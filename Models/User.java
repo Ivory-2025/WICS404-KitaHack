@@ -5,6 +5,9 @@ public class User {
     private String email;
     private String password;
     private String role;
+    // New coordinate fields for Routing and Matching Services
+    private double latitude;
+    private double longitude;
 
     // Constructor
     public User(int id, String name, String email, String password, String role) {
@@ -60,6 +63,22 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }
 
