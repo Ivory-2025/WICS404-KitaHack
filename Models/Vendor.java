@@ -7,8 +7,12 @@ public class Vendor extends User {
 
     //Constructor
     //for manual vendor object creation
-    public Vendor(int id, String name, String email, String password, String role, String restaurantName, String address, double trustScore) {
-        super(id, name, email, password, "VENDOR");// to make sure vendor always taking vendor role
+    public Vendor(int id, String name, String email, String password, String role, 
+                  String restaurantName, String address, double trustScore, 
+                  double latitude, double longitude) {
+        super(id, name, email, password, "VENDOR");
+        this.setLatitude(latitude); // Inherited from User
+        this.setLongitude(longitude); // Inherited from User
         this.restaurantName = restaurantName;
         this.address = address;
         this.trustScore = trustScore;
