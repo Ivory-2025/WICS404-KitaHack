@@ -1,5 +1,3 @@
-package Models;
-
 public class NGO extends User {
     private String organizationName;
     private String address;
