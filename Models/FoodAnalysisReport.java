@@ -10,7 +10,7 @@ public class FoodAnalysisReport {
     private String recommendation;
 
     // Default Constructor
-    public AIAnalysisResult() {}
+    public FoodAnalysisReport() {}
 
     // Getters
     public int getReportId() { return reportId; }
