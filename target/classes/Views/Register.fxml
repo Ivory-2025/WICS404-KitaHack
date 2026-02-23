@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="15.0" prefHeight="550.0" prefWidth="450.0" 
+      stylesheets="@../css/style.css" 
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.RegisterController">
+    
+    <padding>
+        <Insets top="30" right="40" bottom="30" left="40"/>
+    </padding>
+
+    <children>
+        <Text text="SavePlate" styleClass="header-text" />
+        <Text text="Create an Account to Start Saving Food" 
+              style="-fx-font-size: 14px; -fx-fill: #636e72;" />
+        
+        <VBox spacing="5.0" maxWidth="300.0">
+            <Label text="Full Name" style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
+            <TextField fx:id="nameField" promptText="Enter your name"/>
+        </VBox>
+
+        <VBox spacing="5.0" maxWidth="300.0">
+            <Label text="Email Address" style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
+            <TextField fx:id="emailField" promptText="Enter your email"/>
+        </VBox>
+
+        <VBox spacing="5.0" maxWidth="300.0">
+            <Label text="Password" style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
+            <PasswordField fx:id="passwordField" promptText="Create a password"/>
+        </VBox>
+
+        <VBox spacing="5.0" maxWidth="300.0">
+            <Label text="I am a..." style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
+            <ComboBox fx:id="roleComboBox" promptText="Select Role" maxWidth="300.0"/>
+        </VBox>
+        
+        <Button text="CREATE ACCOUNT" onAction="#handleRegister" prefWidth="200.0">
+            <VBox.margin>
+                <Insets top="10" />
+            </VBox.margin>
+        </Button>
+        
+        <Hyperlink text="Already have an account? Login" onAction="#handleBackToLogin" 
+                   style="-fx-text-fill: #4CAF50; -fx-underline: false;"/>
+    </children>
+</VBox>

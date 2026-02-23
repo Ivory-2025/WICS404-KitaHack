@@ -27,12 +27,12 @@ public class FoodAnalysisService {
      * @return The raw JSON response string from Google's servers.
      */
     public String callGeminiApi(byte[] imageBytes) {
-        String apiKey = System.getenv("GEMINI_API_KEY"); 
-        
-        if (apiKey == null || apiKey.isEmpty()) {
-            System.err.println("API Key is missing! Set the GEMINI_API_KEY environment variable.");
-            return "{ \"error\": \"API key missing\" }";
-        }
+    // Switch from System.getenv to your Config file
+    String apiKey = Utils.Config.GEMINI_API_KEY; 
+    
+    if (apiKey == null || apiKey.isEmpty()) {
+        return "{ \"error\": \"API key missing in Utils/Config.java\" }";
+    }
 
         String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
         String base64Image = Base64.getEncoder().encodeToString(imageBytes);

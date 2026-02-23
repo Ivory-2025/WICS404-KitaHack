@@ -9,9 +9,35 @@ import java.util.List;
 
 public class FoodListingDAO {
 
+    /**
+     * Saves a new food listing to the database.
+     * This fixes the "undefined" error in VendorDashboard.java.
+     */
+    public void save(FoodListing listing) {
+        // SQL matches the columns in your DatabaseInitializer
+        String sql = "INSERT INTO food_listings (vendor_id, food_name, ingredients, production_time, expiry_time, status) VALUES (?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            // Getting data from the FoodListing and nested Vendor model
+            pstmt.setInt(1, listing.getVendor().getId());
+            pstmt.setString(2, listing.getFoodName());
+            pstmt.setString(3, listing.getIngredients());
+            pstmt.setString(4, listing.getProductionTime().toString());
+            pstmt.setString(5, listing.getExpiryTime().toString());
+            pstmt.setString(6, listing.getStatus());
+            
+            pstmt.executeUpdate();
+            System.out.println("Food listing saved to database.");
+            
+        } catch (SQLException e) {
+            System.out.println("Error saving listing: " + e.getMessage());
+        }
+    }
+
     public List<FoodListing> getAvailableListings() {
         List<FoodListing> listings = new ArrayList<>();
-        // JOIN users to get vendor latitude/longitude for matching
         String sql = "SELECT fl.*, u.latitude, u.longitude FROM food_listings fl " +
                      "JOIN users u ON fl.vendorId = u.id WHERE fl.status = 'available'";
 
@@ -62,7 +88,7 @@ public class FoodListingDAO {
         
         Vendor vendor = new Vendor();
         vendor.setId(rs.getInt("vendorId"));
-        vendor.setLatitude(rs.getDouble("latitude")); // Crucial for MatchingService
+        vendor.setLatitude(rs.getDouble("latitude")); 
         vendor.setLongitude(rs.getDouble("longitude"));
         listing.setVendor(vendor);
         return listing;

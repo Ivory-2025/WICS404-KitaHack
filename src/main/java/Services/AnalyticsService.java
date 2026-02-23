@@ -4,60 +4,55 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
-import Utils.Config;
+import Utils.Config; // Ensure Utils folder has "package Utils;"
 import Models.SurplusRecord;
-import Models.Vendor; 
+import Models.Vendor;
+import DAO.SurplusRecordDAO;
 
 public class AnalyticsService {
-    private List<SurplusRecord> history = new ArrayList<>();
+    
+    // Use the DAO for database persistence instead of a local list
+    private final SurplusRecordDAO surplusDAO = new SurplusRecordDAO();
 
-    // 1. Store daily surplus
     public void recordDailySurplus(SurplusRecord record) {
-        history.add(record);
+        surplusDAO.save(record);
     }
 
-    // 2. Calculate 7-day average as the data foundation for AI analysis
     public double getSevenDayAverage(Vendor vendor) {
+        // Fetch real history from SQLite
+        List<SurplusRecord> history = surplusDAO.getRecordsByVendor(vendor.getId());
+        
         return history.stream()
-            .filter(r -> r.getVendor().equals(vendor))
             .limit(7)
             .mapToInt(SurplusRecord::getSurplusCount)
             .average()
             .orElse(0.0);
     }
 
-    // 3. Generate weekly insights combining manual logic and AI suggestions
     public String getWeeklyInsight(Vendor vendor) {
         double avg = getSevenDayAverage(vendor);
-        String manualInsight;
-        
-        if (avg > 5.0) {
-            manualInsight = "Action Required: High surplus detected. Average: " + Math.round(avg) + " units.";
-        } else {
-            manualInsight = "Sustainability Goal Met: Low food waste this week!";
-        }
+        String manualInsight = (avg > 5.0) 
+            ? "Action Required: High surplus detected. Average: " + Math.round(avg) + " units."
+            : "Sustainability Goal Met: Low food waste this week!";
 
         try {
-            // Call Gemini AI for professional inventory strategy
             String aiSuggestion = getAIStockSuggestion(vendor, avg);
             return manualInsight + "\n" + aiSuggestion;
         } catch (Exception e) {
             return manualInsight + "\nAI Suggestion: Service temporarily unavailable.";
         }
     }
-    // 4. Call Google AI Studio (Gemini) for smart stock reduction suggestions
+
     public String getAIStockSuggestion(Vendor vendor, double avgSurplus) throws Exception {
-        // Fetch API Key from Config file for security
+        // Fetch API Key from Config file
         String apiKey = Config.GEMINI_API_KEY; 
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + apiKey;
 
-        String prompt = "As a food waste expert, a vendor named " + vendor.getName() + 
+        String prompt = "As a food waste expert, a vendor named " + vendor.getRestaurantName() + 
                         " has a 7-day average surplus of " + avgSurplus + " items. " +
-                        "Suggest a stock reduction strategy for next week in 1 sentence.";
+                        "Suggest a stock reduction strategy in 1 sentence.";
 
-        // Build the request body following Google AI Studio API format
         String jsonBody = "{\"contents\": [{\"parts\": [{\"text\": \"" + prompt + "\"}]}]}";
 
         HttpClient client = HttpClient.newHttpClient();
@@ -70,10 +65,10 @@ public class AnalyticsService {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         
         if (response.statusCode() == 200) {
-            // Returns raw JSON. In the final phase, consider parsing the JSON for plain text output.
-            return "AI Insight: " + response.body(); 
+            // Basic cleanup of raw JSON if you don't have a JSON library yet
+            return "AI Insight: " + response.body().replaceAll("\\s+", " "); 
         } else {
-            return "AI Suggestion: Consider reducing stock by 15% to align with SDG 12 goals.";
+            return "AI Suggestion: Reduce inventory by 10% to meet SDG 12 (Responsible Consumption).";
         }
     }
 }

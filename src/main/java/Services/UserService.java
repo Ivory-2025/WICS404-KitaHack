@@ -16,17 +16,16 @@ public class UserService {
     /**
      * Handles the login logic by checking credentials against the database.
      */
-    public User login(String email, String password) {
-        if (email == null || password == null) return null;
-        
-        User user = userDAO.getUserByEmail(email);
-        
-        // Verify password (in a real app, use hashing!)
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
-        }
-        return null;
+    // Inside UserService.java, around line 21
+public User login(String email, String password) {
+    User user = userDAO.getUserByEmail(email);
+    
+    // Check if user exists AND password is not null before comparing
+    if (user != null && user.getPassword() != null && user.getPassword().equals(password)) {
+        return user;
     }
+    return null;
+}
 
     /**
      * Registers a new user and ensures the role is set correctly.

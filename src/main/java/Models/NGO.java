@@ -6,6 +6,7 @@ public class NGO extends User {
     private double radiusCoverage;
     private int capacity;
 
+    
     // Constructor
     public NGO(int id, String name, String email, String password, String role, 
                String organizationName, String address, double radiusCoverage, 
@@ -25,9 +26,10 @@ public class NGO extends User {
     }
 
     // Getters & Setters
-    public String getOrganizationName() { 
-        return organizationName; 
+    public String getOrganizationName() {
+        return organizationName != null ? organizationName : getName();
     }
+    
 
     public void setOrganizationName(String organizationName) { 
         this.organizationName = organizationName; 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="25.0" prefHeight="500.0" prefWidth="450.0" 
+      stylesheets="@../css/style.css" 
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.LoginController">
+    <children>
+        <Text text="SavePlate" styleClass="header-text" />
+        <Text text="Welcome Back" style="-fx-font-size: 14px; -fx-fill: #636e72;" />
+        
+        <TextField fx:id="emailField" promptText="Email" maxWidth="300.0"/>
+        <PasswordField fx:id="passwordField" promptText="Password" maxWidth="300.0"/>
+        
+        <Button text="SIGN IN" onAction="#handleLogin" prefWidth="200.0"/>
+        
+        <Hyperlink text="Don't have an account? Sign Up" onAction="#handleShowSignUp" 
+                   style="-fx-text-fill: #4CAF50; -fx-underline: false;"/>
+    </children>
+</VBox>

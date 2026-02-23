@@ -15,54 +15,45 @@ import Models.FoodAnalysisReport;
 import Models.FoodListing;
 import Models.Vendor;
 import Services.FoodAnalysisService;
+import DAO.FoodListingDAO;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 
-/**
- * Pure JavaFX Vendor Dashboard (No FXML).
- * Handles building the UI, uploading food, displaying reports, and showing listing status.
- */
 public class VendorDashboard extends VBox {
 
-    // --- UI Elements ---
     private ImageView foodImageView;
     private Button uploadButton;
     private Label statusLabel;
     private TextArea reportTextArea;
     private TableView<FoodListing> listingsTable;
 
-    // --- Data & Services ---
     private FoodAnalysisService aiService;
     private Vendor currentVendor;
     private ObservableList<FoodListing> vendorListings;
+    private FoodListingDAO foodListingDAO; // Added DAO
 
-    public VendorDashboard() {
-        // Initialize services and mock user
-        aiService = new FoodAnalysisService();
-        vendorListings = FXCollections.observableArrayList();
-        currentVendor = new Vendor(1, "Ali", "ali@cafe.com", "pass123", "VENDOR", 
-                                   "Campus Cafe", "Student Union Bldg", 4.8, 3.12, 101.65);
+    // Updated constructor to accept the logged-in vendor
+    public VendorDashboard(Vendor vendor) {
+        this.aiService = new FoodAnalysisService();
+        this.foodListingDAO = new FoodListingDAO(); 
+        this.vendorListings = FXCollections.observableArrayList();
+        this.currentVendor = vendor; // Use the actual logged-in user
 
-        // Build the User Interface
         buildUI();
+        loadExistingListings();
     }
 
-    /**
-     * Constructs the visual layout using pure Java.
-     */
     private void buildUI() {
         this.setPadding(new Insets(20));
         this.setSpacing(15);
 
-        // 1. Header & Status
-        Label titleLabel = new Label("Vendor Dashboard - EcoBites");
+        Label titleLabel = new Label("Vendor Dashboard - " + currentVendor.getRestaurantName());
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         statusLabel = new Label("Ready to scan surplus food.");
         statusLabel.setStyle("-fx-text-fill: green;");
 
-        // 2. Upload Section (Requirement 1)
         foodImageView = new ImageView();
         foodImageView.setFitWidth(300);
         foodImageView.setFitHeight(200);
@@ -73,82 +64,53 @@ public class VendorDashboard extends VBox {
         uploadButton.setStyle("-fx-font-size: 14px; -fx-padding: 10px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
         uploadButton.setOnAction(e -> handleUploadFood());
 
-        // 3. AI Report Section (Requirement 2)
-        Label reportLabel = new Label("AI Analysis Report:");
         reportTextArea = new TextArea();
         reportTextArea.setEditable(false);
         reportTextArea.setPrefRowCount(6);
-        reportTextArea.setPromptText("Gemini AI results will appear here...");
 
-        // 4. Listing Status Table (Requirement 3)
-        Label tableLabel = new Label("Your Active Listings:");
         listingsTable = new TableView<>();
-        listingsTable.setPrefHeight(200);
-
         TableColumn<FoodListing, String> nameCol = new TableColumn<>("Food Item");
         nameCol.setCellValueFactory(new PropertyValueFactory<>("foodName"));
-        nameCol.setPrefWidth(150);
-
         TableColumn<FoodListing, String> statusCol = new TableColumn<>("Status");
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-        statusCol.setPrefWidth(100);
 
-        TableColumn<FoodListing, LocalDateTime> expiryCol = new TableColumn<>("Expires At");
-        expiryCol.setCellValueFactory(new PropertyValueFactory<>("expiryTime"));
-        expiryCol.setPrefWidth(150);
-
-        listingsTable.getColumns().addAll(nameCol, statusCol, expiryCol);
+        listingsTable.getColumns().addAll(nameCol, statusCol);
         listingsTable.setItems(vendorListings);
 
-        // Combine all elements into this VBox layout
-        this.getChildren().addAll(
-            titleLabel, 
-            statusLabel, 
-            new HBox(15, foodImageView, uploadButton), 
-            reportLabel, 
-            reportTextArea, 
-            tableLabel, 
-            listingsTable
-        );
+        this.getChildren().addAll(titleLabel, statusLabel, new HBox(15, foodImageView, uploadButton), new Label("AI Analysis Report:"), reportTextArea, new Label("Your Active Listings:"), listingsTable);
     }
 
-    /**
-     * Requirement 1: Upload food & call AI.
-     */
     private void handleUploadFood() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Surplus Food Photo");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
-
-        Stage stage = (Stage) this.getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+        File selectedFile = fileChooser.showOpenDialog((Stage) this.getScene().getWindow());
 
         if (selectedFile != null) {
             try {
                 statusLabel.setText("Gemini AI is analyzing your food...");
                 statusLabel.setStyle("-fx-text-fill: orange;");
 
-                // Show image
                 Image image = new Image(selectedFile.toURI().toString());
                 foodImageView.setImage(image);
 
-                // Convert to bytes for AI
                 byte[] imageBytes = Files.readAllBytes(selectedFile.toPath());
 
-                // Create listing framework
+                // 1. Create temporary listing
                 FoodListing newListing = new FoodListing();
                 newListing.setVendor(currentVendor);
                 newListing.setProductionTime(LocalDateTime.now());
                 newListing.setFoodName("Surplus Bundle #" + (vendorListings.size() + 1));
+                newListing.setStatus("available");
 
-                // Call AI Service
+                // 2. Call AI Service
                 String aiJsonResponse = aiService.callGeminiApi(imageBytes);
                 FoodAnalysisReport report = aiService.generateFoodAnalysisReport(aiJsonResponse, newListing);
 
-                // Update Table (Requirement 3)
-                vendorListings.add(report.getListing());
+                // 3. Save to Database via DAO
+                foodListingDAO.save(report.getListing());
 
-                // Display Report (Requirement 2)
+                // 4. Update UI
+                vendorListings.add(report.getListing());
                 updateUIWithReport(report);
 
             } catch (Exception e) {
@@ -159,21 +121,15 @@ public class VendorDashboard extends VBox {
         }
     }
 
-    /**
-     * Requirement 2: Display the detailed AI analysis.
-     */
-    private void updateUIWithReport(FoodAnalysisReport report) {
-        statusLabel.setText("Listing automatically pushed to Student App!");
-        statusLabel.setStyle("-fx-text-fill: green;");
-        
-        String displayText = "🔥 AI generated the following details:\n" +
-                "--------------------------------------------------\n" +
-                "Recommendation: " + report.getRecommendation() + "\n" +
-                "Ingredients Detected: " + report.getListing().getIngredients() + "\n" +
-                "Freshness Score: " + (int)(report.getFreshnessScore() * 100) + "%\n" +
-                "Expires At: " + report.getListing().getExpiryTime().toString() + "\n" +
-                "Allergens: " + (report.getAllergens().isEmpty() ? "None Detected" : String.join(", ", report.getAllergens()));
+    private void loadExistingListings() {
+        // You can use your DAO to load previously saved listings for this vendor
+        // List<FoodListing> existing = foodListingDAO.findByVendor(currentVendor.getId());
+        // vendorListings.addAll(existing);
+    }
 
-        reportTextArea.setText(displayText);
+    private void updateUIWithReport(FoodAnalysisReport report) {
+        statusLabel.setText("Listing saved and pushed to NGO network!");
+        statusLabel.setStyle("-fx-text-fill: green;");
+        reportTextArea.setText("AI Recommendation: " + report.getRecommendation());
     }
 }

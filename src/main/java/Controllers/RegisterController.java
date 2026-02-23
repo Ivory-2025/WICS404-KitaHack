@@ -1,32 +1,45 @@
 package Controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.scene.control.*;
+import DAO.UserDAOImpl;
 import Models.User;
 import Services.UserService;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Alert;
+import java.io.IOException;
 
 public class RegisterController {
 
     @FXML private TextField nameField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
+    @FXML private ComboBox<String> roleComboBox; // Added for role selection
 
     private final UserService userService;
 
-    // Constructor injection
-    public RegisterController(UserService userService) {
-        this.userService = userService;
+    public RegisterController() {
+        this.userService = new UserService(new UserDAOImpl());
+    }
+
+    @FXML
+    public void initialize() {
+        // Populates the dropdown menu for your SDG project roles
+        if (roleComboBox != null) {
+            roleComboBox.getItems().addAll("VENDOR", "NGO");
+        }
     }
 
     @FXML
     public void handleRegister() {
-        String name = nameField.getText();
-        String email = emailField.getText();
+        String name = nameField.getText().trim();
+        String email = emailField.getText().trim();
         String password = passwordField.getText();
+        String role = roleComboBox.getValue();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || role == null) {
             showAlert("Error", "Please fill in all fields.");
             return;
         }
@@ -35,13 +48,26 @@ public class RegisterController {
         newUser.setName(name);
         newUser.setEmail(email);
         newUser.setPassword(password);
-        newUser.setRole("USER"); // Default role
+        newUser.setRole(role);
 
         if (userService.registerUser(newUser)) {
             showAlert("Success", "Account created successfully!");
-            // Logic to switch to Login screen would go here
+            handleBackToLogin(); // Automatically switch back to Login
         } else {
             showAlert("Error", "Registration failed. Email might already be in use.");
+        }
+    }
+
+    @FXML
+    public void handleBackToLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Login.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) nameField.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("SavePlate: Login");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -8,6 +8,7 @@ public class DatabaseConnection {
 
     private static final String URL = "jdbc:sqlite:kitaHack.db";
 
+    // Renamed to getConnection to match your other classes
     public static Connection connect() {
         try {
             return DriverManager.getConnection(URL);

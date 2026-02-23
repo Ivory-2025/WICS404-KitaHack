@@ -1,0 +1,41 @@
+/* Modern Background and Text */
+.root {
+    -fx-background-color: #F5F7FA; /* Light modern gray */
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Fancy Header Text */
+.header-text {
+    -fx-fill: #2D3436;
+    -fx-font-weight: bold;
+    -fx-font-size: 28px;
+}
+
+/* Styled Input Fields */
+.text-field, .password-field, .combo-box {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #D1D8E0;
+    -fx-background-color: white;
+    -fx-padding: 8 12;
+}
+
+.text-field:focused {
+    -fx-border-color: #4CAF50; /* SavePlate Green */
+    -fx-border-width: 2;
+}
+
+/* High-Class Button */
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 30;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
