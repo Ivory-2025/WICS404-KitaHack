@@ -4,8 +4,8 @@ import Models.Transaction;
 import java.util.ArrayList;
 import java.util.List;
 public class TransactionDAO {
-    private List<Transaction> transactions = new ArrayList<>();
-    private int nextId = 1; // Simulating database auto-increment
+    private static List<Transaction> transactions = new ArrayList<>();
+    private static int nextId = 1;
 
     // Create: Save a transaction and assign an ID
     public void save(Transaction transaction) {
