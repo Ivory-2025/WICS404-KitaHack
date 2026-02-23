@@ -1,0 +1,11 @@
+# 1. Protection: Ignore the config file containing your Google AI API Key
+Services/Config.java
+
+# 2. Cleanup: Ignore Windows system files often found in your repo
+desktop.ini
+
+# 3. IDE: Ignore VS Code settings
+.vscode/
+
+# 4. Java: Ignore compiled class files
+*.class
