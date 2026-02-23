@@ -31,6 +31,18 @@ public class DatabaseInitializer {
                 );
                 """;
 
+        String createRatingsTable="""
+                CREATE TABLE IF NOT EXISTS ratings (
+                    rating_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    from_user_id INTEGER,
+                    to_user_id INTEGER,
+                    score INTEGER CHECK(score BETWEEN 1 AND 5),
+                    comment TEXT,
+                    FOREIGN KEY(from_user_id) REFERENCES users(id),
+                    FOREIGN KEY(to_user_id) REFERENCES users(id)
+                );
+                """;
+
         try (Connection conn = DatabaseConnection.connect();
              Statement stmt = conn.createStatement()) {
 
