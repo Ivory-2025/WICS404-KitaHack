@@ -2,15 +2,12 @@ package DAO;
 
 import Database.DatabaseConnection;
 import Models.User;
+import java.sql.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+public class UserDAOImpl implements UserDAOInt {
 
-public class UserDAO {
-
-    // CREATE
+    //Create
+    @Override
     public void insertUser(User user) {
         String sql = "INSERT INTO users(name, email, password) VALUES(?,?,?)";
 
@@ -30,6 +27,7 @@ public class UserDAO {
     }
 
     // READ (Login purpose)
+    @Override
     public User getUserByEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";
 
@@ -56,7 +54,43 @@ public class UserDAO {
         return null;
     }
 
-    // DELETE
+    @Override
+    public void updateUser(User user) {
+        // Important for updating Latitude/Longitude for your SDG project
+        String sql = "UPDATE users SET name = ?, latitude = ?, longitude = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user.getName());
+            pstmt.setDouble(2, user.getLatitude());
+            pstmt.setDouble(3, user.getLongitude());
+            pstmt.setInt(4, user.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public User login(String email, String password) {
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new User(rs.getInt("id"), rs.getString("name"), 
+                                rs.getString("email"), rs.getString("password"), 
+                                rs.getString("role"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    //DELETE
+    @Override
     public void deleteUser(int id) {
         String sql = "DELETE FROM users WHERE id = ?";
 
