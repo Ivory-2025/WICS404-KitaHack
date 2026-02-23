@@ -8,6 +8,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import Utils.Config; 
+
 public class AnalyticsService {
     private List<SurplusRecord> history = new ArrayList<>();
 
