@@ -1,8 +1,9 @@
 package DAO;
 
-import Models.Transaction;
 import java.util.ArrayList;
 import java.util.List;
+
+import Models.Transaction;
 public class TransactionDAO {
     private static List<Transaction> transactions = new ArrayList<>();
     private static int nextId = 1;

@@ -55,4 +55,7 @@ public class DatabaseInitializer {
             e.printStackTrace();
         }
     }
+    public static void main(String[] args) {
+        initialize();
+    }
 }

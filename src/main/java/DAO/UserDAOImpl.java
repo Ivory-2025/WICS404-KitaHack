@@ -2,6 +2,7 @@ package DAO;
 
 import Database.DatabaseConnection;
 import Models.User;
+
 import java.sql.*;
 
 public class UserDAOImpl implements UserDAOInt {
@@ -9,8 +10,7 @@ public class UserDAOImpl implements UserDAOInt {
     //Create
     @Override
     public void insertUser(User user) {
-        String sql = "INSERT INTO users(name, email, password) VALUES(?,?,?)";
-
+        String sql = "INSERT INTO users(name, email, password, role, latitude, longitude) VALUES(?,?,?,?,?,?)";
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

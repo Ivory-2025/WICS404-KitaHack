@@ -1,10 +1,5 @@
 package Controllers;
 
-import Models.FoodAnalysisReport;
-import Models.FoodListing;
-import Models.Vendor;
-import Services.FoodAnalysisService;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -16,6 +11,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import Models.FoodAnalysisReport;
+import Models.FoodListing;
+import Models.Vendor;
+import Services.FoodAnalysisService;
 
 import java.io.File;
 import java.nio.file.Files;

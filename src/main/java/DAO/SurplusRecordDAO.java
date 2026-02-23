@@ -1,9 +1,10 @@
 package DAO;
 
-import Models.SurplusRecord;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import Models.SurplusRecord;
 public class SurplusRecordDAO {
     // Simulated database table 
     private List<SurplusRecord> records = new ArrayList<>();

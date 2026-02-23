@@ -1,9 +1,9 @@
 package Services;
 
 import DAO.UserDAOInt;
+import Models.NGO;
 import Models.User;
 import Models.Vendor;
-import Models.NGO;
 
 public class UserService {
     private final UserDAOInt userDAO;

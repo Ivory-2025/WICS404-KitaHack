@@ -1,8 +1,5 @@
 package Services;
 
-import Models.FoodAnalysisReport;
-import Models.FoodListing;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+
+import Models.FoodAnalysisReport;
+import Models.FoodListing;
 
 /**
  * Service responsible for analyzing food images using the Gemini API,

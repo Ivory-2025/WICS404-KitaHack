@@ -1,14 +1,14 @@
 package Services;
 
-import Models.SurplusRecord;
-import Models.Vendor;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import Utils.Config; 
+import Utils.Config;
+import Models.SurplusRecord;
+import Models.Vendor; 
 
 public class AnalyticsService {
     private List<SurplusRecord> history = new ArrayList<>();

@@ -4,10 +4,15 @@ import DAO.FoodListingDAO;
 import DAO.NGODAO;
 import Models.FoodListing;
 import Models.NGO;
+import Models.Vendor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service to match surplus food listings with nearby NGOs based on 
+ * location proximity and organization capacity.
+ */
 public class MatchingService {
 
     private final FoodListingDAO foodListingDAO;
@@ -19,63 +24,58 @@ public class MatchingService {
     }
 
     /**
-     * Given a food listing, find all NGOs that:
-     * 1. Are within their own radius coverage of the vendor
-     * 2. Have capacity > 0
+     * Given a food listing, finds all NGOs that are within their own 
+     * coverage radius and have remaining capacity.
      */
     public List<NGO> findMatchingNGOs(FoodListing listing) {
         List<NGO> allNGOs = ngoDAO.getAllNGOs();
         List<NGO> matchedNGOs = new ArrayList<>();
 
-        double vendorLat = getLatFromAddress(listing.getVendor().getAddress());
-        double vendorLng = getLngFromAddress(listing.getVendor().getAddress());
+        // Get Vendor coordinates from the User model inheritance
+        Vendor vendor = listing.getVendor();
+        double vendorLat = vendor.getLatitude();
+        double vendorLng = vendor.getLongitude();
 
         for (NGO ngo : allNGOs) {
-            double ngoLat = getLatFromAddress(ngo.getAddress());
-            double ngoLng = getLngFromAddress(ngo.getAddress());
+            // Get NGO coordinates (Inherited from User)
+            double ngoLat = ngo.getLatitude();
+            double ngoLng = ngo.getLongitude();
 
             double distance = calculateDistanceKm(vendorLat, vendorLng, ngoLat, ngoLng);
 
-            boolean withinRadius = distance <= ngo.getRadiusCoverage();
-            boolean hasCapacity  = ngo.getCapacity() > 0;
-
-            if (withinRadius && hasCapacity) {
+            // Logic: Distance must be <= NGO's radius AND NGO must have capacity
+            if (distance <= ngo.getRadiusCoverage() && ngo.getCapacity() > 0) {
                 matchedNGOs.add(ngo);
             }
         }
-
         return matchedNGOs;
     }
 
     /**
-     * Given an NGO, find all AVAILABLE food listings that are within the NGO's radius.
-     * This is what populates the NGO dashboard table.
+     * Finds all available food listings within an NGO's operational radius.
+     * This is used to populate the NGO's "Surplus Feed" dashboard.
      */
     public List<FoodListing> findMatchingListingsForNGO(NGO ngo) {
         List<FoodListing> availableListings = foodListingDAO.getAvailableListings();
         List<FoodListing> matchedListings = new ArrayList<>();
 
-        double ngoLat = getLatFromAddress(ngo.getAddress());
-        double ngoLng = getLngFromAddress(ngo.getAddress());
+        double ngoLat = ngo.getLatitude();
+        double ngoLng = ngo.getLongitude();
 
         for (FoodListing listing : availableListings) {
-            double vendorLat = getLatFromAddress(listing.getVendor().getAddress());
-            double vendorLng = getLngFromAddress(listing.getVendor().getAddress());
-
-            double distance = calculateDistanceKm(ngoLat, ngoLng, vendorLat, vendorLng);
+            Vendor vendor = listing.getVendor();
+            double distance = calculateDistanceKm(ngoLat, ngoLng, vendor.getLatitude(), vendor.getLongitude());
 
             if (distance <= ngo.getRadiusCoverage()) {
                 matchedListings.add(listing);
             }
         }
-
         return matchedListings;
     }
 
     /**
-     * Called when an NGO taps Accept.
-     * First NGO to call this wins — listing is locked immediately.
-     * Returns true if successful, false if someone else already accepted.
+     * Logic for an NGO to accept a listing.
+     * Updates status to 'matched' to prevent others from claiming it.
      */
     public boolean acceptListing(int listingId, NGO ngo) {
         FoodListing listing = foodListingDAO.getListingById(listingId);
@@ -85,24 +85,17 @@ public class MatchingService {
             return false;
         }
 
+        // Only 'available' listings can be accepted
         if (!listing.getStatus().equalsIgnoreCase("available")) {
-            System.out.println("Sorry! Another NGO already accepted this listing.");
+            System.out.println("Listing is no longer available.");
             return false;
         }
 
-        // Lock the listing — first-come-first-serve
-        boolean updated = foodListingDAO.updateStatus(listingId, "matched");
-
-        if (updated) {
-            System.out.println("NGO " + ngo.getOrganizationName() + " accepted listing #" + listingId);
-            return true;
-        }
-
-        return false;
+        return foodListingDAO.updateStatus(listingId, "matched");
     }
 
     /**
-     * Haversine formula — calculates distance between two coordinates in km.
+     * Haversine formula to calculate distance between two points on Earth.
      */
     public double calculateDistanceKm(double lat1, double lng1, double lat2, double lng2) {
         final int EARTH_RADIUS_KM = 6371;
@@ -117,14 +110,5 @@ public class MatchingService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return EARTH_RADIUS_KM * c;
-    }
-
-    // Placeholder coordinates — update once DB stores real lat/lng
-    private double getLatFromAddress(String address) {
-        return 3.1390;
-    }
-
-    private double getLngFromAddress(String address) {
-        return 101.6869;
     }
 }
