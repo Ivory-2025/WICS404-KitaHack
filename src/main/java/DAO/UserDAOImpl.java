@@ -2,8 +2,6 @@ package DAO;
 
 import Database.DatabaseConnection;
 import Models.User;
-import Models.Vendor;
-import Models.NGO;
 import java.sql.*;
 
 public class UserDAOImpl implements UserDAOInt {
@@ -39,7 +37,7 @@ public class UserDAOImpl implements UserDAOInt {
         // Inside UserDAOImpl.java
 if (rs.next()) {
     User user = new User();
-    user.setId(rs.getInt("id"));
+    user.setUserId(rs.getInt("id"));
     user.setName(rs.getString("name"));      // If this is missing, you get "Welcome null"
     user.setEmail(rs.getString("email"));
     user.setPassword(rs.getString("password")); // If this is missing, you get the NullPointerException
@@ -61,7 +59,7 @@ if (rs.next()) {
             pstmt.setString(1, user.getName());
             pstmt.setDouble(2, user.getLatitude());
             pstmt.setDouble(3, user.getLongitude());
-            pstmt.setInt(4, user.getId());
+            pstmt.setInt(4, user.getUserId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

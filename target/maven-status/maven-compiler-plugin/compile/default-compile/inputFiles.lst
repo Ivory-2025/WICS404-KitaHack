@@ -21,6 +21,7 @@ C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Database\
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Services\UserService.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\UserDAOInt.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\VendorDashboardController.java
+C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\MessageDAO.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\RatingDAO.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\MarketplaceController.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\FoodListingDAO.java
@@ -33,5 +34,6 @@ C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controlle
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\VendorDashboard.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Services\ModelsChecker.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\UploadFoodController.java
+C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\UserSession.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\NGO.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\FoodAnalysisReport.java

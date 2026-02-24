@@ -54,31 +54,31 @@ public class VendorDAO {
      * Fetches a Vendor by their User ID. 
      * Useful for your Dashboard and Analytics logic.
      */
-    public Vendor getVendorById(int id) {
-        String sql = """
-                SELECT u.*, v.restaurant_name, v.address, v.trust_score
-                FROM users u
-                JOIN vendors v ON u.id = v.user_id
-                WHERE u.id = ?
-                """;
-        try (Connection conn = DatabaseConnection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) return mapResultSet(rs);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Vendor getVendorByUserId(int userId) {
+    // Selects the vendor profile linked to the logged-in User ID
+    String sql = "SELECT * FROM vendors WHERE user_id = ?";
+    
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setInt(1, userId);
+        ResultSet rs = pstmt.executeQuery();
+        
+        // Inside VendorDAO.java
+if (rs.next()) {
+    Vendor vendor = new Vendor();
+    vendor.setId(rs.getInt("vendor_id"));
+    vendor.setRestaurantName(rs.getString("restaurant_name")); // Fixed Column Name
+    return vendor;
+}
+    } catch (SQLException e) {
+        System.err.println("DB Error: " + e.getMessage());
     }
+    return null;
+}
 
     public Vendor getVendorByEmail(String email) {
-        String sql = """
-                SELECT u.*, v.restaurant_name, v.address, v.trust_score
-                FROM users u
-                JOIN vendors v ON u.id = v.user_id
-                WHERE u.email = ?
-                """;
+        String sql = "SELECT * FROM vendors WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
@@ -93,7 +93,7 @@ public class VendorDAO {
     private Vendor mapResultSet(ResultSet rs) throws SQLException {
         Vendor vendor = new Vendor();
         // Inherited fields from User
-        vendor.setId(rs.getInt("id"));
+        vendor.setUserId(rs.getInt("id"));
         vendor.setName(rs.getString("name"));
         vendor.setEmail(rs.getString("email"));
         vendor.setPassword(rs.getString("password"));

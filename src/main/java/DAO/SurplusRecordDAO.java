@@ -19,7 +19,7 @@ public class SurplusRecordDAO {
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, record.getVendor().getId());
+            pstmt.setInt(1, record.getVendor().getUserId());
             pstmt.setDouble(2, record.getAmount());
             pstmt.setString(3, record.getDate().toString());
             pstmt.setString(4, record.getFoodType());

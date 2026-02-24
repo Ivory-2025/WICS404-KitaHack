@@ -13,6 +13,7 @@ public class FoodListing {
     private String ingredients;
     private String status;
     private LocalDateTime expiryTime;
+    private String quantity;
 
     // Constructors
 
@@ -72,6 +73,10 @@ public class FoodListing {
 
     public String getImagePath() {
         return imagePath;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 
     public void setImagePath(String imagePath) {

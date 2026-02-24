@@ -55,7 +55,7 @@ public class NGODAO {
     private NGO mapResultSet(ResultSet rs) throws SQLException {
         NGO ngo = new NGO();
         // Fields inherited from User model
-        ngo.setId(rs.getInt("id"));
+        ngo.setUserId(rs.getInt("id"));
         ngo.setName(rs.getString("name"));
         ngo.setEmail(rs.getString("email"));
         ngo.setRole(rs.getString("role"));
@@ -69,4 +69,54 @@ public class NGODAO {
         
         return ngo;
     }
+
+    public NGO getNGOByEmail(String email) {
+    // Querying the NGOs table we renamed earlier
+    String sql = "SELECT * FROM NGOs WHERE email = ?"; 
+    
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setString(1, email);
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            NGO ngo = new NGO();
+            ngo.setUserId(rs.getInt("ngo_id"));
+            ngo.setOrganizationName(rs.getString("organizationName"));
+            ngo.setLatitude(rs.getDouble("latitude"));
+            ngo.setLongitude(rs.getDouble("longitude"));
+            ngo.setRadiusCoverage(rs.getDouble("radiusCoverage"));
+            return ngo;
+        }
+    } catch (SQLException e) {
+        System.err.println("Database Error: " + e.getMessage());
+    }
+    return null;
+}
+
+public NGO getNGOByUserId(int userId) {
+    // Selects the NGO profile linked to the core User ID
+    String sql = "SELECT * FROM NGOs WHERE user_id = ?";
+    
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setInt(1, userId);
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            NGO ngo = new NGO();
+            ngo.setUserId(rs.getInt("ngo_id"));
+            ngo.setOrganizationName(rs.getString("organizationName"));
+            ngo.setLatitude(rs.getDouble("latitude"));
+            ngo.setLongitude(rs.getDouble("longitude"));
+            ngo.setRadiusCoverage(rs.getDouble("radiusCoverage"));
+            return ngo;
+        }
+    } catch (SQLException e) {
+        System.err.println("Database Error: " + e.getMessage());
+    }
+    return null;
+}
 }

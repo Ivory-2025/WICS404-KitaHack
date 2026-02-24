@@ -1,6 +1,6 @@
 package Models;
 public class User {
-    private int id;
+    private int UserId;
     private String name;
     private String email;
     private String password;
@@ -10,8 +10,8 @@ public class User {
     private double longitude;
 
     // Constructor
-    public User(int id, String name, String email, String password, String role) {
-        this.id = id;
+    public User(int UserId, String name, String email, String password, String role) {
+        this.UserId = UserId;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -25,12 +25,12 @@ public class User {
     }
 
     // Getters & Setters
-    public int getId() {
-        return id;
+    public int getUserId() {
+        return UserId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserId(int Userid) {
+        this.UserId = Userid;
     }
 
     public String getName() {

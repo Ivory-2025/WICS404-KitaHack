@@ -19,7 +19,7 @@ public class TransactionDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setInt(1, transaction.getListing().getListingId());
-            pstmt.setInt(2, transaction.getNgo().getId());
+            pstmt.setInt(2, transaction.getNgo().getUserId());
             pstmt.setString(3, transaction.getTransactionDate().toString());
             pstmt.setString(4, transaction.getStatus());
 

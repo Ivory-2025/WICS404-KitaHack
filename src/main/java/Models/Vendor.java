@@ -4,6 +4,7 @@ public class Vendor extends User {
     private String restaurantName;
     private String address;
     private double trustScore;
+    private int id;
 
     //Constructor
     //for manual vendor object creation
@@ -47,5 +48,13 @@ public class Vendor extends User {
 
     public void setTrustScore(double trustScore) {
         this.trustScore = trustScore;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

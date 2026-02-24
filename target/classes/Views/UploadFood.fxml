@@ -56,8 +56,7 @@
                 </VBox>
             </HBox>
             
-            <Button text="← Back to Dashboard" onAction="#handleBack" 
-                    style="-fx-background-color: transparent; -fx-text-fill: #4A5568; -fx-font-weight: 700; -fx-cursor: hand;"/>
+            <Button onAction="#handleBack" text="← Back to Dashboard" style="-fx-background-color: transparent; -fx-text-fill: #1A1A1A; -fx-font-weight: bold; -fx-cursor: hand;"/>
         </VBox>
     </children>
 </StackPane>

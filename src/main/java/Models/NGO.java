@@ -56,4 +56,15 @@ public class NGO extends User {
     public void setCapacity(int capacity) { 
         this.capacity = capacity; 
     }
+
+    private int id; // Ensure this matches your ngo_id column
+
+    // Add this method to clear the error at line 148
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 } 

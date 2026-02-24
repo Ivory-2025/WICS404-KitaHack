@@ -19,8 +19,8 @@ public class RatingDAO {
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, rating.getFromUser().getId());
-            pstmt.setInt(2, rating.getToUser().getId());
+            pstmt.setInt(1, rating.getFromUser().getUserId());
+            pstmt.setInt(2, rating.getToUser().getUserId());
             pstmt.setInt(3, rating.getScore());
             pstmt.setString(4, rating.getComment());
 

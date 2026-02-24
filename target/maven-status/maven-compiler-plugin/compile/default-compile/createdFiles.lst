@@ -1,10 +1,12 @@
 DAO\FoodListingDAO.class
 DAO\TransactionDAO.class
 Models\FoodAnalysisReport.class
+Models\UserSession.class
 Controllers\NGODashboardController.class
 Models\Rating.class
 app\Main.class
 Controllers\RegisterController.class
+DAO\MessageDAO.class
 Models\NGO.class
 Controllers\LoginController.class
 Models\SurplusRecord.class

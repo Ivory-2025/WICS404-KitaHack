@@ -21,7 +21,7 @@ public class AnalyticsService {
 
     public double getSevenDayAverage(Vendor vendor) {
         // Fetch real history from SQLite
-        List<SurplusRecord> history = surplusDAO.getRecordsByVendor(vendor.getId());
+        List<SurplusRecord> history = surplusDAO.getRecordsByVendor(vendor.getUserId());
         
         return history.stream()
             .limit(7)

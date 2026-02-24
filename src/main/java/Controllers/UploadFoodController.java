@@ -3,6 +3,9 @@ package Controllers;
 import Services.FoodAnalysisService;
 import Models.FoodAnalysisReport;
 import Models.FoodListing;
+import Models.NGO;
+import Models.UserSession;
+import Models.Vendor;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -17,12 +20,24 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import Services.MatchingService;
+import Services.RoutingService;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+
+import DAO.FoodListingDAO;
+import DAO.MessageDAO;
 
 public class UploadFoodController {
 
+    // These must be declared at the class level to fix the red errors
+private Vendor currentVendor; // This should be set when the dashboard loads
+private FoodListingDAO foodListingDAO = new FoodListingDAO();
+    private MatchingService matchingService = new MatchingService();
+    private RoutingService routingService = new RoutingService();
+    private MessageDAO messageDAO = new MessageDAO();
     // Matches your FXML fx:id exactly
     @FXML private TextField foodNameField;
     @FXML private TextField quantityField;
@@ -34,9 +49,15 @@ public class UploadFoodController {
     private File selectedFile;
 
     @FXML
-    public void initialize() {
-        foodService = new FoodAnalysisService();
+public void initialize() {
+    this.foodService = new FoodAnalysisService();
+    // Retrieve the vendor from the global session
+    this.currentVendor = Models.UserSession.getInstance().getVendor(); 
+    
+    if (this.currentVendor == null) {
+        System.err.println("Error: No vendor session found.");
     }
+}
 
     @FXML
     private void handleSelectPhoto(ActionEvent event) {
@@ -100,25 +121,86 @@ public class UploadFoodController {
     }
 
     @FXML
-    private void handlePublish(ActionEvent event) {
-        // Add your DAO save logic here
-        System.out.println("Publishing: " + foodNameField.getText());
+private void handlePublish() {
+
+    if (currentVendor == null) {
+        System.out.println("Error: No vendor session found.");
+        return;
+    }
+
+    FoodListing listing = new FoodListing();
+    listing.setFoodName(foodNameField.getText());
+    listing.setQuantity(quantityField.getText());
+    listing.setVendor(currentVendor);
+    listing.setStatus("available");
+
+    foodListingDAO.save(listing);
+
+    // Find NGOs based on listing
+    List<NGO> matches = matchingService.findMatchingNGOs(listing);
+
+    for (NGO ngo : matches) {
+        String msg = "New Surplus: " + listing.getFoodName() +
+                " is ready!";
+
+        messageDAO.sendAutoPM(
+                currentVendor.getUserId(),
+                ngo.getUserId(),
+                msg
+        );
+    }
+
+    showConfirmation("Listing Published! " + matches.size() + " NGOs notified.");
+}
+
+    private void showConfirmation(String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, content);
+        alert.show();
+    }
+    
+    public void setVendor(Vendor vendor) {
+        this.currentVendor = vendor;
     }
 
     @FXML
-    private void handleBack(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/Views/VendorDashboard.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            
-            // 5-Star Premium Transition
-            root.setOpacity(0);
-            FadeTransition ft = new FadeTransition(Duration.millis(500), root);
-            ft.setFromValue(0); ft.setToValue(1); ft.play();
-            
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+private void handleBackToDashboard(ActionEvent event) {
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorDashboard.fxml"));
+        Parent root = loader.load();
+
+        // 1. Pass the vendor profile back to the dashboard
+        VendorDashboardController controller = loader.getController();
+        controller.setCurrentVendor(Models.UserSession.getInstance().getVendor());
+
+        // 2. Switch the Scene
+        Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+        
+    } catch (IOException e) {
+        System.err.println("Navigation Error: " + e.getMessage());
     }
+}
+
+    @FXML
+private void handleBack(ActionEvent event) {
+    try {
+        // Load the Vendor Dashboard FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorDashboard.fxml"));
+        Parent root = loader.load();
+
+        // Pass the vendor profile back to the dashboard controller
+        VendorDashboardController controller = loader.getController();
+        controller.setCurrentVendor(Models.UserSession.getInstance().getVendor());
+
+        // Get the current stage and switch the scene
+        Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+        
+    } catch (IOException e) {
+        System.err.println("Navigation Error: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 }

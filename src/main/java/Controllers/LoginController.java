@@ -1,7 +1,12 @@
 package Controllers;
 
 import DAO.UserDAOImpl;
+import DAO.VendorDAO;
+import DAO.NGODAO;
+import Models.NGO;
 import Models.User;
+import Models.UserSession;
+import Models.Vendor;
 import Services.UserService;
 import javafx.animation.*;
 import javafx.fxml.FXML;
@@ -16,15 +21,15 @@ import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.IOException;
 
 public class LoginController {
 
+    private final UserService userService;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
-
-    private final UserService userService;
+    private final VendorDAO vendorDAO = new VendorDAO(); 
+    private final NGODAO ngoDAO = new NGODAO(); 
 
     public LoginController() {
         this.userService = new UserService(new UserDAOImpl());
@@ -43,20 +48,33 @@ public class LoginController {
         User loggedInUser = userService.login(email, password);
 
         if (loggedInUser != null) {
-            String role = loggedInUser.getRole();
+            // Assign User to session
+            UserSession session = UserSession.getInstance();
+
+            if ("VENDOR".equalsIgnoreCase(loggedInUser.getRole())) {
+                // Fetch vendor by user_id (not email)
+                Vendor vendor = vendorDAO.getVendorByUserId(loggedInUser.getUserId());
+                if (vendor == null) {
+                    showToast("Error: Vendor profile not found in DB.", "#FEE2E2", "#991B1B", "❌");
+                    return;
+                }
+                session.setVendor(vendor);
+            } else if ("NGO".equalsIgnoreCase(loggedInUser.getRole())) {
+                NGO ngo = ngoDAO.getNGOByUserId(loggedInUser.getUserId());
+                if (ngo == null) {
+                    showToast("Error: NGO profile not found in DB.", "#FEE2E2", "#991B1B", "❌");
+                    return;
+                }
+                session.setNGO(ngo);
+            }
 
             showToast("Welcome back, " + loggedInUser.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
 
-            // Smooth transition after toast
             PauseTransition delay = new PauseTransition(Duration.seconds(0.8));
             delay.setOnFinished(e -> {
-                String viewPath;
-                if ("VENDOR".equalsIgnoreCase(role)) {
-                    viewPath = "/Views/VendorDashboard.fxml";
-                } else {
-                    viewPath = "/Views/NGODashboard.fxml";
-                }
-                loadDashboard(viewPath, loggedInUser); // Pass logged-in user
+                String viewPath = "VENDOR".equalsIgnoreCase(loggedInUser.getRole()) 
+                        ? "/Views/VendorDashboard.fxml" : "/Views/NGODashboard.fxml";
+                loadDashboard(viewPath, loggedInUser);
             });
             delay.play();
         } else {
@@ -66,13 +84,16 @@ public class LoginController {
 
     private void loadDashboard(String fxmlPath, User loggedInUser) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorDashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
-            // Pass logged-in user to dashboard controller
-            if (loggedInUser.getRole().equalsIgnoreCase("VENDOR")) {
-                Controllers.VendorDashboardController controller = loader.getController();
-                controller.setCurrentVendor(loggedInUser);
+            // Pass the correct vendor/NGO to dashboard controller
+            if ("VENDOR".equalsIgnoreCase(loggedInUser.getRole())) {
+                VendorDashboardController controller = loader.getController();
+                controller.setCurrentVendor(UserSession.getInstance().getVendor());
+            } else if ("NGO".equalsIgnoreCase(loggedInUser.getRole())) {
+                // NGODashboardController controller = loader.getController();
+                // controller.setCurrentNGO(UserSession.getInstance().getNGO());
             }
 
             Stage stage = (Stage) emailField.getScene().getWindow();
@@ -87,15 +108,13 @@ public class LoginController {
             stage.setScene(new Scene(root));
             stage.setTitle("SavePlate - " + loggedInUser.getRole() + " Dashboard");
             stage.centerOnScreen();
+
         } catch (IOException e) {
-            showToast("Critical Error: Could not load dashboard.", "#FEE2E2", "#991B1B", "🚫");
             e.printStackTrace();
+            showToast("Critical Error: Could not load dashboard.", "#FEE2E2", "#991B1B", "🚫");
         }
     }
 
-    /**
-     * High-Class Toast with Icon
-     */
     private void showToast(String message, String bgColor, String textColor, String icon) {
         Stage stage = (Stage) emailField.getScene().getWindow();
         Popup popup = new Popup();
@@ -103,18 +122,14 @@ public class LoginController {
         HBox toastRoot = new HBox(12);
         toastRoot.setAlignment(Pos.CENTER_LEFT);
         toastRoot.setStyle(String.format(
-            "-fx-background-color: %s; -fx-background-radius: 20; -fx-padding: 12 25;",
-            bgColor
-        ));
+                "-fx-background-color: %s; -fx-background-radius: 20; -fx-padding: 12 25;", bgColor));
 
         Label iconLabel = new Label(icon);
         iconLabel.setStyle("-fx-font-size: 16px;");
 
         Label messageLabel = new Label(message);
         messageLabel.setStyle(String.format(
-            "-fx-text-fill: %s; -fx-font-family: 'Inter'; -fx-font-weight: 800; -fx-font-size: 13px;",
-            textColor
-        ));
+                "-fx-text-fill: %s; -fx-font-family: 'Inter'; -fx-font-weight: 800; -fx-font-size: 13px;", textColor));
 
         toastRoot.getChildren().addAll(iconLabel, messageLabel);
         toastRoot.setEffect(new DropShadow(20, Color.web("#0000000D")));
