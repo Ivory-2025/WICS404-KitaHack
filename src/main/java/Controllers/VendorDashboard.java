@@ -18,7 +18,6 @@ import Services.FoodAnalysisService;
 import DAO.FoodListingDAO;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 public class VendorDashboard extends VBox {
@@ -81,45 +80,51 @@ public class VendorDashboard extends VBox {
     }
 
     private void handleUploadFood() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
-        File selectedFile = fileChooser.showOpenDialog((Stage) this.getScene().getWindow());
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg")
+    );
 
-        if (selectedFile != null) {
-            try {
-                statusLabel.setText("Gemini AI is analyzing your food...");
-                statusLabel.setStyle("-fx-text-fill: orange;");
+    File selectedFile = fileChooser.showOpenDialog((Stage) this.getScene().getWindow());
 
-                Image image = new Image(selectedFile.toURI().toString());
-                foodImageView.setImage(image);
+    if (selectedFile != null) {
+        try {
+            statusLabel.setText("Gemini AI is analyzing your food...");
+            statusLabel.setStyle("-fx-text-fill: orange;");
 
-                byte[] imageBytes = Files.readAllBytes(selectedFile.toPath());
+            // Show image preview
+            Image image = new Image(selectedFile.toURI().toString());
+            foodImageView.setImage(image);
 
-                // 1. Create temporary listing
-                FoodListing newListing = new FoodListing();
-                newListing.setVendor(currentVendor);
-                newListing.setProductionTime(LocalDateTime.now());
-                newListing.setFoodName("Surplus Bundle #" + (vendorListings.size() + 1));
-                newListing.setStatus("available");
+            // 1️⃣ Create new listing
+            FoodListing newListing = new FoodListing();
+            newListing.setVendor(currentVendor);
+            newListing.setProductionTime(LocalDateTime.now());
+            newListing.setFoodName("Surplus Bundle #" + (vendorListings.size() + 1));
+            newListing.setStatus("Pending AI Analysis");
 
-                // 2. Call AI Service
-                String aiJsonResponse = aiService.callGeminiApi(imageBytes);
-                FoodAnalysisReport report = aiService.generateFoodAnalysisReport(aiJsonResponse, newListing);
+            // 2️⃣ Call new unified AI method
+            FoodAnalysisReport report =
+                    aiService.analyzeFoodImage(selectedFile, newListing);
 
-                // 3. Save to Database via DAO
-                foodListingDAO.save(report.getListing());
-
-                // 4. Update UI
-                vendorListings.add(report.getListing());
-                updateUIWithReport(report);
-
-            } catch (Exception e) {
-                statusLabel.setText("Error analyzing photo.");
-                statusLabel.setStyle("-fx-text-fill: red;");
-                e.printStackTrace();
+            if (report == null) {
+                throw new RuntimeException("AI returned null report.");
             }
+
+            // 3️⃣ Save listing to database
+            foodListingDAO.save(report.getListing());
+
+            // 4️⃣ Update UI
+            vendorListings.add(report.getListing());
+            updateUIWithReport(report);
+
+        } catch (Exception e) {
+            statusLabel.setText("Error analyzing photo.");
+            statusLabel.setStyle("-fx-text-fill: red;");
+            e.printStackTrace();
         }
     }
+}
 
     private void loadExistingListings() {
         // You can use your DAO to load previously saved listings for this vendor

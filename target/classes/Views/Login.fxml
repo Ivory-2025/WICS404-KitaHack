@@ -1,23 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
 
-<VBox alignment="CENTER" spacing="25.0" prefHeight="500.0" prefWidth="450.0" 
-      stylesheets="@../css/style.css" 
-      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="Controllers.LoginController">
+<StackPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #FAFAFA;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.LoginController">
     <children>
-        <Text text="SavePlate" styleClass="header-text" />
-        <Text text="Welcome Back" style="-fx-font-size: 14px; -fx-fill: #636e72;" />
-        
-        <TextField fx:id="emailField" promptText="Email" maxWidth="300.0"/>
-        <PasswordField fx:id="passwordField" promptText="Password" maxWidth="300.0"/>
-        
-        <Button text="SIGN IN" onAction="#handleLogin" prefWidth="200.0"/>
-        
-        <Hyperlink text="Don't have an account? Sign Up" onAction="#handleShowSignUp" 
-                   style="-fx-text-fill: #4CAF50; -fx-underline: false;"/>
+        <VBox alignment="CENTER" spacing="30.0" maxWidth="450.0" maxHeight="550.0" 
+              style="-fx-background-color: white; -fx-background-radius: 35; -fx-padding: 50;">
+            <effect>
+                <DropShadow color="#0000000D" radius="30" offsetY="15"/>
+            </effect>
+            <children>
+                <VBox alignment="CENTER" spacing="8">
+                    <Text text="SavePlate" style="-fx-font-size: 48px; -fx-font-weight: 900; -fx-fill: #1A1A1A; -fx-font-family: 'Inter';" />
+                    <Label text="Fighting food waste with intelligence." style="-fx-font-size: 14px; -fx-text-fill: #999999; -fx-font-family: 'Inter';"/>
+                </VBox>
+
+                <VBox spacing="15" alignment="CENTER">
+                    <TextField fx:id="emailField" promptText="Email Address" 
+                               style="-fx-background-color: #F5F5F7; -fx-background-radius: 12; -fx-padding: 15; -fx-font-family: 'Inter';"/>
+                    
+                    <PasswordField fx:id="passwordField" promptText="Password" 
+                                   style="-fx-background-color: #F5F5F7; -fx-background-radius: 12; -fx-padding: 15; -fx-font-family: 'Inter';"/>
+                </VBox>
+                
+                <VBox spacing="20" alignment="CENTER">
+                    <Button text="Sign In" onAction="#handleLogin" prefWidth="350.0"
+                            style="-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 15; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    
+                    <Hyperlink text="Create a new account" onAction="#handleShowSignUp" 
+                               style="-fx-text-fill: #1A1A1A; -fx-underline: false; -fx-font-weight: 600; -fx-font-size: 13px;"/>
+                </VBox>
+            </children>
+        </VBox>
     </children>
-</VBox>
+</StackPane>

@@ -1,228 +1,131 @@
 package Services;
 
+import Models.FoodAnalysisReport;
+import Models.FoodListing;
+import Utils.Config;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
+import java.io.File;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-import Models.FoodAnalysisReport;
-import Models.FoodListing;
-
-/**
- * Service responsible for analyzing food images using the Gemini API,
- * generating reports, calculating expiry times, and detecting allergens.
- * Built using native Java; no external JSON libraries required.
- */
 public class FoodAnalysisService {
 
-    /**
-     * 1. Call Gemini API
-     * Sends the image of the surplus food to Gemini Vision API for analysis.
-     * * @param imageBytes The raw bytes of the JPG/PNG image.
-     * @return The raw JSON response string from Google's servers.
-     */
-    public String callGeminiApi(byte[] imageBytes) {
-    // Switch from System.getenv to your Config file
-    String apiKey = Utils.Config.GEMINI_API_KEY; 
-    
-    if (apiKey == null || apiKey.isEmpty()) {
-        return "{ \"error\": \"API key missing in Utils/Config.java\" }";
+    private static final String GEMINI_MODEL = "gemini-1.5-flash"; 
+
+    public FoodAnalysisReport analyzeFoodImage(File imageFile, FoodListing listing) {
+        if (imageFile == null || !imageFile.exists()) return null;
+
+        try {
+            String rawResponse = callGeminiAPI(imageFile);
+            
+            // 1. Enhanced defensive parsing
+            JSONObject fullJson = new JSONObject(rawResponse);
+            
+            // Check if API returned an error field
+            if (fullJson.has("error")) {
+                throw new Exception("API Error: " + fullJson.getJSONObject("error").getString("message"));
+            }
+
+            String aiText = fullJson.getJSONArray("candidates")
+                    .getJSONObject(0)
+                    .getJSONObject("content")
+                    .getJSONArray("parts")
+                    .getJSONObject(0)
+                    .getString("text");
+
+            // 2. Clean AI text: Remove markdown and extra whitespace
+            String cleanJson = aiText.replaceAll("(?s)```json\\s*|\\s*```", "").trim();
+            JSONObject data = new JSONObject(cleanJson);
+
+            // 3. Extract Data Safely with defaults
+            String ingredients = data.optString("ingredients", "Not detected");
+            String condition = data.optString("condition", "Unknown");
+            double freshness = data.optDouble("freshnessScore", 0.5);
+            boolean readyToEat = data.optBoolean("isReadyToEat", true);
+            String recommendation = data.optString("recommendation", "No specific recommendation.");
+
+            // 4. Update Model
+            listing.setIngredients(ingredients);
+            listing.setExpiryTime(calculateExpiry(freshness, readyToEat));
+            listing.setStatus(condition);
+
+            List<String> allergens = detectAllergens(ingredients);
+            
+            // Refined Gen Z dietary logic
+            boolean isVeg = !ingredients.toLowerCase().matches(".*(chicken|beef|pork|fish|meat|mutton|shrimp).*");
+            boolean isHalal = !ingredients.toLowerCase().matches(".*(pork|lard|alcohol|wine|beer).*");
+
+            return new FoodAnalysisReport(
+                    listing,
+                    allergens,
+                    isVeg,
+                    isHalal,
+                    freshness,
+                    recommendation
+            );
+
+        } catch (Exception e) {
+            // Log exactly what went wrong for debugging
+            System.err.println("Gemini Analysis Failure: " + e.getMessage());
+            return null;
+        }
     }
 
-        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+    private String callGeminiAPI(File imageFile) throws Exception {
+        byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
         String base64Image = Base64.getEncoder().encodeToString(imageBytes);
 
-        String prompt = "Analyze this food image. Return ONLY a valid JSON object with the following exact keys: " +
-                        "\\\"condition\\\" (String: e.g., Good, Bruised), \\\"ingredients\\\" (String: comma-separated list), " +
-                        "\\\"freshnessScore\\\" (Number between 0.0 and 1.0), \\\"isReadyToEat\\\" (boolean), " +
-                        "\\\"recommendation\\\" (String: a clever recipe idea or a flash sale pitch). Do not use markdown blocks.";
+        // Explicit prompt to ensure high-class JSON data
+        String prompt = "Act as a food safety expert. Analyze this food image. " +
+                        "Provide a detailed JSON response only. Required keys: " +
+                        "\"condition\", \"ingredients\", \"freshnessScore\" (0.0-1.0), " +
+                        "\"isReadyToEat\" (boolean), \"recommendation\".";
 
-        String requestBody = "{\n" +
-            "  \"contents\": [{\n" +
-            "    \"parts\": [\n" +
-            "      {\"text\": \"" + prompt + "\"},\n" +
-            "      {\n" +
-            "        \"inline_data\": {\n" +
-            "          \"mime_type\": \"image/jpeg\",\n" + 
-            "          \"data\": \"" + base64Image + "\"\n" +
-            "        }\n" +
-            "      }\n" +
-            "    ]\n" +
-            "  }]\n" +
-            "}";
+        String requestBody = String.format(
+            "{ \"contents\": [{ \"parts\": [" +
+            "{ \"text\": \"%s\" }," +
+            "{ \"inline_data\": { \"mime_type\": \"image/jpeg\", \"data\": \"%s\" } }" +
+            "] }] }", prompt, base64Image);
 
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(endpoint))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                    .build();
+        String endpoint = "[https://generativelanguage.googleapis.com/v1beta/models/](https://generativelanguage.googleapis.com/v1beta/models/)" 
+                + GEMINI_MODEL + ":generateContent?key=" + Config.GEMINI_API_KEY;
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return response.body();
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(java.time.Duration.ofSeconds(10))
+                .build();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "{ \"error\": \"Failed to connect to the AI\" }";
-        }
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body();
     }
 
-    /**
-     * 2. Generate FoodAnalysisReport (NO EXTERNAL LIBRARIES)
-     * Parses the Gemini API response using native Java String manipulation.
-     * * @param geminiJsonResponse The raw JSON string from the AI.
-     * @param listing The initial FoodListing to be updated.
-     * @return A fully populated FoodAnalysisReport.
-     */
-    public FoodAnalysisReport generateFoodAnalysisReport(String geminiJsonResponse, FoodListing listing) {
-        FoodAnalysisReport report = new FoodAnalysisReport();
-
-        try {
-            // Extract the raw text block from Gemini's complex response wrapper
-            String extractedText = "";
-            int textIndex = geminiJsonResponse.indexOf("\"text\": \"");
-            
-            if (textIndex != -1) {
-                int startIndex = textIndex + 9; 
-                int endIndex = geminiJsonResponse.indexOf("\"}", startIndex); 
-                
-                // Handle case where closing brace might be formatted differently
-                if (endIndex == -1) {
-                    endIndex = geminiJsonResponse.lastIndexOf("\"");
-                }
-                
-                extractedText = geminiJsonResponse.substring(startIndex, endIndex);
-                extractedText = extractedText.replace("\\n", "").replace("\\\"", "\"").replace("\\\\", "\\");
-            } else {
-                extractedText = geminiJsonResponse; 
-            }
-
-            // Extract specific fields using basic String searching
-            String extractedIngredients = extractStringValue(extractedText, "ingredients");
-            String recommendation = extractStringValue(extractedText, "recommendation");
-            
-            boolean isReadyToEat = extractTextValue(extractedText, "isReadyToEat").contains("true");
-            
-            double extractedFreshness = 0.5; // Default fallback value
-            String freshnessString = extractTextValue(extractedText, "freshnessScore");
-            if (!freshnessString.isEmpty()) {
-                try {
-                    extractedFreshness = Double.parseDouble(freshnessString);
-                } catch (NumberFormatException ignored) {}
-            }
-
-            // Update the FoodListing with AI-detected data
-            listing.setIngredients(extractedIngredients);
-            listing.setExpiryTime(calculateExpiryTime(extractedFreshness, isReadyToEat));
-            listing.setStatus("Active"); 
-            
-            // Populate the Analysis Report
-            report.setReportId((int) (Math.random() * 10000));
-            report.setListing(listing);
-            report.setFreshnessScore(extractedFreshness);
-            
-            boolean containsMeat = extractedIngredients.toLowerCase().matches(".*(chicken|beef|pork|fish|meat).*");
-            report.setVegetarian(!containsMeat); 
-            report.setHalalFriendly(!extractedIngredients.toLowerCase().contains("pork")); 
-            report.setRecommendation(recommendation);
-            report.setAllergens(detectAllergens(extractedIngredients));
-
-        } catch (Exception e) {
-            System.err.println("Error parsing AI response manually: " + e.getMessage());
-            e.printStackTrace();
-        }
-        
-        return report;
-    }
-
-    /**
-     * Helper Method: Extracts a String value (surrounded by quotes) from a JSON string.
-     */
-    private String extractStringValue(String json, String key) {
-        String searchKey = "\"" + key + "\":";
-        int keyIndex = json.indexOf(searchKey);
-        if (keyIndex == -1) return ""; 
-        
-        int valueStart = json.indexOf("\"", keyIndex + searchKey.length()) + 1;
-        int valueEnd = json.indexOf("\"", valueStart);
-        
-        if (valueStart > 0 && valueEnd > valueStart) {
-            return json.substring(valueStart, valueEnd);
-        }
-        return "";
-    }
-
-    /**
-     * Helper Method: Extracts a raw text value (boolean or number) from a JSON string.
-     */
-    private String extractTextValue(String json, String key) {
-        String searchKey = "\"" + key + "\":";
-        int keyIndex = json.indexOf(searchKey);
-        if (keyIndex == -1) return ""; 
-        
-        int valueStart = keyIndex + searchKey.length();
-        while (valueStart < json.length() && (json.charAt(valueStart) == ' ' || json.charAt(valueStart) == '\"')) {
-            valueStart++;
-        }
-        
-        int commaEnd = json.indexOf(",", valueStart);
-        int braceEnd = json.indexOf("}", valueStart);
-        
-        int valueEnd = -1;
-        if (commaEnd != -1 && braceEnd != -1) valueEnd = Math.min(commaEnd, braceEnd);
-        else if (commaEnd != -1) valueEnd = commaEnd;
-        else if (braceEnd != -1) valueEnd = braceEnd;
-        else valueEnd = json.length();
-        
-        String result = json.substring(valueStart, valueEnd).trim();
-        // Strip trailing quotes if they accidentally got included
-        if (result.endsWith("\"")) result = result.substring(0, result.length() - 1);
-        
-        return result;
-    }
-
-    /**
-     * 3. Calculate expiry time
-     */
-    public LocalDateTime calculateExpiryTime(double freshnessScore, boolean isReadyToEat) {
+    private LocalDateTime calculateExpiry(double freshness, boolean ready) {
         LocalDateTime now = LocalDateTime.now();
-        
-        if (isReadyToEat) {
-            long hoursUntilExpiry = (long) (24 * freshnessScore); 
-            return now.plusHours(Math.max(1, hoursUntilExpiry)); 
-        } else {
-            long daysUntilExpiry = (long) (7 * freshnessScore);
-            return now.plusDays(Math.max(1, daysUntilExpiry)); 
-        }
+        // Logistics-focused expiry calculation
+        return ready ? now.plusHours((long)(48 * freshness)) : now.plusDays((long)(10 * freshness));
     }
 
-    /**
-     * 4. Detect allergens from ingredient string
-     */
-    public List<String> detectAllergens(String ingredientsString) {
-        List<String> foundAllergens = new ArrayList<>();
-        
-        if (ingredientsString == null || ingredientsString.isEmpty()) {
-            return foundAllergens;
+    private List<String> detectAllergens(String ingredients) {
+        List<String> found = new ArrayList<>();
+        String[] common = {"peanuts", "nuts", "milk", "dairy", "eggs", "wheat", "gluten", "soy", "shellfish"};
+        String input = ingredients.toLowerCase();
+        for (String a : common) {
+            if (input.contains(a)) found.add(a);
         }
-
-        String lowerCaseIngredients = ingredientsString.toLowerCase();
-        List<String> commonAllergens = Arrays.asList(
-            "peanuts", "tree nuts", "milk", "eggs", "wheat", "soy", "fish", "shellfish", "sesame"
-        );
-
-        for (String allergen : commonAllergens) {
-            if (lowerCaseIngredients.contains(allergen)) {
-                foundAllergens.add(allergen);
-            }
-        }
-
-        return foundAllergens;
+        return found;
     }
 }

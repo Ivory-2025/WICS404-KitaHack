@@ -6,11 +6,11 @@ public class NGO extends User {
     private double radiusCoverage;
     private int capacity;
 
-    
-    // Constructor
-    public NGO(int id, String name, String email, String password, String role, 
-               String organizationName, String address, double radiusCoverage, 
-               int capacity, double latitude, double longitude) {
+    // Main Constructor
+    public NGO(int id, String name, String email, String password, String role,
+               String organizationName, String address, double radiusCoverage,
+               int capacity, double latitude, double longitude) { 
+        
         super(id, name, email, password, "NGO");
         this.setLatitude(latitude); 
         this.setLongitude(longitude);
@@ -22,14 +22,12 @@ public class NGO extends User {
 
     // Empty constructor
     public NGO() {
-
     }
 
     // Getters & Setters
     public String getOrganizationName() {
         return organizationName != null ? organizationName : getName();
     }
-    
 
     public void setOrganizationName(String organizationName) { 
         this.organizationName = organizationName; 
@@ -46,6 +44,7 @@ public class NGO extends User {
     public double getRadiusCoverage() { 
         return radiusCoverage; 
     }
+
     public void setRadiusCoverage(double radiusCoverage) { 
         this.radiusCoverage = radiusCoverage; 
     }
@@ -57,4 +56,4 @@ public class NGO extends User {
     public void setCapacity(int capacity) { 
         this.capacity = capacity; 
     }
-}
+} 

@@ -1,28 +1,30 @@
 package Controllers;
 
+import DAO.UserDAOImpl;
+import Models.User;
+import Services.UserService;
+import javafx.animation.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
-import DAO.UserDAOImpl;
-import Models.NGO;
-import Models.User;
-import Models.Vendor;
-import Services.UserService;
+import javafx.util.Duration;
+
 import java.io.IOException;
 
 public class LoginController {
 
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
-    @FXML private Label statusLabel; // Ensure this exists in your FXML
 
-    private UserService userService;
+    private final UserService userService;
 
     public LoginController() {
         this.userService = new UserService(new UserDAOImpl());
@@ -34,71 +36,115 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (email.isEmpty() || password.isEmpty()) {
-            showAlert("Validation Error", "Please enter both email and password.", Alert.AlertType.WARNING);
+            showToast("Required: Please enter both credentials.", "#FEE2E2", "#991B1B", "⚠️");
             return;
         }
 
-        System.out.println("Attempting login with: " + email);
         User loggedInUser = userService.login(email, password);
 
         if (loggedInUser != null) {
             String role = loggedInUser.getRole();
-            System.out.println("DEBUG: User found! Role is: [" + role + "]");
-            
-            showAlert("Login Successful", "Welcome, " + loggedInUser.getName() + "!", Alert.AlertType.INFORMATION);
 
-            if ("VENDOR".equalsIgnoreCase(role)) {
-                // Fixed: Pass 3 arguments as required by your loadDashboard method
-                loadDashboard("/Views/VendorDashboard.fxml", "Vendor Dashboard", loggedInUser);
-            } else if ("NGO".equalsIgnoreCase(role)) {
-                loadDashboard("/Views/NGODashboard.fxml", "NGO Dashboard", loggedInUser);
-            } else {
-                System.out.println("DEBUG: Role not recognized: " + role);
-                if (statusLabel != null) statusLabel.setText("Error: User role not recognized.");
-            }
+            showToast("Welcome back, " + loggedInUser.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
+
+            // Smooth transition after toast
+            PauseTransition delay = new PauseTransition(Duration.seconds(0.8));
+            delay.setOnFinished(e -> {
+                String viewPath;
+                if ("VENDOR".equalsIgnoreCase(role)) {
+                    viewPath = "/Views/VendorDashboard.fxml";
+                } else {
+                    viewPath = "/Views/NGODashboard.fxml";
+                }
+                loadDashboard(viewPath, loggedInUser); // Pass logged-in user
+            });
+            delay.play();
         } else {
-            System.out.println("DEBUG: User not found or password incorrect.");
-            showAlert("Login Failed", "Invalid email or password.", Alert.AlertType.ERROR);
+            showToast("Login Failed: Invalid credentials.", "#FEE2E2", "#991B1B", "❌");
         }
     }
 
-    private void loadDashboard(String fxmlPath, String title, User user) {
+    private void loadDashboard(String fxmlPath, User loggedInUser) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorDashboard.fxml"));
             Parent root = loader.load();
-            
-            // If you need to pass data to controllers, do it here
-            // Example: if (user instanceof NGO) { ... }
+
+            // Pass logged-in user to dashboard controller
+            if (loggedInUser.getRole().equalsIgnoreCase("VENDOR")) {
+                Controllers.VendorDashboardController controller = loader.getController();
+                controller.setCurrentVendor(loggedInUser);
+            }
 
             Stage stage = (Stage) emailField.getScene().getWindow();
+
+            // Fade-in transition
+            root.setOpacity(0);
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(600), root);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+            fadeIn.play();
+
             stage.setScene(new Scene(root));
-            stage.setTitle(title);
+            stage.setTitle("SavePlate - " + loggedInUser.getRole() + " Dashboard");
             stage.centerOnScreen();
-            stage.show();
         } catch (IOException e) {
+            showToast("Critical Error: Could not load dashboard.", "#FEE2E2", "#991B1B", "🚫");
             e.printStackTrace();
-            showAlert("Error", "Failed to load dashboard: " + e.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    /**
+     * High-Class Toast with Icon
+     */
+    private void showToast(String message, String bgColor, String textColor, String icon) {
+        Stage stage = (Stage) emailField.getScene().getWindow();
+        Popup popup = new Popup();
+
+        HBox toastRoot = new HBox(12);
+        toastRoot.setAlignment(Pos.CENTER_LEFT);
+        toastRoot.setStyle(String.format(
+            "-fx-background-color: %s; -fx-background-radius: 20; -fx-padding: 12 25;",
+            bgColor
+        ));
+
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 16px;");
+
+        Label messageLabel = new Label(message);
+        messageLabel.setStyle(String.format(
+            "-fx-text-fill: %s; -fx-font-family: 'Inter'; -fx-font-weight: 800; -fx-font-size: 13px;",
+            textColor
+        ));
+
+        toastRoot.getChildren().addAll(iconLabel, messageLabel);
+        toastRoot.setEffect(new DropShadow(20, Color.web("#0000000D")));
+        popup.getContent().add(toastRoot);
+        popup.show(stage);
+
+        toastRoot.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
+            popup.setX(stage.getX() + stage.getWidth()/2 - toastRoot.getWidth()/2);
+            popup.setY(stage.getY() + stage.getHeight() - 100);
+        });
+
+        FadeTransition in = new FadeTransition(Duration.millis(300), toastRoot);
+        in.setFromValue(0); in.setToValue(1);
+        PauseTransition stay = new PauseTransition(Duration.seconds(2.5));
+        FadeTransition out = new FadeTransition(Duration.millis(400), toastRoot);
+        out.setFromValue(1); out.setToValue(0);
+        out.setOnFinished(e -> popup.hide());
+
+        new SequentialTransition(in, stay, out).play();
     }
 
     @FXML
     public void handleShowSignUp() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/Register.fxml"));
-            Parent root = loader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("/Views/Register.fxml"));
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("SavePlate: Sign Up");
+            stage.setTitle("SavePlate - Join the Mission");
         } catch (IOException e) {
-            e.printStackTrace();
+            showToast("Navigation Error", "#FEE2E2", "#991B1B", "⚠️");
         }
-    }
-
-    private void showAlert(String title, String content, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

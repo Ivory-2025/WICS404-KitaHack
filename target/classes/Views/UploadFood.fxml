@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane fx:controller="Controllers.UploadFoodController" 
+           xmlns:fx="http://javafx.com/fxml/1" 
+           prefHeight="750.0" prefWidth="1000.0" 
+           style="-fx-background-color: #FAFAFA;">
+    <children>
+        <VBox spacing="35">
+            <padding><Insets top="60" right="100" bottom="60" left="100"/></padding>
+            
+            <VBox spacing="8">
+                <Text text="New Listing" style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-fill: #1A1A1A;"/>
+                <Text text="Use Gemini AI to analyze food safety and quality instantly." style="-fx-fill: #555555; -fx-font-size: 17px; -fx-font-weight: 500;"/>
+            </VBox>
+
+            <HBox spacing="80" alignment="CENTER_LEFT">
+                <VBox alignment="CENTER" spacing="25">
+                    <StackPane style="-fx-background-color: white; -fx-background-radius: 25;">
+                        <effect><DropShadow color="#0000001F" radius="45" offsetY="20"/></effect>
+                        <ImageView fx:id="foodImageView" fitWidth="350" fitHeight="260" preserveRatio="true"/>
+                    </StackPane>
+                    <HBox spacing="15" alignment="CENTER">
+                        <Button text="Select Photo" onAction="#handleSelectPhoto" 
+                                style="-fx-background-color: #F0F0F0; -fx-text-fill: #1A1A1A; -fx-font-weight: 700; -fx-background-radius: 25; -fx-padding: 12 25; -fx-cursor: hand;"/>
+                        <Button text="AI Scan" onAction="#handleAIScan" 
+                                style="-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 25; -fx-padding: 12 25; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+
+                <VBox spacing="25" style="-fx-background-color: white; -fx-background-radius: 35; -fx-padding: 50;" HBox.hgrow="ALWAYS">
+                    <effect><DropShadow color="#0000000D" radius="50" offsetY="25"/></effect>
+                    
+                    <TextField fx:id="foodNameField" promptText="Food Name (e.g., Apple)" 
+                               style="-fx-background-color: #F8F9FA; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-background-radius: 15; -fx-padding: 18; -fx-font-size: 15px; -fx-prompt-text-fill: #A0AEC0;"/>
+                    
+                    <TextField fx:id="quantityField" promptText="Quantity" 
+                               style="-fx-background-color: #F8F9FA; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-background-radius: 15; -fx-padding: 18; -fx-font-size: 15px; -fx-prompt-text-fill: #A0AEC0;"/>
+                    
+                    <VBox spacing="10">
+                        <Label text="Estimated Expiry" style="-fx-text-fill: #1A1A1A; -fx-font-weight: 800; -fx-font-size: 14px;"/>
+                        <DatePicker fx:id="expiryDatePicker" maxWidth="Infinity" style="-fx-background-radius: 12;"/>
+                    </VBox>
+
+                    <TextArea fx:id="aiRecommendationArea" prefHeight="110" promptText="AI Analysis will appear here..." 
+                              wrapText="true" editable="false" 
+                              style="-fx-control-inner-background: #F8F9FA; -fx-font-family: 'Inter'; -fx-font-size: 14px;"/>
+                    
+                    <Button text="Publish Listing" onAction="#handlePublish" maxWidth="Infinity" 
+                            style="-fx-background-color: #2D3748; -fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 20; -fx-background-radius: 18; -fx-cursor: hand;"/>
+                </VBox>
+            </HBox>
+            
+            <Button text="← Back to Dashboard" onAction="#handleBack" 
+                    style="-fx-background-color: transparent; -fx-text-fill: #4A5568; -fx-font-weight: 700; -fx-cursor: hand;"/>
+        </VBox>
+    </children>
+</StackPane>
