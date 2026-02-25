@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+
+<StackPane prefHeight="750.0" prefWidth="950.0" style="-fx-background-color: #FAFAFA;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ViewOrdersController">
+    <children>
+        <VBox spacing="30.0">
+            <padding>
+                <Insets top="50" right="60" bottom="50" left="60"/>
+            </padding>
+            
+            <HBox alignment="BOTTOM_LEFT" spacing="20">
+                <VBox>
+                    <Label text="Active Donations" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #1A1A1A; -fx-letter-spacing: -1px;"/>
+                    <Label text="Manage your surplus contributions and NGO matches." style="-fx-font-size: 14px; -fx-text-fill: #999999;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button text="Refresh" onAction="#handleRefresh" style="-fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-radius: 20; -fx-text-fill: #666666; -fx-padding: 8 20; -fx-cursor: hand;"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                <VBox fx:id="ordersContainer" spacing="20.0">
+                    </VBox>
+            </ScrollPane>
+
+            <Button onAction="#handleBack" text="← Back to Dashboard" style="-fx-background-color: transparent; -fx-text-fill: #1A1A1A; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        </VBox>
+    </children>
+</StackPane>
