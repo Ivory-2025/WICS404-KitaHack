@@ -4,7 +4,7 @@ import Models.FoodAnalysisReport;
 import Models.FoodListing;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
+import Utils.Api;
 import java.io.File;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ import java.net.http.HttpResponse;
 
 public class FoodAnalysisService {
 
-    private static final String API_KEY = "AIzaSyCwAU9lxm7_4QGRP50WvhfiUf3dMuD-9k0"; // replace with your key
+    String apiKey = Api.getApiKey();
     private static final String MODEL = "gemini-2.5-flash";     // supports image input
 
     public FoodAnalysisReport analyzeFoodImage(File imageFile, FoodListing listing) {
@@ -48,7 +48,7 @@ public class FoodAnalysisService {
 
             // Step 3: Correct v1beta endpoint for Gemini
             String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/"
-        + MODEL + ":generateContent?key=" + API_KEY;
+        + MODEL + ":generateContent?key=" + apiKey;
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
