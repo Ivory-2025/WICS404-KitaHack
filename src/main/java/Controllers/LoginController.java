@@ -92,8 +92,8 @@ public class LoginController {
                 VendorDashboardController controller = loader.getController();
                 controller.setCurrentVendor(UserSession.getInstance().getVendor());
             } else if ("NGO".equalsIgnoreCase(loggedInUser.getRole())) {
-                // NGODashboardController controller = loader.getController();
-                // controller.setCurrentNGO(UserSession.getInstance().getNGO());
+                NGODashboardController controller = loader.getController();
+                controller.setCurrentNGO(UserSession.getInstance().getNGO());
             }
 
             Stage stage = (Stage) emailField.getScene().getWindow();
