@@ -22,12 +22,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Optional;
+import Services.RoutingService;
 public class UploadFoodController {
 
     private Vendor currentVendor;
@@ -36,12 +36,12 @@ public class UploadFoodController {
     private final RoutingService routingService = new RoutingService();
     private final MessageDAO messageDAO = new MessageDAO();
 
+    @FXML private Button chatNavButton; // Matches the fx:id in FXML
     @FXML private TextField foodNameField;
     @FXML private TextField quantityField;
     @FXML private DatePicker expiryDatePicker;
     @FXML private ImageView foodImageView;
     @FXML private TextArea aiRecommendationArea;
-
     private FoodAnalysisService foodService;
     private File selectedFile;
 
@@ -131,53 +131,92 @@ public class UploadFoodController {
         expiryDatePicker.setValue(report.getListing().getExpiryTime().toLocalDate());
     }
 }
-    @FXML
-    private void handlePublish(ActionEvent event) {
+   @FXML
+private void handlePublish(ActionEvent event) {
+    Stage stage = getStage(event);
 
-        if (currentVendor == null) {
-            showToast(getStage(event),
-                    "Error: No session found", false);
-            return;
-        }
-
-        FoodListing listing = new FoodListing();
-        listing.setFoodName(foodNameField.getText());
-        listing.setQuantity(quantityField.getText());
-        listing.setVendor(currentVendor);
-        listing.setStatus("available");
-        listing.setProductionTime(LocalDateTime.now());
-
-        if (expiryDatePicker.getValue() != null) {
-            listing.setExpiryTime(
-                    expiryDatePicker.getValue().atStartOfDay());
-        } else {
-            listing.setExpiryTime(LocalDateTime.now().plusDays(1));
-        }
-
-        try {
-            foodListingDAO.save(listing);
-
-            List<NGO> matches =
-                    matchingService.findMatchingNGOs(listing);
-
-            for (NGO ngo : matches) {
-                messageDAO.sendAutoPM(
-                        currentVendor.getUserId(),
-                        ngo.getUserId(),
-                        "New Surplus: " + listing.getFoodName() + " is ready!");
-            }
-
-            showToast(getStage(event),
-                    "Listing Published! " + matches.size() + " NGOs notified.",
-                    true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showToast(getStage(event),
-                    "Publishing Failed!", false);
-        }
+    if (currentVendor == null) {
+        showToast(stage, "Error: No session found", false);
+        return;
     }
 
+    // Demo Coordinate Fix
+    if (currentVendor.getLatitude() == 0.0) {
+        currentVendor.setLatitude(3.1390);
+        currentVendor.setLongitude(101.6869);
+    }
+
+    // Data Preparation
+    FoodListing listing = new FoodListing();
+    listing.setFoodName(foodNameField.getText());
+    listing.setQuantity(quantityField.getText());
+    listing.setVendor(currentVendor);
+    listing.setStatus("available");
+    listing.setProductionTime(LocalDateTime.now());
+
+    if (expiryDatePicker.getValue() != null) {
+        listing.setExpiryTime(expiryDatePicker.getValue().atStartOfDay());
+    } else {
+        listing.setExpiryTime(LocalDateTime.now().plusDays(1));
+    }
+
+    try {
+
+        // SAVE
+        foodListingDAO.save(listing);
+
+        // MATCH
+        List<NGO> matches = matchingService.findMatchingNGOs(listing);
+
+        // === NEW ADDITION: Pre-calculate Route Info (Optional Advanced) ===
+        RoutingService routingService = new RoutingService();
+
+for (NGO ngo : matches) {
+
+    String routeSummary = routingService.getRouteSummary(listing, ngo);
+    String mapsLink = routingService.generateGoogleMapsLink(listing, ngo);
+
+    String message = "New Surplus Alert: "
+            + listing.getFoodName()
+            + " is ready!\n\n"
+            + routeSummary
+            + "\n\n🗺 Navigate:\n"
+            + mapsLink
+            + "\n\nTap Accept or Reject below.";
+
+    messageDAO.sendAutoPM(
+            currentVendor.getUserId(),
+            ngo.getUserId(),
+            message
+    );
+}
+
+        // === NEW ADDITION: Proper Confirmation Dialog ===
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Surplus Published");
+        alert.setHeaderText("Success!");
+        alert.setContentText(matches.size() + " NGOs have been notified.");
+
+        ButtonType goToChat = new ButtonType("Go to Chat");
+        ButtonType stayHere = new ButtonType("Stay Here");
+
+        alert.getButtonTypes().setAll(goToChat, stayHere);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == goToChat) {
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ChatLanding.fxml"));
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.show();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        showToast(stage, "Publishing Failed: Check FXML Imports!", false);
+    }
+}
     // ✅ Strongly typed now
     public void setVendor(Vendor vendor) {
         this.currentVendor = vendor;
@@ -209,10 +248,9 @@ public class UploadFoodController {
     }
 
     private Stage getStage(ActionEvent event) {
-        return (Stage) ((Node) event.getSource())
-                .getScene().getWindow();
-    }
-
+    // This grabs the window from the button that triggered the event
+    return (Stage) ((Node) event.getSource()).getScene().getWindow();
+}
     public void showToast(Stage stage,
                           String message,
                           boolean isSuccess) {
@@ -240,4 +278,19 @@ public class UploadFoodController {
         fadeOut.setOnFinished(e -> popup.hide());
         fadeOut.play();
     }
+
+    @FXML
+private void handleGoToChats(ActionEvent event) {
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ChatLanding.fxml"));
+        Parent root = loader.load();
+        
+        // Use your existing helper to switch scenes
+        Stage stage = getStage(event);
+        stage.setScene(new Scene(root));
+        stage.show();
+    } catch (IOException e) {
+        System.err.println("Error navigating to Chat Landing: " + e.getMessage());
+    }
+}
 }

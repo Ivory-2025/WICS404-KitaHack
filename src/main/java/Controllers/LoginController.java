@@ -39,7 +39,6 @@ public class LoginController {
 public void handleLogin() {
     String email = emailField.getText().trim();
     String password = passwordField.getText();
-
     if (email.isEmpty() || password.isEmpty()) {
         showToast("Required: Please enter both credentials.", "#FEE2E2", "#991B1B", "⚠️");
         return;

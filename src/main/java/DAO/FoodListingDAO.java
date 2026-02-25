@@ -6,9 +6,11 @@ import Models.Vendor;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import Services.FoodListingService;
 
 public class FoodListingDAO {
 
+    private List<FoodListing> listings = new ArrayList<>();
     /**
      * Saves a new food listing to the database.
      * This fixes the "undefined" error in VendorDashboard.java.
@@ -117,4 +119,44 @@ public boolean updateStatus(int listingId, String status) {
         listing.setVendor(vendor);
         return listing;
     }
+
+    public FoodListing findById(int id) {
+    String sql = "SELECT * FROM food_listing WHERE listing_id = ?";
+
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return new FoodListing(
+                rs.getInt("listing_id"),
+                rs.getString("title"),
+                rs.getString("description"),
+                rs.getString("location"),
+                rs.getString("status")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
+public void update(FoodListing listing) {
+    String sql = "UPDATE food_listing SET status = ? WHERE listing_id = ?";
+
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, listing.getStatus());
+        stmt.setInt(2, listing.getListingId());
+        stmt.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 }

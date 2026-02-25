@@ -15,6 +15,8 @@ public class FoodListing {
     private LocalDateTime expiryTime;
     private String quantity;
 
+    private boolean locked = false;
+private Integer acceptedByUserId; // store NGO user id
     // Constructors
 
     // Default constructor
@@ -102,6 +104,22 @@ public class FoodListing {
     public String getStatus() {
         return status;
     }
+
+    public boolean isLocked() {
+    return locked;
+}
+
+public void setLocked(boolean locked) {
+    this.locked = locked;
+}
+
+public Integer getAcceptedByUserId() {
+    return acceptedByUserId;
+}
+
+public void setAcceptedByUserId(Integer acceptedByUserId) {
+    this.acceptedByUserId = acceptedByUserId;
+}
 
     // Helper for TableView: Quantity (for now just dummy, you can replace with actual quantity)
 public String getQuantity() {

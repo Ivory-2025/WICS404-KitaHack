@@ -109,28 +109,40 @@ public class NGODashboardController {
     // Accept button — first-come-first-serve
     // -----------------------------------------------------------------------
 
-    @FXML
-    private void handleAccept() {
-        FoodListing selected = foodTable.getSelectionModel().getSelectedItem();
+   @FXML
+private void handleAccept() {
 
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a food listing first.");
-            return;
-        }
+    FoodListing selected = foodTable.getSelectionModel().getSelectedItem();
 
-        boolean success = matchingService.acceptListing(selected.getListingId(), currentNGO);
-
-        if (success) {
-            showAlert(Alert.AlertType.INFORMATION, "Accepted!",
-                "You have successfully claimed: " + selected.getFoodName()
-                + "\nPlease proceed to pick it up.");
-            loadMatchedListings(); // Refresh table so claimed listing disappears
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Too Slow!",
-                "Sorry! Another NGO already accepted this listing.");
-            loadMatchedListings(); // Refresh anyway to reflect latest statuses
-        }
+    if (selected == null) {
+        showAlert(Alert.AlertType.WARNING,
+                "No Selection",
+                "Please select a food listing first.");
+        return;
     }
+
+    boolean success = matchingService.acceptListing(
+            selected.getListingId(),
+            currentNGO
+    );
+
+    if (success) {
+
+        showAlert(Alert.AlertType.INFORMATION,
+                "Accepted!",
+                "You have successfully claimed: "
+                        + selected.getFoodName()
+                        + "\nPlease proceed to pick it up.");
+
+    } else {
+
+        showAlert(Alert.AlertType.ERROR,
+                "Too Slow!",
+                "Sorry! Another NGO already accepted this listing.");
+    }
+
+    loadMatchedListings(); // Always refresh table
+}
 
     // -----------------------------------------------------------------------
     // View Route button — opens Google Maps in the browser

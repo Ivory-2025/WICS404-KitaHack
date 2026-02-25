@@ -53,23 +53,18 @@ String sql = "SELECT * FROM NGOs";
     }
 
     private NGO mapResultSet(ResultSet rs) throws SQLException {
-        NGO ngo = new NGO();
-        // Fields inherited from User model
-        // Change this line in mapResultSet:
-        ngo.setUserId(rs.getInt("vendor_id")); // Was rs.getInt("id")
-        // ngo.setName(rs.getString("organizationName"));
-        // ngo.setEmail(rs.getString("email"));
-        // ngo.setRole(rs.getString("role"));
-        ngo.setLatitude(rs.getDouble("latitude"));
-        ngo.setLongitude(rs.getDouble("longitude"));
-        
-        // Fields specific to NGO
-        ngo.setOrganizationName(rs.getString("organizationName"));
-        ngo.setRadiusCoverage(rs.getDouble("radiusCoverage"));
-        ngo.setCapacity(rs.getInt("capacity"));
-        
-        return ngo;
-    }
+    NGO ngo = new NGO();
+    // Use ngo_id from your schema to avoid "no such column" errors
+    ngo.setNgoId(rs.getInt("ngo_id")); 
+    ngo.setUserId(rs.getInt("user_id")); 
+    ngo.setLatitude(rs.getDouble("latitude"));
+    ngo.setLongitude(rs.getDouble("longitude"));
+    ngo.setOrganizationName(rs.getString("organizationName"));
+    ngo.setRadiusCoverage(rs.getDouble("radiusCoverage"));
+    ngo.setCapacity(rs.getInt("capacity"));
+    
+    return ngo;
+}
 
     public NGO getNGOByEmail(String email) {
     // Querying the NGOs table we renamed earlier

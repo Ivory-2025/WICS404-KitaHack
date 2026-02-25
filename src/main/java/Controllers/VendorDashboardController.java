@@ -1,6 +1,4 @@
 package Controllers;
-
-import Models.User;
 import Models.Vendor;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
@@ -38,6 +36,12 @@ public class VendorDashboardController {
     public void initialize() {
         setupCardInteractions(uploadCard);
         setupCardInteractions(ordersCard);
+        Models.Vendor current = Models.UserSession.getInstance().getVendor();
+    if (current != null) {
+        welcomeLabel.setText("Welcome back, " + current.getRestaurantName() + "!");
+    } else {
+        welcomeLabel.setText("Welcome back, Guest!");
+    }
     }
 
     private void setupCardInteractions(VBox card) {
@@ -132,4 +136,20 @@ private void handleLogout(javafx.event.ActionEvent event) {
             e.printStackTrace();
         }
     }
+
+    @FXML
+private void handleGoToChats(MouseEvent event) {
+    try {
+        // Load the new Chat Landing FXML
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ChatLanding.fxml"));
+        Parent root = loader.load();
+        
+        // Switch the scene
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    } catch (IOException e) {
+        System.err.println("Error navigating to Chats: " + e.getMessage());
+    }
+}
 }
