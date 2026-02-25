@@ -36,52 +36,54 @@ public class LoginController {
     }
 
     @FXML
-    public void handleLogin() {
-        String email = emailField.getText().trim();
-        String password = passwordField.getText();
+public void handleLogin() {
+    String email = emailField.getText().trim();
+    String password = passwordField.getText();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            showToast("Required: Please enter both credentials.", "#FEE2E2", "#991B1B", "⚠️");
+    if (email.isEmpty() || password.isEmpty()) {
+        showToast("Required: Please enter both credentials.", "#FEE2E2", "#991B1B", "⚠️");
+        return;
+    }
+
+    User loggedInUser = userService.login(email, password);
+
+    if (loggedInUser == null) {
+        showToast("Login Failed: Invalid credentials.", "#FEE2E2", "#991B1B", "❌");
+        return;
+    }
+
+    UserSession session = UserSession.getInstance();
+
+    // ✅ HANDLE VENDOR LOGIN
+    if ("VENDOR".equalsIgnoreCase(loggedInUser.getRole())) {
+
+        Vendor vendor = vendorDAO.getVendorByUserId(loggedInUser.getUserId());
+        if (vendor == null) {
+            showToast("Error: Vendor profile not found in DB.", "#FEE2E2", "#991B1B", "❌");
             return;
         }
 
-        User loggedInUser = userService.login(email, password);
+        session.setVendor(vendor);  // 🔥 THIS FIXES YOUR NULL PROBLEM
+        showToast("Welcome back, " + vendor.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
 
-        if (loggedInUser != null) {
-            // Assign User to session
-            UserSession session = UserSession.getInstance();
-
-            if ("VENDOR".equalsIgnoreCase(loggedInUser.getRole())) {
-                // Fetch vendor by user_id (not email)
-                Vendor vendor = vendorDAO.getVendorByUserId(loggedInUser.getUserId());
-                if (vendor == null) {
-                    showToast("Error: Vendor profile not found in DB.", "#FEE2E2", "#991B1B", "❌");
-                    return;
-                }
-                session.setVendor(vendor);
-            } else if ("NGO".equalsIgnoreCase(loggedInUser.getRole())) {
-                NGO ngo = ngoDAO.getNGOByUserId(loggedInUser.getUserId());
-                if (ngo == null) {
-                    showToast("Error: NGO profile not found in DB.", "#FEE2E2", "#991B1B", "❌");
-                    return;
-                }
-                session.setNGO(ngo);
-            }
-
-            showToast("Welcome back, " + loggedInUser.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
-
-            PauseTransition delay = new PauseTransition(Duration.seconds(0.8));
-            delay.setOnFinished(e -> {
-                String viewPath = "VENDOR".equalsIgnoreCase(loggedInUser.getRole()) 
-                        ? "/Views/VendorDashboard.fxml" : "/Views/NGODashboard.fxml";
-                loadDashboard(viewPath, loggedInUser);
-            });
-            delay.play();
-        } else {
-            showToast("Login Failed: Invalid credentials.", "#FEE2E2", "#991B1B", "❌");
-        }
+        loadDashboard("/Views/VendorDashboard.fxml", loggedInUser);
     }
 
+    // ✅ HANDLE NGO LOGIN
+    else if ("NGO".equalsIgnoreCase(loggedInUser.getRole())) {
+
+        NGO ngo = ngoDAO.getNGOByUserId(loggedInUser.getUserId());
+        if (ngo == null) {
+            showToast("Error: NGO profile not found in DB.", "#FEE2E2", "#991B1B", "❌");
+            return;
+        }
+
+        session.setNGO(ngo);
+        showToast("Welcome back, " + ngo.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
+
+        loadDashboard("/Views/NGODashboard.fxml", loggedInUser);
+    }
+}
     private void loadDashboard(String fxmlPath, User loggedInUser) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));

@@ -14,8 +14,8 @@ public class NGODAO {
      */
     public List<NGO> getAllNGOs() {
         List<NGO> ngos = new ArrayList<>();
-        String sql = "SELECT u.*, v.organizationName, v.radiusCoverage, v.capacity " +
-                     "FROM users u JOIN vendors v ON u.id = v.user_id WHERE u.role = 'NGO'";
+        // Use this clean query instead of one with "v." aliases
+String sql = "SELECT * FROM NGOs";
 
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -55,10 +55,11 @@ public class NGODAO {
     private NGO mapResultSet(ResultSet rs) throws SQLException {
         NGO ngo = new NGO();
         // Fields inherited from User model
-        ngo.setUserId(rs.getInt("id"));
-        ngo.setName(rs.getString("name"));
-        ngo.setEmail(rs.getString("email"));
-        ngo.setRole(rs.getString("role"));
+        // Change this line in mapResultSet:
+        ngo.setUserId(rs.getInt("vendor_id")); // Was rs.getInt("id")
+        // ngo.setName(rs.getString("organizationName"));
+        // ngo.setEmail(rs.getString("email"));
+        // ngo.setRole(rs.getString("role"));
         ngo.setLatitude(rs.getDouble("latitude"));
         ngo.setLongitude(rs.getDouble("longitude"));
         

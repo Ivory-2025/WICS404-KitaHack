@@ -4,6 +4,7 @@ public class UserSession {
     private static UserSession instance;
     private Vendor currentVendor;
     private NGO currentNGO;
+    private User currentUser;
 
     private UserSession() {}
 
@@ -24,4 +25,11 @@ public class UserSession {
         currentVendor = null;
         currentNGO = null;
     }
+
+    public void logout() {
+    this.currentUser = null;
+    this.currentVendor = null;
+    this.currentNGO = null; // If you have an NGO field as well
+    System.out.println("UserSession: Current session has been cleared.");
+}
 }

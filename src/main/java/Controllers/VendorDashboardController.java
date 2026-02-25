@@ -86,9 +86,31 @@ public class VendorDashboardController {
     }
 
     @FXML
-    private void handleLogout(MouseEvent event) {
-        switchScreen(event, "/Views/Login.fxml");
+private void handleLogout(javafx.event.ActionEvent event) {
+    // 1. Clear the session so the next user starts fresh
+    Models.UserSession.getInstance().logout(); 
+
+    try {
+        // 2. Load the Login view
+        Parent root = FXMLLoader.load(getClass().getResource("/Views/Login.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        // 3. Keep your signature high-class fade transition
+        root.setOpacity(0);
+        javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(Duration.millis(500), root);
+        ft.setFromValue(0);
+        ft.setToValue(1);
+
+        stage.setScene(new Scene(root));
+        stage.centerOnScreen();
+        ft.play();
+        
+        System.out.println("✅ Session cleared and user logged out.");
+    } catch (IOException e) {
+        System.err.println("Error: Could not load Login.fxml");
+        e.printStackTrace();
     }
+}
 
     private void switchScreen(MouseEvent event, String fxmlPath) {
         try {
