@@ -8,13 +8,15 @@ public class DatabaseConnection {
 
     private static final String URL = "jdbc:sqlite:kitaHack.db";
 
-    // Renamed to getConnection to match your other classes
     public static Connection connect() {
+        Connection conn = null;
         try {
-            return DriverManager.getConnection(URL);
+            // Establish the connection to the local .db file
+            conn = DriverManager.getConnection(URL);
+            // System.out.println("✅ Connection to SQLite has been established.");
         } catch (SQLException e) {
-            System.out.println("Connection failed: " + e.getMessage());
-            return null;
+            System.err.println("❌ Database Connection Error: " + e.getMessage());
         }
+        return conn;
     }
 }

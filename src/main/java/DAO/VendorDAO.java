@@ -50,27 +50,21 @@ public class VendorDAO {
         }
     }
 
-    /**
-     * Fetches a Vendor by their User ID. 
-     * Useful for your Dashboard and Analytics logic.
-     */
     public Vendor getVendorByUserId(int userId) {
-    // Selects the vendor profile linked to the logged-in User ID
     String sql = "SELECT * FROM vendors WHERE user_id = ?";
-    
     try (Connection conn = DatabaseConnection.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
         pstmt.setInt(1, userId);
         ResultSet rs = pstmt.executeQuery();
         
-        // Inside VendorDAO.java
-if (rs.next()) {
-    Vendor vendor = new Vendor();
-    vendor.setId(rs.getInt("vendor_id"));
-    vendor.setRestaurantName(rs.getString("restaurant_name")); // Fixed Column Name
-    return vendor;
-}
+        if (rs.next()) {
+            Vendor vendor = new Vendor();
+            vendor.setId(rs.getInt("vendor_id"));
+            vendor.setUserId(rs.getInt("user_id")); // 🔥 CRITICAL: Must set the UserID for the Chat
+            vendor.setRestaurantName(rs.getString("restaurant_name"));
+            return vendor;
+        }
     } catch (SQLException e) {
         System.err.println("DB Error: " + e.getMessage());
     }

@@ -14,8 +14,9 @@ public class NGODAO {
      */
     public List<NGO> getAllNGOs() {
         List<NGO> ngos = new ArrayList<>();
-        // Use this clean query instead of one with "v." aliases
-String sql = "SELECT * FROM NGOs";
+        // Added DISTINCT to organizationName to filter out duplicates at the query level
+        String sql = "SELECT DISTINCT ngo_id, user_id, latitude, longitude, " +
+                     "organizationName, radiusCoverage, capacity FROM NGOs";
 
         try (Connection conn = DatabaseConnection.connect();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -27,6 +28,19 @@ String sql = "SELECT * FROM NGOs";
             e.printStackTrace();
         }
         return ngos;
+    }
+
+    private NGO mapResultSet(ResultSet rs) throws SQLException {
+        NGO ngo = new NGO();
+        // Uses ngo_id as the primary identifier to maintain data integrity
+        ngo.setNgoId(rs.getInt("ngo_id")); 
+        ngo.setUserId(rs.getInt("user_id")); 
+        ngo.setLatitude(rs.getDouble("latitude"));
+        ngo.setLongitude(rs.getDouble("longitude"));
+        ngo.setOrganizationName(rs.getString("organizationName"));
+        ngo.setRadiusCoverage(rs.getDouble("radiusCoverage"));
+        ngo.setCapacity(rs.getInt("capacity"));
+        return ngo;
     }
 
     /**
@@ -50,25 +64,6 @@ String sql = "SELECT * FROM NGOs";
             e.printStackTrace();
         }
         return null;
-    }
-
-    private NGO mapResultSet(ResultSet rs) throws SQLException {
-        NGO ngo = new NGO();
-        // Fields inherited from User model
-        // Change this line in mapResultSet:
-        ngo.setUserId(rs.getInt("vendor_id")); // Was rs.getInt("id")
-        // ngo.setName(rs.getString("organizationName"));
-        // ngo.setEmail(rs.getString("email"));
-        // ngo.setRole(rs.getString("role"));
-        ngo.setLatitude(rs.getDouble("latitude"));
-        ngo.setLongitude(rs.getDouble("longitude"));
-        
-        // Fields specific to NGO
-        ngo.setOrganizationName(rs.getString("organizationName"));
-        ngo.setRadiusCoverage(rs.getDouble("radiusCoverage"));
-        ngo.setCapacity(rs.getInt("capacity"));
-        
-        return ngo;
     }
 
     public NGO getNGOByEmail(String email) {

@@ -34,6 +34,14 @@
                 <Label mouseTransparent="true" text="📋" style="-fx-font-size: 45px;"/>
                 <Label mouseTransparent="true" text="View Orders" style="-fx-font-size: 19px; -fx-font-weight: 800;"/>
             </VBox>
+
+            <VBox fx:id="chatCard" onMouseClicked="#handleGoToChats" alignment="CENTER" spacing="25" 
+                  style="-fx-background-color: white; -fx-background-radius: 35; -fx-padding: 50; -fx-cursor: hand;" 
+                  pickOnBounds="true">
+                <effect><DropShadow color="#0000000D" radius="30" offsetY="15"/></effect>
+                <Label mouseTransparent="true" text="💬" style="-fx-font-size: 45px;"/>
+                <Label mouseTransparent="true" text="Messages" style="-fx-font-size: 19px; -fx-font-weight: 800;"/>
+            </VBox>
         </HBox>
 
         <Region VBox.vgrow="ALWAYS" />
