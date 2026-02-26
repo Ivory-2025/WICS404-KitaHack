@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.*?>
+
+<VBox alignment="CENTER" spacing="40.0" prefHeight="700.0" prefWidth="900.0" 
+      style="-fx-background-color: white;" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.NGODashboardController">
+    
+    
+    <Text text="NGO Dashboard" style="-fx-font-size: 32px; -fx-font-weight: bold;" />
+
+    <HBox alignment="CENTER" spacing="50.0">
+        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#goToMarketplace" 
+              style="-fx-background-color: #f8f9fa; -fx-padding: 40; -fx-background-radius: 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+            <Text text="🛒" style="-fx-font-size: 50px;" />
+            <Text text="NGO Marketplace" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#goToRatings" 
+              style="-fx-background-color: #f8f9fa; -fx-padding: 40; -fx-background-radius: 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+            <Text text="⭐" style="-fx-font-size: 50px;" />
+            <Text text="View Ratings" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+        </VBox>
+    </HBox>
+
+    <Button text="Sign Out" onAction="#handleLogout" style="-fx-text-fill: #e74c3c; -fx-background-color: transparent; -fx-font-weight: bold;" />
+</VBox>

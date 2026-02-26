@@ -80,11 +80,15 @@ public void handleLogin() {
         }
 
         session.setNGO(ngo);
-        showToast("Welcome back, " + ngo.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
+        showToast("Welcome back" +  "✨", "#D1FAE5", "#065F46", "✅");
 
+<<<<<<< HEAD
+        loadDashboard("/Views/NGOMainDashboard.fxml", loggedInUser);
+=======
         loadDashboard("/Views/NGODashboard.fxml", loggedInUser);
         System.out.println("Session Vendor After Login: " 
     + UserSession.getInstance().getVendor());
+>>>>>>> origin/demo
     }
 }
     private void loadDashboard(String fxmlPath, User loggedInUser) {

@@ -53,6 +53,29 @@ public class RatingDAO {
         return 0.0;
     }
 
+    public List<Models.VendorRatingSummary> getVendorLeaderboard() {
+    List<Models.VendorRatingSummary> list = new ArrayList<>();
+    // Join with users to get names, group by vendor, and order by highest average
+    String sql = "SELECT u.name, AVG(r.score) as avg_score " +
+                 "FROM ratings r " +
+                 "JOIN users u ON r.to_user_id = u.id " +
+                 "GROUP BY u.name " +
+                 "ORDER BY avg_score DESC";
+
+    try (Connection conn = Database.DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql);
+         ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+            list.add(new Models.VendorRatingSummary(
+                rs.getString("name"),
+                rs.getDouble("avg_score")
+            ));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return list;
+}
     /**
      * Retrieves all comments/ratings for a specific vendor.
      */

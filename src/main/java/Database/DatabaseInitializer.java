@@ -101,6 +101,7 @@ public class DatabaseInitializer {
                 );
                 """;
 
+
         // Add this after the table creation logic
         try (Connection conn = DatabaseConnection.connect(); 
          Statement stmt = conn.createStatement()) {
@@ -119,6 +120,7 @@ public class DatabaseInitializer {
         stmt.execute(createSurplusRecordsTable);
         stmt.execute(createRatingsTable);
 
+
         System.out.println("All tables initialized successfully in kitaHack.db.");
 
         // Auto-create test user so you can log in immediately
@@ -127,7 +129,7 @@ String insertTestUser = "INSERT OR IGNORE INTO users (name, email, password, rol
 
 // 2. Now use it in the PreparedStatement
 try (PreparedStatement pstmt = conn.prepareStatement(insertTestUser)) {
-    pstmt.setString(1, "Test User");
+    pstmt.setString(1, "Ali's Cafe");
     pstmt.setString(2, "aiburiliong@gmail.com");
     pstmt.setString(3, "password123");
     pstmt.setString(4, "VENDOR");
@@ -159,6 +161,41 @@ try (PreparedStatement pstmt = conn.prepareStatement(insertTestUser)) {
             System.out.println("DEBUG: Test NGO & Profile ready: ngo@saveplate.com");
         }
 
+        // --- ADDED RATING TEST DATA ---
+// 1. Create a Vendor profile for Ali's Cafe (so the leaderboard has a name)
+String insertVendorProfile = """
+    INSERT OR IGNORE INTO vendors (user_id, restaurant_name, trust_score) 
+    SELECT id, 'Ali''s Cafe', 5.0 
+    FROM users WHERE email = 'aiburiliong@gmail.com'
+""";
+stmt.execute(insertVendorProfile);
+
+// 2. Wipe old ratings to keep the demo clean
+stmt.execute("DELETE FROM ratings");
+
+// 3. Add the Stars (Test Data)
+// NGO (ID 2) rates Ali's Cafe (ID 1)
+stmt.execute("INSERT INTO ratings (from_user_id, to_user_id, score, comment) VALUES (2, 1, 5, 'Amazing Nasi Lemak!')");
+// Another NGO rates Ali's Cafe
+stmt.execute("INSERT INTO ratings (from_user_id, to_user_id, score, comment) VALUES (2, 1, 4, 'Very helpful staff')");
+
+System.out.println("DEBUG: Leaderboard test data (Ali's Cafe) is ready!");
+
+stmt.execute("INSERT OR IGNORE INTO users (id, name, email, password, role, latitude, longitude) " +
+             "VALUES (10, 'Ali''s Cafe', 'ali@cafe.com', 'pass', 'VENDOR', 3.0486, 101.5855)");
+
+stmt.execute("UPDATE users SET latitude = 3.1073, longitude = 101.6067 WHERE id = 1");
+
+// 2. Add the actual food listing
+stmt.execute("DELETE FROM food_listings");
+String tomorrow = java.time.LocalDateTime.now().plusDays(1).toString(); // Makes it valid for 24h
+
+String insertFood = String.format("""
+    INSERT INTO food_listings (vendorId, foodName, status, expiryTime, ingredients) 
+    VALUES (10, 'Nasi Lemak Bungkus', 'available', '%s', 'Coconut rice, egg, sambal')
+    """, tomorrow);
+stmt.execute(insertFood);
+System.out.println("DEBUG: Nasi Lemak test data is live!");
     } catch (SQLException e) {
         System.err.println("Database Initialization Error: " + e.getMessage());
         e.printStackTrace();

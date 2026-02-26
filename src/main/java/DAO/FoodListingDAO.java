@@ -4,6 +4,7 @@ import Database.DatabaseConnection;
 import Models.FoodListing;
 import Models.Vendor;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import Services.FoodListingService;
@@ -62,21 +63,22 @@ public class FoodListingDAO {
     }
 
     public List<FoodListing> getAvailableListings() {
-        List<FoodListing> listings = new ArrayList<>();
-        String sql = "SELECT fl.*, u.latitude, u.longitude FROM food_listings fl " +
-                     "JOIN users u ON fl.vendorId = u.id WHERE fl.status = 'available'";
+    List<FoodListing> listings = new ArrayList<>();
+    // You MUST join with users to get the name for 'Ali's Cafe'
+    String sql = "SELECT fl.*, u.name as vendor_name, u.latitude, u.longitude " +
+                 "FROM food_listings fl " +
+                 "JOIN users u ON fl.vendorId = u.id " +
+                 "WHERE fl.status = 'available'";
 
-        try (Connection conn = DatabaseConnection.connect();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                listings.add(mapResultSet(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    try (Connection conn = Database.DatabaseConnection.connect();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+            listings.add(mapResultSet(rs));
         }
-        return listings;
-    }
+    } catch (SQLException e) { e.printStackTrace(); }
+    return listings;
+}
 
     public FoodListing getListingById(int listingId) {
         String sql = "SELECT fl.*, u.latitude, u.longitude FROM food_listings fl " +
@@ -130,19 +132,28 @@ public boolean updateStatus(int listingId, String status) {
 }
 
     private FoodListing mapResultSet(ResultSet rs) throws SQLException {
-        FoodListing listing = new FoodListing();
-        listing.setListingId(rs.getInt("listingId"));
-        listing.setFoodName(rs.getString("foodName"));
-        listing.setStatus(rs.getString("status"));
-        
-        Vendor vendor = new Vendor();
-        vendor.setUserId(rs.getInt("vendorId"));
-        vendor.setLatitude(rs.getDouble("latitude")); 
-        vendor.setLongitude(rs.getDouble("longitude"));
-        listing.setVendor(vendor);
-        return listing;
+    FoodListing listing = new FoodListing();
+    listing.setListingId(rs.getInt("listingId"));
+    listing.setFoodName(rs.getString("foodName"));
+    listing.setStatus(rs.getString("status"));
+    
+    // ADD THIS LINE: Reads the expiry string and turns it into a Java Date
+    String dateStr = rs.getString("expiryTime");
+    if (dateStr != null) {
+        listing.setExpiryTime(LocalDateTime.parse(dateStr.replace(" ", "T")));
     }
 
+    Vendor vendor = new Vendor();
+    vendor.setUserId(rs.getInt("vendorId"));
+    
+    // IMPORTANT: Get the name from the SQL JOIN for Ali's Cafe
+    vendor.setRestaurantName(rs.getString("vendor_name")); 
+    
+    vendor.setLatitude(rs.getDouble("latitude")); 
+    vendor.setLongitude(rs.getDouble("longitude"));
+    listing.setVendor(vendor);
+    return listing;
+    }
     public FoodListing findById(int id) {
     String sql = "SELECT * FROM food_listing WHERE listing_id = ?";
 
