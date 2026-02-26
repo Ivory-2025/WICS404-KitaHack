@@ -10,16 +10,9 @@ public class RoutingService {
      * Generates a summary string (Distance/Time) for the dashboard label.
      */
     public String getRouteSummary(FoodListing listing, NGO ngo) {
-        Vendor vendor = listing.getVendor();
-        // Since we are using coordinates from the database
-        double distance = calculateBasicDistance(
-            vendor.getLatitude(), vendor.getLongitude(),
-            ngo.getLatitude(), ngo.getLongitude()
-        );
-
-        int estMinutes = (int) (distance * 2); // Rough estimate: 2 mins per km
-        return String.format("📍 Pickup: %s\n📏 Distance: %.1f km\n⏱️ Est. Drive: %d mins", 
-                             vendor.getRestaurantName(), distance, estMinutes);
+        double distance = calculateBasicDistance(listing.getVendor(), ngo);
+        int estMinutes = (int) (distance * 2) + 5; // Added 5 min traffic buffer
+        return String.format("📏 Distance: %.1f km\n⏱️ Est. Drive: %d mins", distance, estMinutes);
     }
 
     /**
@@ -33,7 +26,14 @@ public class RoutingService {
                              v.getLatitude(), v.getLongitude());
     }
 
-    private double calculateBasicDistance(double lat1, double lon1, double lat2, double lon2) {
+    public double calculateBasicDistance(Vendor vendor, NGO ngo) {
+        if (vendor == null || ngo == null) return 0.0;
+
+        double lat1 = vendor.getLatitude();
+        double lon1 = vendor.getLongitude();
+        double lat2 = ngo.getLatitude();
+        double lon2 = ngo.getLongitude();
+
         // Haversine formula logic
         double R = 6371; 
         double dLat = Math.toRadians(lat2 - lat1);
@@ -41,6 +41,7 @@ public class RoutingService {
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 }

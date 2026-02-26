@@ -3,11 +3,14 @@ package Controllers;
 //** TODO: setup Java FX, FXML, for the codes to work
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.Node;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -198,18 +201,22 @@ public void setCurrentNGO(NGO ngo) {
 
     @FXML
 private void handleAccept() {
+    // 1. Get Selection and Check for Null
     FoodListing selected = foodTable.getSelectionModel().getSelectedItem();
-    if (selected == null) return;
 
-    // Use the smart logic from our model!
+    if (selected == null) {
+        showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a food listing first.");
+        return;
+    }
+
+    // 2. Prepare the "Gen Z" Safety Dialog
     String timeLeft = selected.getTimeUntilExpiry();
-
     Dialog<ButtonType> dialog = new Dialog<>();
     dialog.setTitle("Food Rescue Mission! 🥳");
 
-    javafx.scene.layout.VBox content = new javafx.scene.layout.VBox(15);
-    content.setAlignment(javafx.geometry.Pos.CENTER);
-    content.setPadding(new javafx.geometry.Insets(25));
+    VBox content = new VBox(15);
+    content.setAlignment(Pos.CENTER);
+    content.setPadding(new Insets(25));
     content.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
 
     Label msg = new Label("Awesome choice! \n\nJust a heads-up: this " + selected.getFoodName() + 
@@ -222,18 +229,28 @@ private void handleAccept() {
     ButtonType claimBtn = new ButtonType("GOT IT, CLAIM!", ButtonBar.ButtonData.OK_DONE);
     dialog.getDialogPane().getButtonTypes().addAll(claimBtn, ButtonType.CANCEL);
     
+    // 3. Handle the Claim Execution
     dialog.showAndWait().ifPresent(response -> {
         if (response == claimBtn) {
-            if (matchingService.acceptListing(selected.getListingId(), currentNGO)) {
-                loadMatchedListings(); 
+            // Call the matching service to update the DB
+            boolean success = matchingService.acceptListing(selected.getListingId(), currentNGO);
+
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, 
+                          "Accepted!", 
+                          "You have successfully claimed: " + selected.getFoodName() + 
+                          "\nPlease proceed to pick it up.");
+            } else {
+                showAlert(Alert.AlertType.ERROR, 
+                          "Too Slow!", 
+                          "Sorry! Another NGO already accepted this listing.");
             }
+            
+            // 4. Always Refresh the Table
+            loadMatchedListings(); 
         }
     });
 }
-
-    // -----------------------------------------------------------------------
-    // View Route button — opens Google Maps in the browser
-    // -----------------------------------------------------------------------
 
     @FXML
     private void handleViewRoute() {

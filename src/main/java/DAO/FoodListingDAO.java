@@ -7,9 +7,34 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import Services.FoodListingService;
 
 public class FoodListingDAO {
 
+    public Models.FoodListing getLatestListingByVendor(int vendorUserId) {
+    // Use listingId for ordering as per your schema
+    String sql = "SELECT * FROM food_listings WHERE vendor_id = ? ORDER BY listingId DESC LIMIT 1";
+    
+    try (Connection conn = Database.DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, vendorUserId);
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            Models.FoodListing listing = new Models.FoodListing();
+            listing.setListingId(rs.getInt("listingId")); // Fixed column name
+            listing.setFoodName(rs.getString("food_name")); // Fixed column name
+            listing.setStatus(rs.getString("status"));
+            // Since 'quantity' is missing in schema, use a placeholder to stop the error
+            listing.setQuantity("Standard Pack"); 
+            return listing;
+        }
+    } catch (SQLException e) {
+        System.err.println("Database Error: " + e.getMessage());
+    }
+    return null;
+}
+    private List<FoodListing> listings = new ArrayList<>();
     /**
      * Saves a new food listing to the database.
      * This fixes the "undefined" error in VendorDashboard.java.
@@ -128,5 +153,44 @@ public boolean updateStatus(int listingId, String status) {
     vendor.setLongitude(rs.getDouble("longitude"));
     listing.setVendor(vendor);
     return listing;
+    }
+    public FoodListing findById(int id) {
+    String sql = "SELECT * FROM food_listing WHERE listing_id = ?";
+
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return new FoodListing(
+                rs.getInt("listing_id"),
+                rs.getString("title"),
+                rs.getString("description"),
+                rs.getString("location"),
+                rs.getString("status")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
+public void update(FoodListing listing) {
+    String sql = "UPDATE food_listing SET status = ? WHERE listing_id = ?";
+
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, listing.getStatus());
+        stmt.setInt(2, listing.getListingId());
+        stmt.executeUpdate();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 }
 }

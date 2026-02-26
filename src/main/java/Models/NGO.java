@@ -5,6 +5,7 @@ public class NGO extends User {
     private String address;
     private double radiusCoverage;
     private int capacity;
+    private int ngoId;
 
     // Main Constructor
     public NGO(int id, String name, String email, String password, String role,
@@ -66,5 +67,14 @@ public class NGO extends User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setNgoId(int ngoId) {
+        this.ngoId = ngoId;
+    }
+
+    // The matching getter method
+    public int getNgoId() {
+        return ngoId;
     }
 } 

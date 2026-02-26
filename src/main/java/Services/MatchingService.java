@@ -18,24 +18,31 @@ public class MatchingService {
     }
 
     public List<NGO> findMatchingNGOs(FoodListing listing) {
-
     List<NGO> allNGOs = ngoDAO.getAllNGOs();
     List<NGO> matchedNGOs = new ArrayList<>();
 
-    for (NGO ngo : allNGOs) {
+    double vLat = listing.getVendor().getLatitude();
+    double vLon = listing.getVendor().getLongitude();
 
-        double distance = calculateDistanceKm(
-                ngo.getLatitude(),
-                ngo.getLongitude(),
-                listing.getVendor().getLatitude(),
-                listing.getVendor().getLongitude()
-        );
+    System.out.println("\n🔍 SMART MATCHING START");
+    System.out.println("📍 Vendor Location: " + vLat + ", " + vLon);
+    System.out.println("📂 Total NGOs in DB: " + allNGOs.size());
+
+    for (NGO ngo : allNGOs) {
+        double distance = calculateDistanceKm(vLat, vLon, ngo.getLatitude(), ngo.getLongitude());
+        
+        // Debugging logs to identify the "0" result
+        System.out.println("🏢 Checking: " + ngo.getOrganizationName());
+        System.out.println("   📏 Distance: " + String.format("%.2f", distance) + " km");
+        System.out.println("   🎯 Required Radius: " + ngo.getRadiusCoverage() + " km");
 
         if (distance <= ngo.getRadiusCoverage()) {
+            System.out.println("   ✅ MATCH FOUND!");
             matchedNGOs.add(ngo);
+        } else {
+            System.out.println("   ❌ TOO FAR");
         }
     }
-
     return matchedNGOs;
 }
 
@@ -58,16 +65,6 @@ public class MatchingService {
         return filteredMatches;
     }
 
-    public boolean acceptListing(int listingId, NGO ngo) {
-        FoodListing listing = foodListingDAO.getListingById(listingId);
-
-        // Security check: Only 'available' listings can be claimed
-        if (listing != null && listing.getStatus().equalsIgnoreCase("available")) {
-            // Sync with your DAO to update database state
-            return foodListingDAO.updateStatus(listingId, "claimed", ngo.getUserId());
-        }
-        return false;
-    }
 
     /**
      * Missing Method: Calculates distance in Kilometers using Haversine formula.
@@ -83,4 +80,23 @@ public class MatchingService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
+
+    public boolean acceptListing(int listingId, NGO ngo) {
+
+    FoodListing listing = foodListingDAO.findById(listingId);
+
+    if (listing == null) return false;
+
+    if (listing.isLocked()) {
+        return false;
+    }
+
+    listing.setLocked(true);
+    listing.setAcceptedByUserId(ngo.getUserId());
+    listing.setStatus("accepted");
+
+    foodListingDAO.update(listing);
+
+    return true;
+}
 }
