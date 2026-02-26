@@ -77,7 +77,7 @@ public class NGODashboardController {
         //     }
         // );
         // ONLY run this if the current FXML actually has a table (Marketplace view)
-    if (foodTable != null && foodTable.getScene() != null){
+    if (foodTable != null){
         setupTableColumns();
         foodTable.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldVal, selectedListing) -> {
