@@ -249,8 +249,61 @@ private void goToMarketplace(javafx.scene.input.MouseEvent event) {
 
 @FXML
 private void goToRatings(javafx.scene.input.MouseEvent event) {
-    System.out.println("Rating feature coming soon!");
-    // Similar to goToMarketplace, point this to your Ratings FXML when ready
+    handleViewRating();
+}
+
+private void handleViewRating() {
+    DAO.RatingDAO ratingDAO = new DAO.RatingDAO();
+    List<Models.VendorRatingSummary> ratingsList = ratingDAO.getVendorLeaderboard();
+    ObservableList<Models.VendorRatingSummary> data = FXCollections.observableArrayList(ratingsList);
+
+    Stage stage = new Stage();
+    javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(15);
+    root.setPadding(new javafx.geometry.Insets(25));
+    root.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+
+    Label title = new Label("🏆 Food Hero Leaderboard");
+    title.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2f3542;");
+    
+    TableView<Models.VendorRatingSummary> table = new TableView<>();
+    table.setItems(data);
+    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    table.setStyle("-fx-background-color: transparent; -fx-table-cell-border-color: transparent;");
+
+    // COLUMN 1: VENDOR (Blue Style)
+    TableColumn<Models.VendorRatingSummary, String> nameCol = new TableColumn<>("VENDOR");
+    nameCol.setCellValueFactory(new PropertyValueFactory<>("vendorName"));
+    nameCol.setCellFactory(column -> new TableCell<>() {
+        @Override protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) { setText(null); setStyle(""); }
+            else { 
+                setText(item); 
+                setStyle("-fx-background-color: #eaf2ff; -fx-text-fill: #0984e3; -fx-font-weight: bold; -fx-padding: 15; -fx-background-radius: 10 0 0 10;");
+            }
+        }
+    });
+
+    // COLUMN 2: RATING (Gold Style)
+    TableColumn<Models.VendorRatingSummary, String> rateCol = new TableColumn<>("RATING");
+    rateCol.setCellValueFactory(new PropertyValueFactory<>("stars"));
+    rateCol.setCellFactory(column -> new TableCell<>() {
+        @Override protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) { setText(null); setStyle(""); }
+            else { 
+                setText(item); 
+                setStyle("-fx-background-color: #fff9e6; -fx-text-fill: #ffa502; -fx-alignment: CENTER; -fx-font-size: 18px; -fx-background-radius: 0 10 10 0;");
+            }
+        }
+    });
+
+    table.getColumns().addAll(nameCol, rateCol);
+    root.getChildren().addAll(title, new Separator(), table);
+    
+    stage.setScene(new Scene(root, 500, 550));
+    stage.setTitle("Rating Leaderboard");
+    stage.show();
 }
 @FXML
 public void handleLogout(ActionEvent event) { // Added ActionEvent parameter for the Button
