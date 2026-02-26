@@ -1,14 +1,23 @@
 package Controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.stage.Stage;
 import Models.Rating;
 import Models.User;
 import Models.FoodListing;
 import Services.MarketplaceService;
+
+import java.io.IOException;
+
 import DAO.RatingDAO;
 
 public class MarketplaceController {
@@ -81,5 +90,12 @@ public class MarketplaceController {
         } catch (NumberFormatException e) {
             statusLabel.setText("Please enter a valid number (1-5) for the score.");
         }
+    }
+    public void openNGOMarketplace(ActionEvent event) throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NGODashboard.fxml")); // adjust path
+    Parent root = loader.load();
+    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    stage.setScene(new Scene(root));
+    stage.show();
     }
 }

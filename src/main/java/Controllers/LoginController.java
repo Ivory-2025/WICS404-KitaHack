@@ -81,7 +81,7 @@ public void handleLogin() {
         session.setNGO(ngo);
         showToast("Welcome back, " + ngo.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
 
-        loadDashboard("/Views/NGODashboard.fxml", loggedInUser);
+        loadDashboard("/Views/NGOMainDashboard.fxml", loggedInUser);
     }
 }
     private void loadDashboard(String fxmlPath, User loggedInUser) {
