@@ -9,6 +9,7 @@
       style="-fx-background-color: white;" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="Controllers.NGODashboardController">
     
+    
     <Text text="NGO Dashboard" style="-fx-font-size: 32px; -fx-font-weight: bold;" />
 
     <HBox alignment="CENTER" spacing="50.0">

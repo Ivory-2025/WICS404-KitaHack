@@ -82,28 +82,91 @@ public class NGODashboardController {
      * Example from your login controller:
      *     ngoController.setCurrentNGO(loggedInNGO);
      */
-    public void setCurrentNGO(NGO ngo) {
-        this.currentNGO = ngo;
+
+    @FXML private Label welcomeLabel; 
+
+// 2. Keep your setCurrentNGO exactly like this
+public void setCurrentNGO(NGO ngo) {
+    this.currentNGO = ngo;
+    
+    // Simple message, no more null name errors!
+    if (welcomeLabel != null) {
+        welcomeLabel.setText("Welcome back! ✨");
+    }
+    
+    if (foodTable != null) {
         loadMatchedListings();
     }
+}
 
     // -----------------------------------------------------------------------
     // Table setup
     // -----------------------------------------------------------------------
 
     private void setupTableColumns() {
-        colFoodName.setCellValueFactory(new PropertyValueFactory<>("foodName"));
+    // 1. Food Item Column (Bold & Professional)
+    colFoodName.setCellValueFactory(new PropertyValueFactory<>("foodName"));
+    colFoodName.setCellFactory(column -> new TableCell<>() {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) { setText(null); setStyle(""); }
+            else { 
+                setText(item); 
+                setStyle("-fx-font-family: 'Segoe UI', sans-serif; -fx-font-weight: bold; -fx-text-fill: #2d3436; -fx-padding: 10;");
+            }
+        }
+    });
 
-        // Vendor name comes from nested object so we use a custom factory
-        colVendorName.setCellValueFactory(cellData ->
-            new javafx.beans.property.SimpleStringProperty(
-                cellData.getValue().getVendor().getRestaurantName()
-            )
-        );
+    // 2. Vendor Column (Subtle Blue Text)
+    colVendorName.setCellValueFactory(cellData -> 
+        new javafx.beans.property.SimpleStringProperty(cellData.getValue().getVendor().getRestaurantName()));
+    colVendorName.setCellFactory(column -> new TableCell<>() {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) { setText(null); setStyle(""); }
+            else { 
+                setText("🏠 " + item); 
+                setStyle("-fx-text-fill: #2d3436; -fx-font-style: italic; -fx-padding: 10;");
+            }
+        }
+    });
 
-        colExpiryTime.setCellValueFactory(new PropertyValueFactory<>("expiryTime"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
-    }
+    // 3. Expiry Column (Clear Red/Orange Warning)
+    colExpiryTime.setCellValueFactory(new PropertyValueFactory<>("expiryTimeString"));
+    colExpiryTime.setCellFactory(column -> new TableCell<>() {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) { setText(null); setStyle(""); }
+            else { 
+                setText("⏰ " + item); 
+                setStyle("-fx-text-fill: #d63031; -fx-font-weight: bold; -fx-padding: 10;");
+            }
+        }
+    });
+
+    // 4. Status Column (The "Pill" Design)
+    colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+    colStatus.setCellFactory(column -> new TableCell<>() {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) { setText(null); setStyle(""); }
+            else {
+                setText(item.toUpperCase());
+                if (item.equalsIgnoreCase("available")) {
+                    setStyle("-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-font-weight: bold; " +
+                             "-fx-background-radius: 15; -fx-alignment: center; -fx-margin: 5;");
+                } else {
+                    setStyle("-fx-background-color: #f8d7da; -fx-text-fill: #721c24; -fx-font-weight: bold; " +
+                             "-fx-background-radius: 15; -fx-alignment: center; -fx-margin: 5;");
+                }
+            }
+        }
+    });
+}
 
     // -----------------------------------------------------------------------
     // Load food listings that match this NGO
@@ -134,27 +197,39 @@ public class NGODashboardController {
     // -----------------------------------------------------------------------
 
     @FXML
-    private void handleAccept() {
-        FoodListing selected = foodTable.getSelectionModel().getSelectedItem();
+private void handleAccept() {
+    FoodListing selected = foodTable.getSelectionModel().getSelectedItem();
+    if (selected == null) return;
 
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a food listing first.");
-            return;
+    // Use the smart logic from our model!
+    String timeLeft = selected.getTimeUntilExpiry();
+
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Food Rescue Mission! 🥳");
+
+    javafx.scene.layout.VBox content = new javafx.scene.layout.VBox(15);
+    content.setAlignment(javafx.geometry.Pos.CENTER);
+    content.setPadding(new javafx.geometry.Insets(25));
+    content.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+
+    Label msg = new Label("Awesome choice! \n\nJust a heads-up: this " + selected.getFoodName() + 
+                         "\nexpires in about " + timeLeft + ".\n\nEat it before then to stay safe!");
+    msg.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3436; -fx-text-alignment: CENTER; -fx-font-weight: bold;");
+
+    content.getChildren().addAll(msg);
+    dialog.getDialogPane().setContent(content);
+
+    ButtonType claimBtn = new ButtonType("GOT IT, CLAIM!", ButtonBar.ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(claimBtn, ButtonType.CANCEL);
+    
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == claimBtn) {
+            if (matchingService.acceptListing(selected.getListingId(), currentNGO)) {
+                loadMatchedListings(); 
+            }
         }
-
-        boolean success = matchingService.acceptListing(selected.getListingId(), currentNGO);
-
-        if (success) {
-            showAlert(Alert.AlertType.INFORMATION, "Accepted!",
-                "You have successfully claimed: " + selected.getFoodName()
-                + "\nPlease proceed to pick it up.");
-            loadMatchedListings(); // Refresh table so claimed listing disappears
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Too Slow!",
-                "Sorry! Another NGO already accepted this listing.");
-            loadMatchedListings(); // Refresh anyway to reflect latest statuses
-        }
-    }
+    });
+}
 
     // -----------------------------------------------------------------------
     // View Route button — opens Google Maps in the browser

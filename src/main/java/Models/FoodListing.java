@@ -2,6 +2,7 @@ package Models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Duration;
 
 public class FoodListing {
 
@@ -91,6 +92,23 @@ public class FoodListing {
         this.productionTime = productionTime;
     }
 
+
+// Replace/Add these methods in your FoodListing class
+public String getTimeUntilExpiry() {
+    if (expiryTime == null) return "soon";
+    Duration duration = Duration.between(LocalDateTime.now(), expiryTime);
+    long hours = duration.toHours();
+    
+    if (hours < 1) return "less than an hour";
+    if (hours < 24) return hours + " hours";
+    return (hours / 24) + " days";
+}
+
+// Update this for your TableView to show the date
+public String getExpiryTimeString() {
+    return (expiryTime != null) ? expiryTime.toLocalDate().toString() : "N/A";
+}
+
     public String getIngredients() {
         return ingredients;
     }
@@ -106,11 +124,6 @@ public class FoodListing {
     // Helper for TableView: Quantity (for now just dummy, you can replace with actual quantity)
 public String getQuantity() {
     return "1"; // placeholder, replace with actual field if you add quantity
-}
-
-// Helper for TableView: formatted expiry string
-public String getExpiryTimeString() {
-    return (expiryTime != null) ? expiryTime.toLocalDate().toString() : "N/A";
 }
 
     public void setStatus(String status) {
