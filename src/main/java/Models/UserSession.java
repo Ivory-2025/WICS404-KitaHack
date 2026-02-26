@@ -15,6 +15,9 @@ public class UserSession {
         return instance;
     }
 
+    public void setUser(User user) { this.currentUser= user; }
+    public User getUser() { return currentUser; }
+
     public void setVendor(Vendor vendor) { this.currentVendor = vendor; }
     public Vendor getVendor() { return currentVendor; }
 

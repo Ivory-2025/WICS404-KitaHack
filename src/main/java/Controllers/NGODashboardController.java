@@ -3,8 +3,10 @@ package Controllers;
 //** TODO: setup Java FX, FXML, for the codes to work
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.Node;
+import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,12 +20,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import Models.FoodListing;
 import Models.NGO;
-import Services.MatchingService;
-import Services.RoutingService;
+import Models.User;
+import Models.UserSession;
+import DAO.*;
 import java.io.IOException;
 import java.awt.Desktop;
 import java.net.URI;
 import java.util.List;
+import javafx.stage.Popup;
+import Services.*;
+import javafx.util.Duration;
 
 public class NGODashboardController {
 
@@ -32,15 +38,18 @@ public class NGODashboardController {
     // -----------------------------------------------------------------------
 
     @FXML private TableView<FoodListing> foodTable;
+    @FXML private TextField emailField;
     @FXML private TableColumn<FoodListing, String> colFoodName;
     @FXML private TableColumn<FoodListing, String> colVendorName;
     @FXML private TableColumn<FoodListing, String> colExpiryTime;
     @FXML private TableColumn<FoodListing, String> colStatus;
-
     @FXML private Label lblRouteSummary;
     @FXML private Button btnAccept;
     @FXML private Button btnViewRoute;
+    @FXML private PasswordField passwordField;
+    private final DAO.NGODAO ngoDAO = new DAO.NGODAO();
 
+    private final UserService userService = new UserService();
     // -----------------------------------------------------------------------
     // Services
     // -----------------------------------------------------------------------
@@ -68,7 +77,7 @@ public class NGODashboardController {
         //     }
         // );
         // ONLY run this if the current FXML actually has a table (Marketplace view)
-    if (foodTable != null) {
+    if (foodTable != null && foodTable.getScene() != null){
         setupTableColumns();
         foodTable.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldVal, selectedListing) -> {
@@ -201,52 +210,65 @@ public void setCurrentNGO(NGO ngo) {
 
     @FXML
 private void handleAccept() {
-    // 1. Get Selection and Check for Null
     FoodListing selected = foodTable.getSelectionModel().getSelectedItem();
-
     if (selected == null) {
         showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a food listing first.");
         return;
     }
 
-    // 2. Prepare the "Gen Z" Safety Dialog
     String timeLeft = selected.getTimeUntilExpiry();
     Dialog<ButtonType> dialog = new Dialog<>();
-    dialog.setTitle("Food Rescue Mission! 🥳");
-
-    VBox content = new VBox(15);
-    content.setAlignment(Pos.CENTER);
-    content.setPadding(new Insets(25));
-    content.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
-
-    Label msg = new Label("Awesome choice! \n\nJust a heads-up: this " + selected.getFoodName() + 
-                         "\nexpires in about " + timeLeft + ".\n\nEat it before then to stay safe!");
-    msg.setStyle("-fx-font-size: 14px; -fx-text-fill: #2d3436; -fx-text-alignment: CENTER; -fx-font-weight: bold;");
-
-    content.getChildren().addAll(msg);
-    dialog.getDialogPane().setContent(content);
-
-    ButtonType claimBtn = new ButtonType("GOT IT, CLAIM!", ButtonBar.ButtonData.OK_DONE);
-    dialog.getDialogPane().getButtonTypes().addAll(claimBtn, ButtonType.CANCEL);
     
-    // 3. Handle the Claim Execution
-    dialog.showAndWait().ifPresent(response -> {
-        if (response == claimBtn) {
-            // Call the matching service to update the DB
-            boolean success = matchingService.acceptListing(selected.getListingId(), currentNGO);
+    // Remove the "ugly" Windows top bar for a high-class feel
+    dialog.initStyle(javafx.stage.StageStyle.TRANSPARENT);
 
+    // Root Container
+    VBox root = new VBox(20);
+    root.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+    root.getStyleClass().add("custom-dialog-container");
+    root.setPadding(new Insets(40));
+    root.setAlignment(Pos.CENTER);
+
+    // Icon and High-Class Header
+    Label icon = new Label("✨");
+    icon.setStyle("-fx-font-size: 45px;");
+    
+    Label title = new Label("Mission Briefing");
+    title.setStyle("-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #0F172A;");
+
+    // Your specific message logic
+    VBox messageBox = new VBox(10);
+    messageBox.setAlignment(Pos.CENTER);
+    
+    Label mainMsg = new Label("Awesome choice! You're rescuing " + selected.getFoodName());
+    mainMsg.setStyle("-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #10B981; -fx-text-alignment: CENTER;");
+    mainMsg.setWrapText(true);
+
+    Label expiryMsg = new Label("Just a heads-up: it expires in about " + timeLeft + ".");
+    expiryMsg.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748B; -fx-font-weight: 600;");
+
+    root.getChildren().addAll(icon, title, messageBox, mainMsg, expiryMsg);
+    dialog.getDialogPane().setContent(root);
+
+    // Modern Button Types
+    ButtonType claimBtnType = new ButtonType("GOT IT, CLAIM! ⚡", ButtonBar.ButtonData.OK_DONE);
+    ButtonType cancelBtnType = new ButtonType("CANCEL", ButtonBar.ButtonData.CANCEL_CLOSE);
+    dialog.getDialogPane().getButtonTypes().addAll(claimBtnType, cancelBtnType);
+
+    // Apply high-class styling to the buttons after they are created
+    Button claimBtn = (Button) dialog.getDialogPane().lookupButton(claimBtnType);
+    claimBtn.getStyleClass().add("gen-z-button");
+    claimBtn.getStyleClass().add("claim-btn-premium");
+
+    dialog.showAndWait().ifPresent(response -> {
+        if (response == claimBtnType) {
+            boolean success = matchingService.acceptListing(selected.getListingId(), currentNGO);
             if (success) {
-                showAlert(Alert.AlertType.INFORMATION, 
-                          "Accepted!", 
-                          "You have successfully claimed: " + selected.getFoodName() + 
-                          "\nPlease proceed to pick it up.");
+                // High-class success toast instead of standard alert
+                showToast((Stage)foodTable.getScene().getWindow(), "Mission Secured! ⚡", true);
             } else {
-                showAlert(Alert.AlertType.ERROR, 
-                          "Too Slow!", 
-                          "Sorry! Another NGO already accepted this listing.");
+                showAlert(Alert.AlertType.ERROR, "Too Slow!", "Sorry! Another NGO already accepted this listing.");
             }
-            
-            // 4. Always Refresh the Table
             loadMatchedListings(); 
         }
     });
@@ -308,34 +330,31 @@ public void handleLogout() {
 }
 @FXML
 private void goToMarketplace(javafx.scene.input.MouseEvent event) {
-    // try {
-    //     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/NGODashboard.fxml"));
-    //     javafx.scene.Parent root = loader.load();
-        
-    //     // Pass the current NGO to the marketplace view
-    //     NGODashboardController controller = loader.getController();
-    //     controller.setCurrentNGO(this.currentNGO);
-        
-    //     //Stage stage = (Stage) lblRouteSummary.getScene().getWindow();
-    //     Stage stage = (Stage) javafx.stage.Window.getWindows().filtered(w -> w.isShowing()).get(0);
-    //     stage.setScene(new Scene(root));
-    // } catch (java.io.IOException e) {
-    //     e.printStackTrace();
-    //     showAlert(Alert.AlertType.ERROR, "Error", "Could not load Marketplace.");
-    // }
     try {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/NGODashboard.fxml"));
         Parent root = loader.load();
         
         NGODashboardController controller = loader.getController();
-        controller.setCurrentNGO(this.currentNGO);
         
-        // Use the event to get the current window safely
+        // Use UserSession as the single source of truth to avoid null NGO errors
+        NGO sessionNGO = Models.UserSession.getInstance().getNGO();
+        controller.setCurrentNGO(sessionNGO != null ? sessionNGO : this.currentNGO);
+        
         Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        
+        // 🔥 ADDED: High-class Fade-in
+        root.setOpacity(0);
+        javafx.animation.FadeTransition fadeIn = new javafx.animation.FadeTransition(javafx.util.Duration.millis(600), root);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+
         stage.setScene(new Scene(root));
-        stage.setTitle("NGO Marketplace");
+        stage.setTitle("SavePlate - NGO Marketplace");
     } catch (java.io.IOException e) {
         e.printStackTrace();
+        // Use your 4-String toast signature for errors
+        showToast("Error: Could not load Marketplace. 🚫", "#FEE2E2", "#991B1B", "⚠️");
     }
 }
 
@@ -417,5 +436,130 @@ public void openNGOMarketplace(ActionEvent event) throws IOException {
     Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
     stage.setScene(new Scene(root));
     stage.show();
+}
+
+@FXML
+private void handleBackToDashboard(ActionEvent event) {
+    // Navigate to the main NGO entry point
+    // Make sure the path matches your actual file name (e.g., NGOMainDashboard.fxml)
+    loadDashboard("/Views/NGOMainDashboard.fxml", event); 
+}
+
+// A helper to handle the scene switching logic
+private void loadDashboard(String fxmlPath, ActionEvent event) {
+    try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+        
+        Object controller = loader.getController();
+        
+        // Pass data based on the controller type
+        if (controller instanceof NGODashboardController) {
+             ((NGODashboardController) controller).setCurrentNGO(Models.UserSession.getInstance().getNGO());
+        } else if (controller instanceof VendorDashboardController) {
+             ((VendorDashboardController) controller).setCurrentVendor(Models.UserSession.getInstance().getVendor());
+        }
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    } catch (IOException e) {
+        System.err.println("Error loading dashboard: " + e.getMessage());
+    }
+}
+
+@FXML
+public void handleLogin(ActionEvent event) {
+    // 1. Clear old session data
+    Models.UserSession.getInstance().logout(); 
+
+    String email = emailField.getText().trim();
+    String password = passwordField.getText();
+
+    Models.User loggedInUser = userService.login(email, password);
+
+    if (loggedInUser == null) {
+        Stage stage = (Stage) emailField.getScene().getWindow();
+        showToast(stage, "Login Failed: Invalid credentials. ❌", false);
+        return;
+    }
+    
+    // 2. Save User to Session
+    Models.UserSession.getInstance().setUser(loggedInUser);
+
+    // 3. Switch Screen based on Role
+    if ("VENDOR".equalsIgnoreCase(loggedInUser.getRole())) {
+        loadDashboard("/Views/VendorDashboard.fxml", event);
+    } // ✅ REPAIRED: NGO ROLE BLOCK
+else if ("NGO".equalsIgnoreCase(loggedInUser.getRole())) {
+NGO ngo = ngoDAO.getNGOByUserId(loggedInUser.getUserId());
+    
+    if (ngo == null) {
+        // Use the 3-parameter toast signature you defined for errors
+        Stage stage = (Stage) emailField.getScene().getWindow();
+        showToast(stage, "Error: NGO profile not found in DB. ❌", false);
+        return;
+    }
+
+    UserSession.getInstance().setNGO(ngo);
+    
+    // Correctly call the helper with the 'event' parameter
+    loadDashboard("/Views/NGODashboard.fxml", event);
+}
+}
+
+
+public void showToast(Stage stage, String message, boolean isSuccess) {
+    Label label = new Label(message);
+    
+    // High-class "Glassmorphism" styling
+    label.setStyle("-fx-background-color: " + (isSuccess ? "#10B981" : "#EF4444") + ";"
+            + "-fx-text-fill: white; -fx-padding: 15 30; -fx-background-radius: 25;"
+            + "-fx-font-weight: 800; -fx-font-size: 14px;"
+            + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+
+    Popup popup = new Popup();
+    popup.getContent().add(label);
+    
+    // Position it at the top-center of the app window
+    popup.show(stage);
+    popup.setX(stage.getX() + (stage.getWidth() / 2) - (label.getLayoutBounds().getWidth() / 2));
+    popup.setY(stage.getY() + 80); 
+
+    // Smooth fade-out animation
+    javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(javafx.util.Duration.millis(2500), label);
+    fadeOut.setFromValue(1.0);
+    fadeOut.setToValue(0.0);
+    fadeOut.setOnFinished(e -> popup.hide());
+    fadeOut.play();
+}
+
+private void showToast(String message, String bgColor, String textColor, String icon) {
+    // Safety check to ensure the UI is loaded
+    if (foodTable == null || foodTable.getScene() == null) return;
+
+    Stage stage = (Stage) foodTable.getScene().getWindow();
+    Popup popup = new Popup();
+
+    HBox toastRoot = new HBox(12);
+    toastRoot.setAlignment(Pos.CENTER_LEFT);
+    toastRoot.setStyle(String.format(
+            "-fx-background-color: %s; -fx-background-radius: 20; -fx-padding: 12 25;", bgColor));
+
+    Label iconLabel = new Label(icon);
+    Label messageLabel = new Label(message);
+    messageLabel.setStyle(String.format("-fx-text-fill: %s; -fx-font-weight: 800;", textColor));
+
+    toastRoot.getChildren().addAll(iconLabel, messageLabel);
+    popup.getContent().add(toastRoot);
+    popup.show(stage);
+
+    // Fade-out logic
+    FadeTransition out = new FadeTransition(Duration.millis(400), toastRoot);
+    out.setDelay(Duration.seconds(2.5));
+    out.setFromValue(1);
+    out.setToValue(0);
+    out.setOnFinished(e -> popup.hide());
+    out.play();
 }
 }

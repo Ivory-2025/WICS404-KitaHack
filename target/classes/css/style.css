@@ -101,3 +101,60 @@
 .modern-datepicker .arrow-button {
     -fx-background-color: transparent;
 }
+
+/* style.css additions */
+.premium-table {
+    -fx-background-color: transparent;
+    -fx-selection-bar: #F0FDF4; /* Very soft emerald */
+    -fx-selection-bar-non-focused: #F8FAFC;
+}
+
+.premium-table .column-header-background {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 15 0;
+}
+
+.premium-table .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 40;
+}
+
+.premium-table .column-header .label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+.premium-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: #F1F5F9;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 0;
+}
+
+.premium-table .table-row-cell:selected {
+    -fx-background-color: #F0FDF4;
+    -fx-background-radius: 12;
+    -fx-text-fill: #10B981;
+}
+
+/* Glass Dialog Styling */
+.custom-dialog-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 30, 0, 0, 15);
+}
+
+.custom-dialog-pane .button-bar .button {
+    -fx-background-radius: 15;
+    -fx-padding: 12 30;
+    -fx-font-weight: 800;
+    -fx-cursor: hand;
+}
+
+.claim-button {
+    -fx-background-color: #10B981;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.3), 15, 0, 0, 8);
+}

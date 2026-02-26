@@ -6,7 +6,12 @@ import Models.User;
 import Models.Vendor;
 
 public class UserService {
-    private final UserDAOInt userDAO;
+    private final DAO.UserDAOInt userDAO;
+
+    public UserService() {
+        // Initialize the actual DAO implementation here
+        this.userDAO = new DAO.UserDAOImpl(); 
+    }
 
     // Constructor that takes the Interface to allow flexibility
     public UserService(UserDAOInt userDAO) {
