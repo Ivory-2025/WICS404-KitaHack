@@ -25,6 +25,7 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import Services.RoutingService;
@@ -133,7 +134,6 @@ public class UploadFoodController {
 }
 @FXML
 private void handlePublish(ActionEvent event) {
-    // 1. Correctly identify the current stage
     Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
     if (currentVendor == null) {
@@ -147,67 +147,50 @@ private void handlePublish(ActionEvent event) {
         currentVendor.setLongitude(101.6869);
     }
 
-    // Data Preparation
-    FoodListing listing = new FoodListing();
-    listing.setFoodName(foodNameField.getText());
-    listing.setQuantity(quantityField.getText());
-    listing.setVendor(currentVendor);
-    listing.setStatus("available");
-    listing.setProductionTime(LocalDateTime.now());
-
-    if (expiryDatePicker.getValue() != null) {
-        listing.setExpiryTime(expiryDatePicker.getValue().atStartOfDay());
-    } else {
-        listing.setExpiryTime(LocalDateTime.now().plusDays(1));
-    }
-
     try {
+        // Data Preparation
+        FoodListing listing = new FoodListing();
+        listing.setFoodName(foodNameField.getText());
+        listing.setQuantity(quantityField.getText());
+        listing.setVendor(currentVendor);
+        listing.setStatus("available");
+        listing.setProductionTime(LocalDateTime.now());
+
+        if (expiryDatePicker.getValue() != null) {
+            listing.setExpiryTime(expiryDatePicker.getValue().atStartOfDay());
+        } else {
+            listing.setExpiryTime(LocalDateTime.now().plusDays(1));
+        }
+
         // SAVE
         foodListingDAO.save(listing);
 
         // MATCH
         List<NGO> matches = matchingService.findMatchingNGOs(listing);
-
-        // Inside handlePublish in UploadFoodController.java
-for (Models.NGO ngo : matches) {
-    // Construct the detailed surplus alert
-    String detailedMessage = "New Surplus Alert: " + listing.getFoodName() + "\n" +
-                             "--------------------------\n" +
-                             "📊 AI Analysis: " + aiRecommendationArea.getText() + "\n" +
-                             "📦 Quantity: " + listing.getQuantity() + "\n" +
-                             "⏰ Production: " + listing.getProductionTime() + "\n" +
-                             "⌛ Expiry: " + listing.getExpiryTime() + "\n" +
-                             "--------------------------\n" +
-                             "Tap 'Accept' to view the fastest route.";
-
-    messageDAO.sendAutoPM(
-        currentVendor.getUserId(),
-        ngo.getUserId(),
-        detailedMessage
-    );
-}
-
-        // Routing and Automated PM logic
+        String aiReport = aiRecommendationArea.getText(); // FIX: Pulls actual report
         RoutingService routingService = new RoutingService();
 
+        foodListingDAO.save(listing);
+        String actualAIReport = aiRecommendationArea.getText();
+            // Rich Gen Z Style Content
+        // Consolidated Loop: Sends ONE rich message per NGO
         for (NGO ngo : matches) {
             String routeSummary = routingService.getRouteSummary(listing, ngo);
             String mapsLink = routingService.generateGoogleMapsLink(listing, ngo);
 
-            // The "New Surplus" string triggers the Accept/Reject buttons in Chat
-            String message = "New Surplus Alert: "
-                    + listing.getFoodName()
-                    + " is ready!\n\n"
-                    + routeSummary
-                    + "\n\n🗺 Navigate:\n"
-                    + mapsLink
-                    + "\n\nTap Accept or Reject below.";
+        // FIX: Pull the actual report generated on the landing page
+        
+            String messageContent = "NEW SURPLUS ALERT: " + listing.getFoodName() + " 🍎\n" +
+                                    "✨ AI Analysis: " + aiReport + "\n" +
+                                    "--------------------------\n" +
+                                    "📦 Quantity: " + listing.getQuantity() + "\n" +
+                                    "⌛ Best Before: " + listing.getExpiryTime().format(DateTimeFormatter.ofPattern("HH:mm a")) + "\n" +
+                                    "--------------------------\n" +
+                                    routeSummary + "\n" +
+                                    "🗺 Navigate: " + mapsLink + "\n\n" +
+                                    "Tap Accept or Reject below. ⚡";
 
-            messageDAO.sendAutoPM(
-                    currentVendor.getUserId(),
-                    ngo.getUserId(),
-                    message
-            );
+            messageDAO.sendAutoPM(currentVendor.getUserId(), ngo.getUserId(), messageContent);
         }
 
         // Confirmation Dialog
@@ -218,21 +201,17 @@ for (Models.NGO ngo : matches) {
 
         ButtonType goToChat = new ButtonType("Go to Chat");
         ButtonType stayHere = new ButtonType("Stay Here");
-
         alert.getButtonTypes().setAll(goToChat, stayHere);
 
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent() && result.get() == goToChat) {
-            // LOAD CHAT LANDING
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ChatLanding.fxml"));
             Parent root = loader.load();
             
-            // Apply Fade Transition for a premium feel
             root.setOpacity(0);
             FadeTransition fadeIn = new FadeTransition(Duration.millis(600), root);
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1);
+            fadeIn.setFromValue(0); fadeIn.setToValue(1);
             fadeIn.play();
 
             stage.setScene(new Scene(root));
@@ -241,7 +220,7 @@ for (Models.NGO ngo : matches) {
 
     } catch (Exception e) {
         e.printStackTrace();
-        showToast(stage, "Publishing Failed: Check FXML Imports!", false);
+        showToast(stage, "Publishing Failed!", false);
     }
 }
     // ✅ Strongly typed now

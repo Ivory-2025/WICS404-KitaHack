@@ -84,6 +84,20 @@ decisionBox.setManaged(false);
         if (!ngoListView.getItems().isEmpty()) {
             ngoListView.getSelectionModel().selectFirst();
         }
+
+        ngoListView.setCellFactory(lv -> new ListCell<Models.NGO>() {
+        @Override
+        protected void updateItem(Models.NGO ngo, boolean empty) {
+            super.updateItem(ngo, empty);
+            if (empty || ngo == null) {
+                setText(null);
+            } else {
+                setText(ngo.getOrganizationName()); // Displays "PJ Food Rescue"
+            }
+        }
+    });
+
+    loadActiveChats();
     }
 
     public void stopTimer() {
@@ -91,75 +105,100 @@ decisionBox.setManaged(false);
     }
 
     private void loadMessages() {
-        messageContainer.getChildren().clear();
-        int vendorId = UserSession.getInstance().getVendor().getUserId();
-        List<Message> history = messageDAO.getChatHistory(vendorId, selectedNGO.getUserId());
-        for (Message msg : history) {
-            addMessageToUI(msg.getContent(), msg.getSenderId() == vendorId);
-        }
-        chatScrollPane.setVvalue(1.0);
+        // 1. Clear the ListView items first to ensure a fresh UI
+    ngoListView.getItems().clear(); 
+    
+    // 2. Load the cleaned list from the NGOs table
+    List<Models.NGO> ngos = ngoDAO.getAllNGOs(); 
+    ObservableList<Models.NGO> items = FXCollections.observableArrayList(ngos);
+    ngoListView.setItems(items);
+    // 1. Clears current view to prevent duplication
+    messageContainer.getChildren().clear(); 
+    
+    // 2. Safety check for selected contact
+    if (selectedNGO == null) return;
+
+    // 3. Fetch from DB using current Vendor session
+    int vendorId = UserSession.getInstance().getVendor().getUserId();
+    List<Message> history = messageDAO.getChatHistory(vendorId, selectedNGO.getUserId());
+    
+    // 4. Rebuild the UI bubbles
+    for (Message msg : history) {
+        addMessageToUI(msg.getContent(), msg.getSenderId() == vendorId);
     }
+    
+    chatScrollPane.setVvalue(1.0);
+}
 
     private void addMessageToUI(String content, boolean isVendor) {
     VBox bubbleContainer = new VBox(8);
     bubbleContainer.setAlignment(isVendor ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
 
-    VBox bubble = new VBox(12);
-    // Standard styling for your bubbles
-    bubble.setStyle("-fx-background-color: " + (isVendor ? "#1A1A1A" : "#FFFFFF") + "; " +
-                    "-fx-padding: 18; -fx-background-radius: 20; " +
-                    "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);");
+    // Main Card Container
+    VBox card = new VBox(15);
+    card.setStyle("-fx-background-color: " + (isVendor ? "#d4edc8" : "#FFFFFF") + "; " +
+                  "-fx-padding: 20; -fx-background-radius: 20; " +
+                  "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);");
 
-    Label textLabel = new Label(content);
-    textLabel.setWrapText(true);
-    textLabel.setMaxWidth(350);
-    textLabel.setStyle("-fx-text-fill: " + (isVendor ? "white" : "#1A1A1A") + "; " +
-                       "-fx-font-family: 'System'; -fx-font-weight: 600; -fx-font-size: 15px;");
-    bubble.getChildren().add(textLabel);
+    if (content.contains("New Surplus Alert")) {
+        // 1. Header: NEW SURPLUS ALERT
+        Label header = new Label("NEW SURPLUS ALERT");
+        header.setStyle("-fx-font-weight: 900; -fx-font-size: 18px; -fx-text-fill: #145694;");
 
-    // Interactive Card Logic
-    if (!isVendor && content.contains("New Surplus Alert")) {
-        HBox actions = new HBox(12);
-        actions.setAlignment(Pos.CENTER_LEFT);
+        // 2. Food Details (The "png" placeholder in your sketch)
+        VBox foodDetails = new VBox(5);
+        foodDetails.setStyle("-fx-background-color: #F1F5F9; -fx-padding: 15; -fx-background-radius: 12;");
+        Label detailText = new Label(content.split("✨ AI Analysis:")[0]);
+        detailText.setWrapText(true);
+        detailText.setStyle("-fx-font-size: 14px; -fx-text-fill: #475569;");
+        foodDetails.getChildren().add(detailText);
+
+        // 3. AI Analysis Section
+        VBox aiSection = new VBox(8);
+        aiSection.setStyle("-fx-border-color: #10B981; -fx-border-width: 2; -fx-border-radius: 12; " +
+                           "-fx-padding: 15; -fx-background-color: #ECFDF5;");
+        Label aiTitle = new Label("✨ AI SUSTAINABILITY REPORT");
+        aiTitle.setStyle("-fx-font-weight: 800; -fx-font-size: 12px; -fx-text-fill: #065F46;");
         
-        // 1. Calculate Traffic Duration using your RoutingService
-        Services.RoutingService routingService = new Services.RoutingService();
-        
-        // Use coordinates from Session (Vendor) and current selection (NGO)
-        double distance = routingService.calculateBasicDistance(
-            UserSession.getInstance().getVendor(), 
-            selectedNGO
-        );
+        String aiBody = content.contains("✨ AI Analysis:") ? content.split("✨ AI Analysis:")[1].split("----------------")[0] : "Processing...";
+        Label aiContent = new Label(aiBody.trim());
+        aiContent.setWrapText(true);
+        aiContent.setStyle("-fx-font-size: 13px; -fx-text-fill: #047857; -fx-font-style: italic;");
+        aiSection.getChildren().addAll(aiTitle, aiContent);
 
-        // Logic: 2 mins per km + 5 mins traffic buffer for the demo
-        int estMinutes = (int) (distance * 2) + 5; 
-        
-        Label trafficLabel = new Label("🚗 Total Duration: " + estMinutes + " mins (Moderate Traffic)");
-        trafficLabel.setStyle("-fx-text-fill: #E53E3E; -fx-font-weight: 800; -fx-font-size: 13px;");
+        // 4. Traffic Duration
+        Services.RoutingService rs = new Services.RoutingService();
+        double distance = rs.calculateBasicDistance(UserSession.getInstance().getVendor(), selectedNGO);
+        int estMins = (int)(distance * 2) + 5;
+        Label traffic = new Label("🚗 Estimated Arrival: " + estMins + " mins to Vendor Site");
+        traffic.setStyle("-fx-text-fill: #E53E3E; -fx-font-weight: 800; -fx-font-size: 12px;");
 
-        // 2. Setup Accept/Reject Buttons
-        Button acceptBtn = new Button("Accept & Navigate");
-        Button rejectBtn = new Button("Reject");
-
-        acceptBtn.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12; -fx-padding: 8 20; -fx-cursor: hand;");
-        rejectBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #EF4444; -fx-font-weight: 800; -fx-border-color: #EF4444; -fx-border-radius: 12; -fx-cursor: hand;");
-
-        // 3. Handlers
-        applyPulseAnimation(acceptBtn);
+        // 5. Accept / Reject Buttons
+        HBox actions = new HBox(15);
+        actions.setAlignment(Pos.CENTER);
+        Button accept = new Button("Accept");
+        accept.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 20; -fx-padding: 10 30; -fx-cursor: hand;");
+        Button reject = new Button("Reject");
+        reject.setStyle("-fx-background-color: transparent; -fx-text-fill: #EF4444; -fx-font-weight: 800; -fx-border-color: #EF4444; -fx-border-radius: 20; -fx-padding: 10 30; -fx-cursor: hand;");
         
-        // Use your existing RoutingService to generate the link
-        acceptBtn.setOnAction(e -> handleAcceptDonation(bubbleContainer));
-        
-        rejectBtn.setOnAction(e -> {
+        // Handlers
+        accept.setOnAction(e -> handleAcceptDonation(bubbleContainer));
+        reject.setOnAction(e -> {
             messageContainer.getChildren().remove(bubbleContainer);
             showToast((Stage)bubbleContainer.getScene().getWindow(), "Donation Declined", false);
         });
 
-        actions.getChildren().addAll(acceptBtn, rejectBtn);
-        bubble.getChildren().addAll(trafficLabel, actions);
+        actions.getChildren().addAll(accept, reject);
+        card.getChildren().addAll(header, foodDetails, aiSection, traffic, actions);
+    } else {
+        // Fallback for regular text messages
+        Label text = new Label(content);
+        text.setWrapText(true);
+        text.setStyle("-fx-text-fill: " + (isVendor ? "white" : "#1A1A1A") + "; -fx-font-size: 14px;");
+        card.getChildren().add(text);
     }
 
-    bubbleContainer.getChildren().add(bubble);
+    bubbleContainer.getChildren().add(card);
     messageContainer.getChildren().add(bubbleContainer);
 }
     
@@ -224,24 +263,21 @@ private void handleSendMessage() { // Remove any parameters like (ActionEvent ev
 }
 
     private void loadActiveChats() {
-        ngoListView.getItems().clear();
+    // Wrap in runLater to ensure thread safety and prevent IndexOutOfBounds
+    javafx.application.Platform.runLater(() -> {
+        // 1. Tell the selection model to let go first
+        ngoListView.getSelectionModel().clearSelection();
+        
+        // 2. Clear existing items to prevent the "PJ Food Rescue" duplicates
+        ngoListView.getItems().clear(); 
+        
+        // 3. Load unique NGOs from the database
         List<Models.NGO> ngos = ngoDAO.getAllNGOs(); 
-        ObservableList<Models.NGO> items = FXCollections.observableArrayList(ngos);
-        ngoListView.setItems(items);
-        ngoListView.setCellFactory(lv -> new ListCell<Models.NGO>() {
-            @Override
-            protected void updateItem(Models.NGO item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("-fx-background-color: transparent;");
-                } else {
-                    setText(item.getOrganizationName());
-                    setStyle("-fx-font-family: 'System'; -fx-font-weight: 700; -fx-font-size: 15px; -fx-padding: 15; -fx-text-fill: #1A1A1A;");
-                }
-            }
-        });
-    }
+        if (ngos != null && !ngos.isEmpty()) {
+            ngoListView.setItems(javafx.collections.FXCollections.observableArrayList(ngos));
+        }
+    });
+}
 
     @FXML
     private void handleBackToDashboard(ActionEvent event) {
