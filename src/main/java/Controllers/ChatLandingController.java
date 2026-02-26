@@ -25,7 +25,7 @@ import javafx.util.Duration;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
-
+import Services.*;
 public class ChatLandingController {
     @FXML private ListView<NGO> ngoListView;
     @FXML private Label chatHeaderLabel;
@@ -105,6 +105,7 @@ decisionBox.setManaged(false);
     bubbleContainer.setAlignment(isVendor ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
 
     VBox bubble = new VBox(12);
+    // Standard styling for your bubbles
     bubble.setStyle("-fx-background-color: " + (isVendor ? "#1A1A1A" : "#FFFFFF") + "; " +
                     "-fx-padding: 18; -fx-background-radius: 20; " +
                     "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);");
@@ -114,62 +115,48 @@ decisionBox.setManaged(false);
     textLabel.setMaxWidth(350);
     textLabel.setStyle("-fx-text-fill: " + (isVendor ? "white" : "#1A1A1A") + "; " +
                        "-fx-font-family: 'System'; -fx-font-weight: 600; -fx-font-size: 15px;");
-    
     bubble.getChildren().add(textLabel);
 
-    // Interactive card logic for NGOs
-    if (!isVendor && content.contains("New Surplus")) {
+    // Interactive Card Logic
+    if (!isVendor && content.contains("New Surplus Alert")) {
         HBox actions = new HBox(12);
         actions.setAlignment(Pos.CENTER_LEFT);
         
-        // 1. Calculate Traffic Duration for the card
-        // This simulates your RoutingService logic for the demo
-        String duration = "18 mins (Moderate Traffic)"; 
-        Label trafficInfo = new Label("🚗 " + duration);
-        trafficInfo.setStyle("-fx-text-fill: #718096; -fx-font-size: 12px; -fx-font-weight: 700;");
+        // 1. Calculate Traffic Duration using your RoutingService
+        Services.RoutingService routingService = new Services.RoutingService();
+        
+        // Use coordinates from Session (Vendor) and current selection (NGO)
+        double distance = routingService.calculateBasicDistance(
+            UserSession.getInstance().getVendor(), 
+            selectedNGO
+        );
 
-        // 2. Add the Map Icon
-        ImageView mapIcon = new ImageView(new Image(getClass().getResourceAsStream("/Assets/map_icon.png")));
-        mapIcon.setFitHeight(16);
-        mapIcon.setFitWidth(16);
+        // Logic: 2 mins per km + 5 mins traffic buffer for the demo
+        int estMinutes = (int) (distance * 2) + 5; 
+        
+        Label trafficLabel = new Label("🚗 Total Duration: " + estMinutes + " mins (Moderate Traffic)");
+        trafficLabel.setStyle("-fx-text-fill: #E53E3E; -fx-font-weight: 800; -fx-font-size: 13px;");
 
-        Button acceptBtn = new Button("Accept", mapIcon);
-        acceptBtn.setGraphicTextGap(8);
+        // 2. Setup Accept/Reject Buttons
+        Button acceptBtn = new Button("Accept & Navigate");
         Button rejectBtn = new Button("Reject");
 
-        // 3. Tooltip and Styling
-        Tooltip routeTooltip = new Tooltip("View live route on Google Maps");
-        routeTooltip.setShowDelay(Duration.millis(200));
-        acceptBtn.setTooltip(routeTooltip);
-
-        String acceptIdleStyle = "-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12; -fx-padding: 8 20; -fx-cursor: hand;";
-        String acceptHoverStyle = "-fx-background-color: #059669; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12; -fx-padding: 8 20; -fx-cursor: hand;";
-        
-        acceptBtn.setStyle(acceptIdleStyle);
+        acceptBtn.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 12; -fx-padding: 8 20; -fx-cursor: hand;");
         rejectBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #EF4444; -fx-font-weight: 800; -fx-border-color: #EF4444; -fx-border-radius: 12; -fx-cursor: hand;");
 
-        acceptBtn.setOnMouseEntered(e -> acceptBtn.setStyle(acceptHoverStyle));
-        acceptBtn.setOnMouseExited(e -> acceptBtn.setStyle(acceptIdleStyle));
-
-        // 4. Handlers
+        // 3. Handlers
         applyPulseAnimation(acceptBtn);
+        
+        // Use your existing RoutingService to generate the link
         acceptBtn.setOnAction(e -> handleAcceptDonation(bubbleContainer));
         
         rejectBtn.setOnAction(e -> {
-            statusLabel.setText("Rejected");
-statusIndicator.setFill(javafx.scene.paint.Color.RED);
-
-distanceLabel.setText("");
-etaLabel.setText("");
-
-messageContainer.getChildren().remove(bubbleContainer);
-
-showToast((Stage) bubbleContainer.getScene().getWindow(),
-        "Donation Declined", false);
+            messageContainer.getChildren().remove(bubbleContainer);
+            showToast((Stage)bubbleContainer.getScene().getWindow(), "Donation Declined", false);
         });
 
         actions.getChildren().addAll(acceptBtn, rejectBtn);
-        bubble.getChildren().addAll(trafficInfo, actions); // Add traffic duration to card
+        bubble.getChildren().addAll(trafficLabel, actions);
     }
 
     bubbleContainer.getChildren().add(bubble);
@@ -187,52 +174,21 @@ showToast((Stage) bubbleContainer.getScene().getWindow(),
     pulse.play();
 }
    private void handleAcceptDonation(VBox container) {
-
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-    alert.setTitle("Transport Verification");
-    alert.setHeaderText("Vehicle Ready?");
-    alert.setContentText("Do you have a transport vehicle ready for pickup?");
-
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Confirm vehicle readiness?", ButtonType.YES, ButtonType.NO);
     alert.showAndWait().ifPresent(response -> {
-
-        if (response == ButtonType.OK) {
-
+        if (response == ButtonType.YES) {
             try {
-                Models.Vendor vendor = Models.UserSession.getInstance().getVendor();
+                Services.RoutingService rs = new Services.RoutingService();
+                
+                // Use your existing generateGoogleMapsLink method
+                // Note: Ensure your method accepts (listing, ngo) or update it to take lat/lon
+                String mapsUrl = rs.generateGoogleMapsLink(currentListing, selectedNGO);
 
-                if (vendor == null) {
-                    showToast((Stage) container.getScene().getWindow(),
-                            "Session Error", false);
-                    return;
-                }
-
-                double vLat = vendor.getLatitude();
-                double vLon = vendor.getLongitude();
-
-                // Simulated routing calculation
-                double distance = 4.8; // replace with real API later
-                int eta = 16; // replace with traffic API later
-
-                // Update header route info
-                distanceLabel.setText("Distance: " + distance + " km");
-                etaLabel.setText("ETA: " + eta + " mins (Traffic)");
-
-                // Update status
-                statusLabel.setText("Accepted");
-                statusIndicator.setFill(javafx.scene.paint.Color.LIMEGREEN);
-
-                showToast((Stage) container.getScene().getWindow(),
-                        "Donation Accepted ✔", true);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                showToast((Stage) container.getScene().getWindow(),
-                        "Error processing acceptance", false);
+                java.awt.Desktop.getDesktop().browse(new java.net.URI(mapsUrl));
+                showToast((Stage)container.getScene().getWindow(), "Opening Maps...", true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-
-        } else {
-            showToast((Stage) container.getScene().getWindow(),
-                    "Action Cancelled", false);
         }
     });
 }
@@ -312,41 +268,35 @@ private void handleSendMessage() { // Remove any parameters like (ActionEvent ev
     }
      @FXML
     private void handleAccept(ActionEvent event) {
-        VBox container = (VBox) ((Node) event.getSource()).getParent().getParent(); // bubble container
-    handleAcceptDonation(container);
-        if (currentListing == null) {
-            showAlert("Error", "No listing found.");
-            return;
-        }
+    // 1. Logic for the global FXML button
+    handleAcceptDonation(messageContainer); // Pass the main container for the Toast
 
-        // Update status
+    if (currentListing != null) {
         currentListing.setStatus("ACCEPTED");
         foodListingDAO.update(currentListing);
-
-        showAlert("Success", "You have accepted this food donation.\nRouting info sent.");
-
-        // Disable buttons after action
-        acceptButton.setDisable(true);
-        rejectButton.setDisable(true);
+        showAlert("Success", "Donation accepted via dashboard.");
     }
 
-    private void handleReject(ActionEvent event) {
-        VBox container = (VBox) ((Node) event.getSource()).getParent().getParent(); // bubble container
-    messageContainer.getChildren().remove(container);
-    showToast((Stage) container.getScene().getWindow(), "Donation Declined", false);
-        if (currentListing == null) {
-            showAlert("Error", "No listing found.");
-            return;
-        }
+    acceptButton.setDisable(true);
+    rejectButton.setDisable(true);
+}
 
+    @FXML
+private void handleReject(ActionEvent event) {
+    // 2. Logic for the global FXML button
+    if (currentListing != null) {
         currentListing.setStatus("REJECTED");
         foodListingDAO.update(currentListing);
-
-        showAlert("Rejected", "You have rejected this food donation.");
-
-        acceptButton.setDisable(true);
-        rejectButton.setDisable(true);
     }
+    
+    statusLabel.setText("Rejected");
+    statusIndicator.setFill(javafx.scene.paint.Color.RED);
+    
+    showToast((Stage) ((Node)event.getSource()).getScene().getWindow(), "Donation Declined", false);
+
+    acceptButton.setDisable(true);
+    rejectButton.setDisable(true);
+}
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

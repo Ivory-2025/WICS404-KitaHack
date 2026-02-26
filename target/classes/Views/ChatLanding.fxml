@@ -91,7 +91,7 @@
                   visible="false"
                   managed="false">
 
-                <Button fx:id="acceptButton"
+                <!-- <Button fx:id="acceptButton"
                         text="Accept"
                         onAction="#handleAccept"
                         style="-fx-background-color: #48BB78; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 20; -fx-padding: 10 25;"/>
@@ -99,7 +99,7 @@
                 <Button fx:id="rejectButton"
                         text="Reject"
                         onAction="#handleReject"
-                        style="-fx-background-color: #F56565; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 20; -fx-padding: 10 25;"/>
+                        style="-fx-background-color: #F56565; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 20; -fx-padding: 10 25;"/> -->
             </HBox>
 
             <!-- MESSAGE INPUT -->

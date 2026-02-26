@@ -131,9 +131,10 @@ public class UploadFoodController {
         expiryDatePicker.setValue(report.getListing().getExpiryTime().toLocalDate());
     }
 }
-   @FXML
+@FXML
 private void handlePublish(ActionEvent event) {
-    Stage stage = getStage(event);
+    // 1. Correctly identify the current stage
+    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
     if (currentVendor == null) {
         showToast(stage, "Error: No session found", false);
@@ -161,37 +162,55 @@ private void handlePublish(ActionEvent event) {
     }
 
     try {
-
         // SAVE
         foodListingDAO.save(listing);
 
         // MATCH
         List<NGO> matches = matchingService.findMatchingNGOs(listing);
 
-        // === NEW ADDITION: Pre-calculate Route Info (Optional Advanced) ===
-        RoutingService routingService = new RoutingService();
-
-for (NGO ngo : matches) {
-
-    String routeSummary = routingService.getRouteSummary(listing, ngo);
-    String mapsLink = routingService.generateGoogleMapsLink(listing, ngo);
-
-    String message = "New Surplus Alert: "
-            + listing.getFoodName()
-            + " is ready!\n\n"
-            + routeSummary
-            + "\n\n🗺 Navigate:\n"
-            + mapsLink
-            + "\n\nTap Accept or Reject below.";
+        // Inside handlePublish in UploadFoodController.java
+for (Models.NGO ngo : matches) {
+    // Construct the detailed surplus alert
+    String detailedMessage = "New Surplus Alert: " + listing.getFoodName() + "\n" +
+                             "--------------------------\n" +
+                             "📊 AI Analysis: " + aiRecommendationArea.getText() + "\n" +
+                             "📦 Quantity: " + listing.getQuantity() + "\n" +
+                             "⏰ Production: " + listing.getProductionTime() + "\n" +
+                             "⌛ Expiry: " + listing.getExpiryTime() + "\n" +
+                             "--------------------------\n" +
+                             "Tap 'Accept' to view the fastest route.";
 
     messageDAO.sendAutoPM(
-            currentVendor.getUserId(),
-            ngo.getUserId(),
-            message
+        currentVendor.getUserId(),
+        ngo.getUserId(),
+        detailedMessage
     );
 }
 
-        // === NEW ADDITION: Proper Confirmation Dialog ===
+        // Routing and Automated PM logic
+        RoutingService routingService = new RoutingService();
+
+        for (NGO ngo : matches) {
+            String routeSummary = routingService.getRouteSummary(listing, ngo);
+            String mapsLink = routingService.generateGoogleMapsLink(listing, ngo);
+
+            // The "New Surplus" string triggers the Accept/Reject buttons in Chat
+            String message = "New Surplus Alert: "
+                    + listing.getFoodName()
+                    + " is ready!\n\n"
+                    + routeSummary
+                    + "\n\n🗺 Navigate:\n"
+                    + mapsLink
+                    + "\n\nTap Accept or Reject below.";
+
+            messageDAO.sendAutoPM(
+                    currentVendor.getUserId(),
+                    ngo.getUserId(),
+                    message
+            );
+        }
+
+        // Confirmation Dialog
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Surplus Published");
         alert.setHeaderText("Success!");
@@ -205,9 +224,17 @@ for (NGO ngo : matches) {
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.isPresent() && result.get() == goToChat) {
-
+            // LOAD CHAT LANDING
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/ChatLanding.fxml"));
             Parent root = loader.load();
+            
+            // Apply Fade Transition for a premium feel
+            root.setOpacity(0);
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(600), root);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+            fadeIn.play();
+
             stage.setScene(new Scene(root));
             stage.show();
         }
