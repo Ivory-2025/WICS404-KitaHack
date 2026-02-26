@@ -37,8 +37,10 @@ public class LoginController {
 
     @FXML
 public void handleLogin() {
+    UserSession.getInstance().logout();
     String email = emailField.getText().trim();
     String password = passwordField.getText();
+   
     if (email.isEmpty() || password.isEmpty()) {
         showToast("Required: Please enter both credentials.", "#FEE2E2", "#991B1B", "⚠️");
         return;
@@ -56,14 +58,14 @@ public void handleLogin() {
     // ✅ HANDLE VENDOR LOGIN
     if ("VENDOR".equalsIgnoreCase(loggedInUser.getRole())) {
 
-        Vendor vendor = vendorDAO.getVendorByUserId(loggedInUser.getUserId());
-        if (vendor == null) {
+        Vendor vendor1 = vendorDAO.getVendorByUserId(loggedInUser.getUserId());
+        if (vendor1 == null) {
             showToast("Error: Vendor profile not found in DB.", "#FEE2E2", "#991B1B", "❌");
             return;
         }
 
-        session.setVendor(vendor);  // 🔥 THIS FIXES YOUR NULL PROBLEM
-        showToast("Welcome back, " + vendor.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
+        session.setVendor(vendor1);  // 🔥 THIS FIXES YOUR NULL PROBLEM
+        showToast("Welcome back, " + vendor1.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
 
         loadDashboard("/Views/VendorDashboard.fxml", loggedInUser);
     }
@@ -81,6 +83,8 @@ public void handleLogin() {
         showToast("Welcome back, " + ngo.getName() + "! ✨", "#D1FAE5", "#065F46", "✅");
 
         loadDashboard("/Views/NGODashboard.fxml", loggedInUser);
+        System.out.println("Session Vendor After Login: " 
+    + UserSession.getInstance().getVendor());
     }
 }
     private void loadDashboard(String fxmlPath, User loggedInUser) {

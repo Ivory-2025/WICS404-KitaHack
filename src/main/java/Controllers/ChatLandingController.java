@@ -7,6 +7,7 @@ import Models.FoodListing;
 import Models.Message;
 import Models.NGO;
 import Models.UserSession;
+import Models.Vendor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,7 +23,11 @@ import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import Services.*;
@@ -51,64 +56,64 @@ public class ChatLandingController {
     private final NGODAO ngoDAO = new NGODAO();
     private final MessageDAO messageDAO = new MessageDAO();
     private NGO selectedNGO;
-
-    @FXML
-    public void initialize() {
-        loadActiveChats();
-        
-        ngoListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                selectedNGO = newVal;
-                chatHeaderLabel.setText(newVal.getOrganizationName());
-loadMessages();
-
-// Default status when opening chat
-statusLabel.setText("Pending Response");
-statusIndicator.setFill(javafx.scene.paint.Color.GOLD);
-
-distanceLabel.setText("");
-etaLabel.setText("");
-decisionBox.setVisible(false);
-decisionBox.setManaged(false);
-            }
-        });
-
-        autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
-            if (selectedNGO != null) {
-                loadMessages();
-            }
-        }));
-        autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
-        autoRefreshTimeline.play();
-
-        if (!ngoListView.getItems().isEmpty()) {
-            ngoListView.getSelectionModel().selectFirst();
-        }
-
-        ngoListView.setCellFactory(lv -> new ListCell<Models.NGO>() {
+   @FXML
+public void initialize() {
+    if (UserSession.getInstance().getVendor() == null) {
+        System.err.println("CRITICAL: UserSession is empty! Redirecting to login...");
+        // Handle redirection logic here if necessary
+    }
+    
+    // 1. Set cell factory for proper display
+    ngoListView.setCellFactory(lv -> new ListCell<Models.NGO>() {
         @Override
         protected void updateItem(Models.NGO ngo, boolean empty) {
             super.updateItem(ngo, empty);
-            if (empty || ngo == null) {
-                setText(null);
-            } else {
-                setText(ngo.getOrganizationName()); // Displays "PJ Food Rescue"
-            }
+            setText((empty || ngo == null) ? null : ngo.getOrganizationName());
         }
     });
 
+    // 2. Load NGOs into the ListView
     loadActiveChats();
-    }
+
+    // 3. Safely select the first item after the list is populated
+    javafx.application.Platform.runLater(() -> {
+        if (!ngoListView.getItems().isEmpty()) {
+            ngoListView.getSelectionModel().selectFirst();
+        }
+    });
+
+    // 4. Set up selection listener
+    ngoListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        if (newVal != null) {
+            selectedNGO = newVal;
+            chatHeaderLabel.setText(newVal.getOrganizationName());
+            loadMessages();
+
+            // Reset UI defaults
+            statusLabel.setText("Pending Response");
+            statusIndicator.setFill(javafx.scene.paint.Color.GOLD);
+            distanceLabel.setText("");
+            etaLabel.setText("");
+            decisionBox.setVisible(false);
+            decisionBox.setManaged(false);
+        }
+    });
+
+    // // 5. Start auto-refresh for messages
+    // autoRefreshTimeline = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+    //     if (selectedNGO != null) {
+    //         loadMessages();
+    //     }
+    // }));
+    // autoRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
+    // autoRefreshTimeline.play();
+}
 
     public void stopTimer() {
         if (autoRefreshTimeline != null) autoRefreshTimeline.stop();
     }
 
     private void loadMessages() {
-        // 1. Clear the ListView items first to ensure a fresh UI
-    ngoListView.getItems().clear(); 
-    
-    // 2. Load the cleaned list from the NGOs table
     List<Models.NGO> ngos = ngoDAO.getAllNGOs(); 
     ObservableList<Models.NGO> items = FXCollections.observableArrayList(ngos);
     ngoListView.setItems(items);
@@ -126,6 +131,13 @@ decisionBox.setManaged(false);
     for (Message msg : history) {
         addMessageToUI(msg.getContent(), msg.getSenderId() == vendorId);
     }
+    ngoListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+    if (newVal != null) {
+        selectedNGO = newVal;
+        chatHeaderLabel.setText(newVal.getOrganizationName());
+        loadMessages();
+    }
+});
     
     chatScrollPane.setVvalue(1.0);
 }
@@ -136,12 +148,16 @@ decisionBox.setManaged(false);
 
     // Main Card Container
     VBox card = new VBox(15);
-    card.setStyle("-fx-background-color: " + (isVendor ? "#d4edc8" : "#FFFFFF") + "; " +
+    card.setStyle("-fx-background-color: " + (isVendor ? "#e4f1de" : "#FFFFFF") + "; " +
                   "-fx-padding: 20; -fx-background-radius: 20; " +
                   "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);");
 
     if (content.contains("New Surplus Alert")) {
+        FoodListing listing = foodListingDAO.getLatestListingByVendor(
+            UserSession.getInstance().getVendor().getUserId()
+        );
         // 1. Header: NEW SURPLUS ALERT
+        // 1. Declare and fetch listing at the START of the block to fix the "red line"
         Label header = new Label("NEW SURPLUS ALERT");
         header.setStyle("-fx-font-weight: 900; -fx-font-size: 18px; -fx-text-fill: #145694;");
 
@@ -166,6 +182,16 @@ decisionBox.setManaged(false);
         aiContent.setStyle("-fx-font-size: 13px; -fx-text-fill: #047857; -fx-font-style: italic;");
         aiSection.getChildren().addAll(aiTitle, aiContent);
 
+        acceptButton.setOnAction(e -> {
+        // Find the most recent listing for this specific NGO to avoid the NPE
+        
+        
+        if (listing != null) {
+            handleAcceptDonation(bubbleContainer, listing); // Pass the listing directly
+        } else {
+            System.err.println("Error: No active listing found to accept.");
+        }
+    });
         // 4. Traffic Duration
         Services.RoutingService rs = new Services.RoutingService();
         double distance = rs.calculateBasicDistance(UserSession.getInstance().getVendor(), selectedNGO);
@@ -178,15 +204,27 @@ decisionBox.setManaged(false);
         actions.setAlignment(Pos.CENTER);
         Button accept = new Button("Accept");
         accept.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 20; -fx-padding: 10 30; -fx-cursor: hand;");
+        applyPulseAnimation(accept);
         Button reject = new Button("Reject");
         reject.setStyle("-fx-background-color: transparent; -fx-text-fill: #EF4444; -fx-font-weight: 800; -fx-border-color: #EF4444; -fx-border-radius: 20; -fx-padding: 10 30; -fx-cursor: hand;");
         
         // Handlers
-        accept.setOnAction(e -> handleAcceptDonation(bubbleContainer));
-        reject.setOnAction(e -> {
-            messageContainer.getChildren().remove(bubbleContainer);
-            showToast((Stage)bubbleContainer.getScene().getWindow(), "Donation Declined", false);
-        });
+        // Pass both the UI container and the actual food listing data
+accept.setOnAction(e -> {
+    // Use messageContainer because it's already on the screen
+    if (messageContainer.getScene() != null) {
+        handleAcceptDonation(bubbleContainer, listing);
+    }
+});
+
+reject.setOnAction(e -> {
+    messageContainer.getChildren().remove(bubbleContainer);
+    // Use messageContainer to safely get the Window for the Toast
+    if (messageContainer.getScene() != null) {
+        Stage stage = (Stage) messageContainer.getScene().getWindow();
+        showToast(stage, "Donation Declined", false);
+    }
+});
 
         actions.getChildren().addAll(accept, reject);
         card.getChildren().addAll(header, foodDetails, aiSection, traffic, actions);
@@ -212,19 +250,58 @@ decisionBox.setManaged(false);
     pulse.setAutoReverse(true);
     pulse.play();
 }
-   private void handleAcceptDonation(VBox container) {
-    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Confirm vehicle readiness?", ButtonType.YES, ButtonType.NO);
+  
+private void handleAcceptDonation(VBox container, Models.FoodListing listing) {
+
+    // 1. Null safety check first
+    if (listing == null) return;
+
+    // 2. Get current session
+    Vendor vendor = UserSession.getInstance().getVendor();
+    NGO ngo = UserSession.getInstance().getNGO();
+
+    // 3. Session validation
+    if (vendor == null && ngo == null) {
+        System.out.println("No active session!");
+        return;
+    }
+
+    if (vendor != null) {
+        // vendor accepting
+    }
+
+    if (ngo != null) {
+        // ngo accepting
+    }
+
+    // 4. Only NGO should generate route (based on your RoutingService method)
+    if (ngo == null) {
+        System.out.println("Only NGO can accept donation with routing.");
+        return;
+    }
+
+    // 5. Instantiate routing service (fix static reference issue)
+    Services.RoutingService rs = new Services.RoutingService();
+    String mapsLink = rs.generateGoogleMapsLink(listing, ngo);
+
+    // 6. Show toast if scene exists
+    if (messageContainer.getScene() != null) {
+        Stage stage = (Stage) messageContainer.getScene().getWindow();
+        showToast(stage, "Donation Accepted!", true);
+    }
+
+    // 7. Confirmation alert
+    Alert alert = new Alert(
+            Alert.AlertType.CONFIRMATION,
+            "Confirm vehicle readiness?",
+            ButtonType.YES,
+            ButtonType.NO
+    );
+
     alert.showAndWait().ifPresent(response -> {
         if (response == ButtonType.YES) {
             try {
-                Services.RoutingService rs = new Services.RoutingService();
-                
-                // Use your existing generateGoogleMapsLink method
-                // Note: Ensure your method accepts (listing, ngo) or update it to take lat/lon
-                String mapsUrl = rs.generateGoogleMapsLink(currentListing, selectedNGO);
-
-                java.awt.Desktop.getDesktop().browse(new java.net.URI(mapsUrl));
-                showToast((Stage)container.getScene().getWindow(), "Opening Maps...", true);
+                java.awt.Desktop.getDesktop().browse(new java.net.URI(mapsLink));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -262,20 +339,21 @@ private void handleSendMessage() { // Remove any parameters like (ActionEvent ev
     fadeOut.play();
 }
 
-    private void loadActiveChats() {
-    // Wrap in runLater to ensure thread safety and prevent IndexOutOfBounds
+   private void loadActiveChats() {
     javafx.application.Platform.runLater(() -> {
-        // 1. Tell the selection model to let go first
+        // Clear selection FIRST to stop JavaFX from looking at an empty index
         ngoListView.getSelectionModel().clearSelection();
+        ngoListView.getItems().clear();
         
-        // 2. Clear existing items to prevent the "PJ Food Rescue" duplicates
-        ngoListView.getItems().clear(); 
-        
-        // 3. Load unique NGOs from the database
         List<Models.NGO> ngos = ngoDAO.getAllNGOs(); 
-        if (ngos != null && !ngos.isEmpty()) {
-            ngoListView.setItems(javafx.collections.FXCollections.observableArrayList(ngos));
-        }
+ObservableList<NGO> items = FXCollections.observableArrayList(ngos);
+ngoListView.setItems(items);
+
+if (!items.isEmpty()) {
+    ngoListView.getSelectionModel().selectFirst();
+} else {
+    selectedNGO = null;
+}
     });
 }
 
@@ -302,16 +380,24 @@ private void handleSendMessage() { // Remove any parameters like (ActionEvent ev
             routeInfoLabel.setText("Estimated travel time: 18 minutes (Traffic considered)");
         }
     }
-     @FXML
-    private void handleAccept(ActionEvent event) {
-    // 1. Logic for the global FXML button
-    handleAcceptDonation(messageContainer); // Pass the main container for the Toast
-
-    if (currentListing != null) {
-        currentListing.setStatus("ACCEPTED");
-        foodListingDAO.update(currentListing);
-        showAlert("Success", "Donation accepted via dashboard.");
+    @FXML
+private void handleAccept(ActionEvent event) {
+    if (currentListing == null) {
+        // Calling the method here makes it "used"
+        showAlert("Error", "No active listing found to accept."); 
+        return;
     }
+
+    // 1. Pass both the container and the current listing
+    handleAcceptDonation(messageContainer, currentListing); 
+
+    // 2. Update status in DB
+    currentListing.setStatus("ACCEPTED");
+    foodListingDAO.update(currentListing);
+
+    // 3. Update UI Visuals
+    statusLabel.setText("Accepted");
+    statusIndicator.setFill(javafx.scene.paint.Color.valueOf("#10B981"));
 
     acceptButton.setDisable(true);
     rejectButton.setDisable(true);

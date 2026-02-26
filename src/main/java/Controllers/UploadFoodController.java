@@ -181,7 +181,7 @@ private void handlePublish(ActionEvent event) {
         // FIX: Pull the actual report generated on the landing page
         
             String messageContent = "NEW SURPLUS ALERT: " + listing.getFoodName() + " 🍎\n" +
-                                    "✨ AI Analysis: " + aiReport + "\n" +
+                                    "✨ AI Analysis: " + actualAIReport + "\n" +
                                     "--------------------------\n" +
                                     "📦 Quantity: " + listing.getQuantity() + "\n" +
                                     "⌛ Best Before: " + listing.getExpiryTime().format(DateTimeFormatter.ofPattern("HH:mm a")) + "\n" +

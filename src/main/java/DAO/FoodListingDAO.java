@@ -10,6 +10,29 @@ import Services.FoodListingService;
 
 public class FoodListingDAO {
 
+    public Models.FoodListing getLatestListingByVendor(int vendorUserId) {
+    // Use listingId for ordering as per your schema
+    String sql = "SELECT * FROM food_listings WHERE vendor_id = ? ORDER BY listingId DESC LIMIT 1";
+    
+    try (Connection conn = Database.DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, vendorUserId);
+        ResultSet rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            Models.FoodListing listing = new Models.FoodListing();
+            listing.setListingId(rs.getInt("listingId")); // Fixed column name
+            listing.setFoodName(rs.getString("food_name")); // Fixed column name
+            listing.setStatus(rs.getString("status"));
+            // Since 'quantity' is missing in schema, use a placeholder to stop the error
+            listing.setQuantity("Standard Pack"); 
+            return listing;
+        }
+    } catch (SQLException e) {
+        System.err.println("Database Error: " + e.getMessage());
+    }
+    return null;
+}
     private List<FoodListing> listings = new ArrayList<>();
     /**
      * Saves a new food listing to the database.
