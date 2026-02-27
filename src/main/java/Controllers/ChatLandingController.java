@@ -342,26 +342,23 @@ private void handleSendMessage() { // Remove any parameters like (ActionEvent ev
 }
 
    private void loadActiveChats() {
-    // 1. Fetch data outside of the UI thread to keep the app responsive
+    // 1. Fetch data on the current thread
     List<Models.NGO> ngos = ngoDAO.getAllNGOs(); 
-    ObservableList<NGO> items = FXCollections.observableArrayList(ngos);
+    ObservableList<NGO> observableNgos = FXCollections.observableArrayList(ngos);
 
-    // 2. Update UI components safely on the JavaFX Application Thread
     javafx.application.Platform.runLater(() -> {
-        // Clear selection first to prevent the SelectionModel from 
-        // trying to track indices that are about to disappear
+        // 2. Disable selection before changing the list to prevent ghost events
         ngoListView.getSelectionModel().clearSelection();
         
-        // Update the list data
-        ngoListView.setItems(items);
+        // 3. Update the list
+        ngoListView.setItems(observableNgos);
 
-        // 3. Safety check: Only select if there is actually data
-        if (!items.isEmpty()) {
+        // 4. THE CRITICAL FIX: Only select if size > 0
+        if (!observableNgos.isEmpty()) {
             ngoListView.getSelectionModel().selectFirst();
         } else {
-            // Reset state if list is empty
             selectedNGO = null;
-            chatHeaderLabel.setText("No active conversations");
+            chatHeaderLabel.setText("No active chats");
             messageContainer.getChildren().clear();
         }
     });

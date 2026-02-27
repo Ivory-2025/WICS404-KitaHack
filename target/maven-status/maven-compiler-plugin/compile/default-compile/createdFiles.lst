@@ -21,7 +21,6 @@ Services\AnalyticsService.class
 Models\User.class
 Services\FoodListingService.class
 Controllers\NGODashboardController$3.class
-Controllers\NGODashboardController$6.class
 Controllers\NGOChatController$1.class
 Services\ModelsChecker.class
 Controllers\ChatLandingController.class
@@ -41,7 +40,6 @@ DAO\VendorDAO.class
 Utils\Api.class
 Controllers\MarketplaceController.class
 Controllers\ChatLandingController$1.class
-Controllers\NGODashboardController$5.class
 Models\OrderResponse.class
 Controllers\ViewOrdersController.class
 Services\MatchingService.class
