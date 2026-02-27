@@ -182,3 +182,87 @@
 .table-row-cell:selected {
     -fx-background-color: #F1F5F9;
 }
+
+/* The track (background) */
+.scroll-bar:vertical .track, .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}
+
+/* The thumb (the part you drag) */
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: #CBD5E1; /* Soft slate color */
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #94A3B8; /* Darker on hover */
+}
+
+/* Hide the increment/decrement buttons (arrows) for a cleaner look */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
+
+/* Main Page Scrollbar Styling */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Hide the background track */
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Make the scrollbar thumb sleek and modern */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6; /* Very thin */
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(203, 213, 225, 0.5); /* Slate color with transparency */
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+/* Remove the arrow buttons at the ends */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+/* Clean the main scroll pane */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Make the main scrollbar high-class */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6; /* Very thin */
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1; /* Soft Slate */
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+/* Remove buttons/arrows from the scrollbar */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-shape: "";
+    -fx-padding: 0;
+}

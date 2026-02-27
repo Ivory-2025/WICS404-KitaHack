@@ -28,7 +28,7 @@ public class RegisterController {
     public void initialize() {
         // Populates the dropdown menu for your SDG project roles
         if (roleComboBox != null) {
-            roleComboBox.getItems().addAll("VENDOR", "NGO");
+            roleComboBox.getItems().addAll("VENDOR", "NGO","USER");
         }
     }
 

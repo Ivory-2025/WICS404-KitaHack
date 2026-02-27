@@ -4,41 +4,50 @@
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.effect.DropShadow?>
 
-<HBox prefHeight="750.0" prefWidth="1000.0" style="-fx-background-color: #F8FAFC;" 
-      stylesheets="@../css/style.css" xmlns:fx="http://javafx.com/fxml/1" 
+<HBox prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: #F8FAFC;" 
+      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="Controllers.NGODashboardController">
     
-    <VBox spacing="40" prefWidth="240" style="-fx-background-color: white; -fx-padding: 40 25; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 15, 0, 5, 0);">
+    <VBox spacing="40" prefWidth="280.0" style="-fx-background-color: white; -fx-padding: 40 30;">
+        <effect>
+            <DropShadow blurType="THREE_PASS_BOX" color="#00000008" offsetX="5.0" radius="10.0" />
+        </effect>
         
-        <Button text="← Dashboard" onAction="#handleBackToDashboard" 
-                style="-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-weight: 700; -fx-cursor: hand; -fx-padding: 0;"/>
-
         <VBox spacing="8">
             <Text text="SavePlate" style="-fx-font-weight: 900; -fx-font-size: 26px; -fx-fill: #10B981;" />
             <Text text="PREMIUM MARKETPLACE" style="-fx-font-size: 9px; -fx-font-weight: 800; -fx-fill: #CBD5E1; -fx-letter-spacing: 1.5px;" />
         </VBox>
 
+        <VBox spacing="20">
+            <Button text="← Back to Dashboard" onAction="#handleBackToDashboard" 
+                    style="-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-cursor: hand; -fx-padding: 0; -fx-font-size: 13px;"/>
+        </VBox>
+
         <Region VBox.vgrow="ALWAYS" />
 
         <Button text="Sign Out" onAction="#handleLogout" 
-                style="-fx-background-color: #FFF1F2; -fx-text-fill: #E11D48; -fx-font-weight: 800; -fx-background-radius: 12; -fx-padding: 12;" 
+                style="-fx-background-color: #FFF1F2; -fx-text-fill: #E11D48; -fx-font-weight: 800; -fx-background-radius: 12; -fx-padding: 14;" 
                 maxWidth="Infinity" />
     </VBox>
 
-    <VBox spacing="30" HBox.hgrow="ALWAYS" style="-fx-padding: 45;">
+    <VBox spacing="30" HBox.hgrow="ALWAYS" style="-fx-padding: 45 60;">
         <HBox alignment="BOTTOM_LEFT">
             <VBox spacing="8" HBox.hgrow="ALWAYS">
-                <Text text="Rescue Missions" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-fill: #0F172A;" />
+                <Text text="Rescue Missions" style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-fill: #0F172A; -fx-letter-spacing: -1px;" />
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Circle radius="4" fill="#10B981" />
                     <Label fx:id="lblRouteSummary" text="Live tracking active • Select a mission below" 
-                           style="-fx-text-fill: #64748B; -fx-font-weight: 600; -fx-font-size: 13px;" />
+                           style="-fx-text-fill: #64748B; -fx-font-weight: 600; -fx-font-size: 14px;" />
                 </HBox>
             </VBox>
         </HBox>
 
-        <VBox style="-fx-background-color: white; -fx-background-radius: 30; -fx-padding: 20; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 40, 0, 0, 20);" VBox.vgrow="ALWAYS">
+        <VBox style="-fx-background-color: white; -fx-background-radius: 30; -fx-padding: 25; -fx-border-color: #E2E8F0; -fx-border-radius: 30;" VBox.vgrow="ALWAYS">
+            <effect>
+                <DropShadow blurType="THREE_PASS_BOX" color="#00000005" height="50.0" radius="24.5" width="50.0" />
+            </effect>
             <TableView fx:id="foodTable" styleClass="premium-table" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="colFoodName" text="ITEM NAME" prefWidth="250" />
@@ -54,10 +63,14 @@
 
         <HBox spacing="25" alignment="CENTER_RIGHT">
             <Button fx:id="btnViewRoute" text="View Route" onAction="#handleViewRoute" 
-                    style="-fx-background-color: transparent; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-padding: 14 30; -fx-font-weight: 700; -fx-text-fill: #64748B;" />
+                    style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-padding: 14 35; -fx-font-weight: 700; -fx-text-fill: #64748B; -fx-cursor: hand;" />
             
             <Button fx:id="btnAccept" text="CLAIM MISSION ⚡" onAction="#handleAccept" 
-                    style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 18; -fx-padding: 16 45; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.4), 20, 0, 0, 10);" />
+                    style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 18; -fx-padding: 18 50; -fx-cursor: hand;">
+                <effect>
+                    <DropShadow blurType="THREE_PASS_BOX" color="#10B98166" height="30.0" radius="14.5" width="30.0" />
+                </effect>
+            </Button>
         </HBox>
     </VBox>
 </HBox>

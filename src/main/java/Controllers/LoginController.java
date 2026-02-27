@@ -76,7 +76,28 @@ public void handleLogin() {
         session.setNGO(ngo);
         showToast("Welcome back! ✨", "#D1FAE5", "#065F46", "✅");
         loadDashboard("/Views/NGOMainDashboard.fxml", loggedInUser);
+    }else if ("USER".equalsIgnoreCase(loggedInUser.getRole())) {
+    // 1. In your project, students/customers might be in the base 'users' table 
+    // or a specific Student/Consumer table.
+    // 1. Create an instance of the DAO
+UserDAOImpl userDAO = new UserDAOImpl(); 
+
+// 2. Call the method on the instance (object), not the class
+User sessionUser = userDAO.getUserById(loggedInUser.getUserId());
+    
+    if (sessionUser == null) {
+        showToast("Error: User profile not found.", "#FEE2E2", "#991B1B", "❌");
+        return;
     }
+
+    // 2. Set the session so UserDashboardController.java can use getName()
+    session.setUser(sessionUser); 
+    
+    showToast("Welcome back, " + sessionUser.getName() + "! Savings await. 🥗", "#D1FAE5", "#065F46", "✅");
+    
+    // 3. Load the new User Dashboard
+    loadDashboard("/Views/UserDashBoard.fxml", loggedInUser);
+}
 } // <--- handleLogin ends here
 
 private void loadDashboard(String fxmlPath, User loggedInUser) {
