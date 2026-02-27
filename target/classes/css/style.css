@@ -1,0 +1,268 @@
+/* Modern Background and Text */
+.root {
+    -fx-background-color: #F5F7FA; /* Light modern gray */
+    -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* Fancy Header Text */
+.header-text {
+    -fx-fill: #2D3436;
+    -fx-font-weight: bold;
+    -fx-font-size: 28px;
+}
+
+/* Styled Input Fields */
+.text-field, .password-field, .combo-box {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #D1D8E0;
+    -fx-background-color: white;
+    -fx-padding: 8 12;
+}
+
+.text-field:focused {
+    -fx-border-color: #4CAF50; /* SavePlate Green */
+    -fx-border-width: 2;
+}
+
+/* High-Class Button */
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 30;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.modern-table .column-header-background { -fx-background-color: #f8f9fa; -fx-background-radius: 15 15 0 0; }
+.modern-table .column-header { -fx-background-color: transparent; -fx-size: 40; }
+.modern-table .table-row-cell { -fx-cell-size: 50; -fx-border-color: transparent transparent #f1f3f5 transparent; }
+.modern-table .table-row-cell:selected { -fx-background-color: #f1f3f5; }
+/* Container styling to match your text fields */
+.modern-datepicker {
+    -fx-background-color: #F5F5F7;
+    -fx-background-radius: 12;
+    -fx-border-color: transparent;
+    -fx-padding: 8;
+}
+
+/* The Popup Calendar Box */
+.modern-datepicker .date-picker-popup {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 30, 0, 0, 15);
+    -fx-padding: 15;
+    -fx-border-color: transparent;
+}
+
+/* Styling the Header (Month/Year selector) */
+.modern-datepicker .month-year-pane {
+    -fx-background-color: transparent;
+}
+
+.modern-datepicker .spinner .label {
+    -fx-text-fill: #1A1A1A;
+    -fx-font-weight: 800;
+}
+
+/* Day Cell Styling (The Grid) */
+.modern-datepicker .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #444444;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.modern-datepicker .day-cell:hover {
+    -fx-background-color: #F5F5F7;
+    -fx-text-fill: #1A1A1A;
+}
+
+/* Today's Date Highlight */
+.modern-datepicker .today {
+    -fx-background-color: transparent;
+    -fx-border-color: #1A1A1A;
+    -fx-border-radius: 10;
+}
+
+/* Selected Date Highlight (Gen Z Matte Black) */
+.modern-datepicker .selected {
+    -fx-background-color: #1A1A1A;
+    -fx-text-fill: white;
+}
+
+/* Remove the clunky default arrow button */
+.modern-datepicker .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* style.css additions */
+.premium-table {
+    -fx-background-color: transparent;
+    -fx-selection-bar: #F0FDF4; /* Very soft emerald */
+    -fx-selection-bar-non-focused: #F8FAFC;
+}
+
+.premium-table .column-header-background {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 15 0;
+}
+
+.premium-table .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 40;
+}
+
+.premium-table .column-header .label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+.premium-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: #F1F5F9;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 0;
+}
+
+.premium-table .table-row-cell:selected {
+    -fx-background-color: #F0FDF4;
+    -fx-background-radius: 12;
+    -fx-text-fill: #10B981;
+}
+
+/* Glass Dialog Styling */
+.custom-dialog-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 30, 0, 0, 15);
+}
+
+.custom-dialog-pane .button-bar .button {
+    -fx-background-radius: 15;
+    -fx-padding: 12 30;
+    -fx-font-weight: 800;
+    -fx-cursor: hand;
+}
+
+.claim-button {
+    -fx-background-color: #10B981;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.3), 15, 0, 0, 8);
+}
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #F8F9FA;
+    -fx-text-fill: #94A3B8;
+    -fx-font-weight: 900;
+    -fx-font-size: 12px;
+    -fx-padding: 15;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-background-insets: 0, 0 0 5 0; /* Creates a gap between rows */
+    -fx-padding: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #F1F5F9;
+}
+
+/* The track (background) */
+.scroll-bar:vertical .track, .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+}
+
+/* The thumb (the part you drag) */
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: #CBD5E1; /* Soft slate color */
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #94A3B8; /* Darker on hover */
+}
+
+/* Hide the increment/decrement buttons (arrows) for a cleaner look */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
+
+/* Main Page Scrollbar Styling */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Hide the background track */
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Make the scrollbar thumb sleek and modern */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6; /* Very thin */
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(203, 213, 225, 0.5); /* Slate color with transparency */
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+/* Remove the arrow buttons at the ends */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+/* Clean the main scroll pane */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Make the main scrollbar high-class */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6; /* Very thin */
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1; /* Soft Slate */
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+/* Remove buttons/arrows from the scrollbar */
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-shape: "";
+    -fx-padding: 0;
+}

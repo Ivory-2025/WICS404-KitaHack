@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+
+<HBox prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: #FAFAFA;" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.VendorAnalyticsController">
+    
+    <VBox prefWidth="280.0" style="-fx-background-color: white; -fx-padding: 40 30;">
+        <effect><DropShadow color="#00000008" radius="20" offsetX="5"/></effect>
+        
+        <VBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="SavePlate" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #1E293B;"/>
+            <Label text="Performance Insights" style="-fx-font-size: 12px; -fx-text-fill: #3B82F6; -fx-font-weight: 700; -fx-letter-spacing: 1px;"/>
+        </VBox>
+
+        <VBox spacing="25.0" VBox.vgrow="ALWAYS">
+            <padding><Insets top="60"/></padding>
+            
+            <HBox onMouseClicked="#handleBack" spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand; -fx-opacity: 0.7;">
+                <Label text="🏠" style="-fx-font-size: 18px;"/>
+                <Label text="Main Dashboard" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #475569;"/>
+            </HBox>
+            
+            <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: #F8FAFC; -fx-padding: 10; -fx-background-radius: 10;">
+                <Label text="📊" style="-fx-font-size: 18px;"/>
+                <Label text="Analytics" style="-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: #1E293B;"/>
+            </HBox>
+        </VBox>
+
+        <Button onAction="#handleBack" text="← Return" 
+                style="-fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 13px;"/>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" spacing="40.0" style="-fx-padding: 60 80;">
+        <VBox spacing="10">
+            <Label text="Sustainability Report" 
+                   style="-fx-font-size: 16px; -fx-text-fill: #94A3B8; -fx-font-weight: 600;"/>
+            <Label text="Environmental Impact" 
+                   style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #1E293B; -fx-letter-spacing: -1px;"/>
+        </VBox>
+
+        <HBox spacing="30">
+            <VBox prefWidth="280" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25;">
+                <effect><DropShadow color="#00000008" radius="20" offsetY="10"/></effect>
+                <Text text="Weekly Avg Surplus" style="-fx-font-size: 13px; -fx-fill: #64748B; -fx-font-weight: 700;" />
+                <Label fx:id="lblAvgSurplus" text="0.0" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #e67e22;">
+                    <padding><Insets top="10"/></padding>
+                </Label>
+            </VBox>
+
+            <VBox prefWidth="280" style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25;">
+                <effect><DropShadow color="#00000008" radius="20" offsetY="10"/></effect>
+                <Text text="CO2 Impact (kg)" style="-fx-font-size: 13px; -fx-fill: #64748B; -fx-font-weight: 700;" />
+                <Label fx:id="lblCO2" text="0.0" style="-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #27ae60;">
+                    <padding><Insets top="10"/></padding>
+                </Label>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="20" VBox.vgrow="ALWAYS" style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 30; -fx-border-color: #E2E8F0; -fx-border-radius: 30;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="✨" style="-fx-font-size: 20px;"/>
+                <Label text="AI Sustainability Prediction" style="-fx-font-weight: 900; -fx-font-size: 20px; -fx-text-fill: #1E293B;" />
+            </HBox>
+            
+            <TextArea fx:id="txtAiInsight" wrapText="true" editable="false" 
+                      text="Analyzing your data... Expert insights will appear here."
+                      style="-fx-control-inner-background: #F8FAFC; -fx-background-color: transparent; -fx-border-color: transparent; -fx-font-size: 15px; -fx-text-fill: #334155; -fx-line-spacing: 5;" 
+                      VBox.vgrow="ALWAYS" />
+        </VBox>
+    </VBox>
+</HBox>

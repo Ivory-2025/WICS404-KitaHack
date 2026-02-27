@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+
+<HBox prefHeight="800.0" prefWidth="1100.0" 
+      spacing="0" 
+      style="-fx-background-color: white;" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      xmlns="http://javafx.com/javafx/21"
+      fx:controller="Controllers.ChatLandingController">
+
+    <children>
+
+        <VBox prefWidth="280.0" minWidth="280.0"
+              style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets top="40" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Button onAction="#handleBackToDashboard" 
+                    text="← Back to Portal" 
+                    style="-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-padding: 0 0 30 0; -fx-cursor: hand; -fx-font-size: 13px;"/>
+
+            <VBox spacing="5" style="-fx-padding: 0 0 20 5;">
+                <Label text="MESSAGES" 
+                       style="-fx-font-size: 11px; -fx-font-weight: 900; -fx-text-fill: #94A3B8; -fx-letter-spacing: 1.5px;"/>
+                <Label text="Active Conversations" 
+                       style="-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #1E293B;"/>
+            </VBox>
+
+            <ListView fx:id="ngoListView" 
+                      VBox.vgrow="ALWAYS" 
+                      style="-fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 5;"/>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS" spacing="0" style="-fx-background-color: white;">
+            
+            <HBox alignment="CENTER_LEFT" 
+                  spacing="20" 
+                  style="-fx-border-color: #F1F5F9; -fx-border-width: 0 0 1 0; -fx-padding: 30 40;">
+                
+                <VBox spacing="8">
+                    <Label fx:id="chatHeaderLabel" 
+                           text="Select a contact" 
+                           style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #0F172A; -fx-letter-spacing: -0.5px;"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Circle fx:id="statusIndicator" 
+                                radius="5" 
+                                fill="#CBD5E1"/>
+                        <Label fx:id="statusLabel" 
+                               text="No active conversation" 
+                               style="-fx-font-size: 14px; -fx-text-fill: #64748B; -fx-font-weight: 600;"/>
+                    </HBox>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <VBox alignment="CENTER_RIGHT" spacing="5" style="-fx-background-color: #F8FAFC; -fx-padding: 12 20; -fx-background-radius: 12; -fx-border-color: #F1F5F9; -fx-border-radius: 12;">
+                    <Label fx:id="distanceLabel" 
+                           text="" 
+                           style="-fx-font-size: 13px; -fx-text-fill: #0F172A; -fx-font-weight: 800;"/>
+                    <Label fx:id="etaLabel" 
+                           text="" 
+                           style="-fx-font-size: 12px; -fx-text-fill: #64748B; -fx-font-weight: 600;"/>
+                </VBox>
+            </HBox>
+
+            <ScrollPane fx:id="chatScrollPane" 
+                        VBox.vgrow="ALWAYS" 
+                        fitToWidth="true" 
+                        hbarPolicy="NEVER" 
+                        vbarPolicy="AS_NEEDED"
+                        style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+                
+                <VBox fx:id="messageContainer" 
+                      spacing="20" 
+                      style="-fx-padding: 30 40; -fx-background-color: white;"/>
+            </ScrollPane>
+
+            <VBox spacing="15" style="-fx-padding: 20 40 30 40; -fx-border-color: #F1F5F9; -fx-border-width: 1 0 0 0;">
+                
+                <HBox spacing="15" 
+                      alignment="CENTER" 
+                      fx:id="decisionBox" 
+                      visible="false" 
+                      managed="false"
+                      style="-fx-padding: 0 0 15 0;">
+
+                    <Button fx:id="acceptButton" 
+                            text="Confirm &amp; Accept" 
+                            onAction="#handleAccept" 
+                            style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 15; -fx-padding: 14 45; -fx-cursor: hand;">
+                        <effect><DropShadow color="#10B98144" radius="15" offsetY="5"/></effect>
+                    </Button>
+
+                    <Button fx:id="rejectButton" 
+                            text="Decline" 
+                            onAction="#handleReject" 
+                            style="-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444; -fx-font-weight: 800; -fx-background-radius: 15; -fx-padding: 14 30; -fx-cursor: hand;"/>
+                </HBox>
+
+                <HBox spacing="15" alignment="CENTER">
+                    <TextField fx:id="messageInputField" 
+                               HBox.hgrow="ALWAYS" 
+                               promptText="Type your message here..." 
+                               style="-fx-background-radius: 15; -fx-padding: 16; -fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-font-size: 14px;"/>
+
+                    <Button onAction="#handleSendMessage" 
+                            text="Send" 
+                            style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: 900; -fx-background-radius: 15; -fx-padding: 16 45; -fx-cursor: hand;">
+                        <effect><DropShadow color="#00000033" radius="10" offsetY="5"/></effect>
+                    </Button>
+                </HBox>
+            </VBox>
+        </VBox>
+
+    </children>
+</HBox>

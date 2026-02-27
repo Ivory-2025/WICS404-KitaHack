@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+
+<HBox prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: #FAFAFA;" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.ManageSurplusController">
+    
+    <VBox prefWidth="280.0" style="-fx-background-color: white; -fx-padding: 40 30;">
+        <effect><DropShadow color="#00000008" radius="20" offsetX="5"/></effect>
+        
+        <VBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="SavePlate" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #1E293B;"/>
+            <Label text="Inventory Manager" style="-fx-font-size: 12px; -fx-text-fill: #F59E0B; -fx-font-weight: 700; -fx-letter-spacing: 1px;"/>
+        </VBox>
+
+        <VBox spacing="25.0" VBox.vgrow="ALWAYS">
+            <padding><Insets top="60"/></padding>
+            
+            <HBox onMouseClicked="#handleBack" spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand; -fx-opacity: 0.7;">
+                <Label text="🏠" style="-fx-font-size: 18px;"/>
+                <Label text="Main Dashboard" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #475569;"/>
+            </HBox>
+            
+            <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: #FEF3C7; -fx-padding: 10; -fx-background-radius: 10;">
+                <Label text="💰" style="-fx-font-size: 18px;"/>
+                <Label text="Manage Sales" style="-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: #D97706;"/>
+            </HBox>
+        </VBox>
+
+        <Button text="← Back to Home" onAction="#handleBack" 
+                style="-fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 13px;"/>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" spacing="0" style="-fx-background-color: #FAFAFA;">
+        
+        <VBox spacing="15">
+            <padding>
+                <Insets top="60" left="60" right="60" bottom="30"/>
+            </padding>
+            <Label text="Surplus Inventory" 
+                   style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #1E293B; -fx-letter-spacing: -1px;"/>
+            <Label text="Convert undonated food into exclusive community flash sales." 
+                   style="-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-font-weight: 500;"/>
+        </VBox>
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
+                    style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+            <content>
+                <VBox fx:id="salesContainer" spacing="20">
+                    <padding>
+                        <Insets top="10" left="60" right="60" bottom="60"/>
+                    </padding>
+                    </VBox>
+            </content>
+        </ScrollPane>
+    </VBox>
+</HBox>

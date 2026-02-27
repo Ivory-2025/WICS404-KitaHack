@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+
+<HBox prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: #FAFAFA;" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.ViewOrdersController">
+    
+    <VBox prefWidth="280.0" style="-fx-background-color: white; -fx-padding: 40 30;">
+        <effect><DropShadow color="#00000008" radius="20" offsetX="5"/></effect>
+        
+        <VBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="SavePlate" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #1E293B;"/>
+            <Label text="Donation Tracker" style="-fx-font-size: 12px; -fx-text-fill: #10B981; -fx-font-weight: 700; -fx-letter-spacing: 1px;"/>
+        </VBox>
+
+        <VBox spacing="25.0" VBox.vgrow="ALWAYS">
+            <padding><Insets top="60"/></padding>
+            
+            <HBox onMouseClicked="#handleBack" spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand; -fx-opacity: 0.7;">
+                <Label text="🏠" style="-fx-font-size: 18px;"/>
+                <Label text="Main Dashboard" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #475569;"/>
+            </HBox>
+            
+            <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: #ECFDF5; -fx-padding: 10; -fx-background-radius: 10;">
+                <Label text="📋" style="-fx-font-size: 18px;"/>
+                <Label text="Active Donations" style="-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: #059669;"/>
+            </HBox>
+        </VBox>
+
+        <Button text="← Back to Portal" onAction="#handleBack" 
+                style="-fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 13px;"/>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" spacing="0">
+        <HBox alignment="CENTER_LEFT" style="-fx-padding: 60 60 30 60;">
+            <VBox spacing="8">
+                <Label text="Donation Feed" 
+                       style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #0F172A; -fx-letter-spacing: -1px;"/>
+                <Label text="Monitor your current food surplus contributions and NGO match status." 
+                       style="-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-font-weight: 500;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Refresh Feed ↻" onAction="#handleRefresh" 
+                    style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-text-fill: #1E293B; -fx-font-weight: 700; -fx-padding: 12 25; -fx-cursor: hand;">
+                <effect><DropShadow color="#00000005" radius="10" offsetY="5"/></effect>
+            </Button>
+        </HBox>
+
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" 
+                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" 
+                    hbarPolicy="NEVER">
+            <content>
+                <VBox fx:id="ordersContainer" spacing="25.0" style="-fx-padding: 20 60 60 60;">
+                    </VBox>
+            </content>
+        </ScrollPane>
+    </VBox>
+</HBox>

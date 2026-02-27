@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+
+<HBox prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #FAFAFA;" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.NGODashboardController">
+    
+    <VBox prefWidth="280.0" style="-fx-background-color: white; -fx-padding: 40 30;">
+        <effect><DropShadow color="#00000008" radius="20" offsetX="5"/></effect>
+        
+        <VBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="SavePlate" style="-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #1E293B;"/>
+            <Label text="NGO Relief Portal" style="-fx-font-size: 12px; -fx-text-fill: #10B981; -fx-font-weight: 700; -fx-letter-spacing: 1px;"/>
+        </VBox>
+
+        <VBox spacing="25.0" VBox.vgrow="ALWAYS">
+            <padding><Insets top="60"/></padding>
+            
+            <HBox onMouseClicked="#goToMarketplace" spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand;">
+                <Label text="🛒" style="-fx-font-size: 18px;"/>
+                <Label text="NGO Marketplace" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #475569;"/>
+            </HBox>
+            
+            <HBox onMouseClicked="#goToRatings" onMouseEntered="#handleHoverEnter" onMouseExited="#handleHoverExit" 
+                  spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand;">
+                <Label text="⭐" style="-fx-font-size: 18px;"/>
+                <Label text="View Ratings" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #475569;"/>
+            </HBox>
+            
+            <HBox onMouseClicked="#goToChat" spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand;">
+                <Label text="💬" style="-fx-font-size: 18px;"/>
+                <Label text="Messages" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #475569;"/>
+            </HBox>
+        </VBox>
+
+        <Button text="Sign Out" onAction="#handleLogout" 
+                style="-fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 13px;"/>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" spacing="40.0" style="-fx-padding: 60 80;">
+        <VBox spacing="10">
+            <Label text="Organization Dashboard" 
+                   style="-fx-font-size: 16px; -fx-text-fill: #94A3B8; -fx-font-weight: 600;"/>
+            <Label text="Impact Summary" 
+                   style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #1E293B; -fx-letter-spacing: -1px;"/>
+        </VBox>
+
+        <HBox spacing="30">
+            <VBox spacing="10" prefWidth="250" style="-fx-background-color: #1E293B; -fx-padding: 25; -fx-background-radius: 25;">
+                <effect><DropShadow color="#00000020" radius="15" offsetY="10"/></effect>
+                <Label text="Total Rescues" style="-fx-text-fill: #94A3B8; -fx-font-weight: 700;"/>
+                <Label text="142 Meals" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: 900;"/>
+            </VBox>
+            
+            <VBox spacing="10" prefWidth="250" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 25; -fx-border-color: #E2E8F0; -fx-border-radius: 25;">
+                <Label text="CO2 Offset" style="-fx-text-fill: #94A3B8; -fx-font-weight: 700;"/>
+                <Label text="24.8 kg" style="-fx-text-fill: #10B981; -fx-font-size: 24px; -fx-font-weight: 900;"/>
+            </VBox>
+        </HBox>
+
+        <GridPane hgap="30.0" vgap="30.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="280.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="280.0" />
+            </columnConstraints>
+            
+            <VBox onMouseClicked="#goToMarketplace" alignment="CENTER_LEFT" spacing="15.0"
+                  style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25; -fx-cursor: hand;">
+                <effect><DropShadow color="#00000008" radius="20" offsetY="10"/></effect>
+                <Label text="🌐" style="-fx-font-size: 30px;"/>
+                <Label text="Browse Marketplace" style="-fx-font-size: 18px; -fx-font-weight: 800;"/>
+                <Label text="Find nearby food surplus for your community." style="-fx-text-fill: #64748B; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <VBox onMouseClicked="#goToChat" GridPane.columnIndex="1" alignment="CENTER_LEFT" spacing="15.0"
+                  style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25; -fx-cursor: hand;">
+                <effect><DropShadow color="#00000008" radius="20" offsetY="10"/></effect>
+                <Label text="🤝" style="-fx-font-size: 30px;"/>
+                <Label text="Vendor Connections" style="-fx-font-size: 18px; -fx-font-weight: 800;"/>
+                <Label text="Communicate with donors and logistics partners." style="-fx-text-fill: #64748B; -fx-font-size: 13px;"/>
+            </VBox>
+        </GridPane>
+    </VBox>
+</HBox>

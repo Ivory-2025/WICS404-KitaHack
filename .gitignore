@@ -9,3 +9,5 @@ desktop.ini
 
 # 4. Java: Ignore compiled class files
 *.class
+*.db
+*.sqbpro
