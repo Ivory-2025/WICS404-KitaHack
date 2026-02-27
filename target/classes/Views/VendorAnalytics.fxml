@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="TOP_CENTER" spacing="25.0" prefHeight="700.0" prefWidth="900.0" 
+      style="-fx-background-color: #f5f6fa;" xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="Controllers.VendorAnalyticsController">
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <Text text="Environmental &amp; Surplus Analysis" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-fill: #2f3640;" />
+
+    <HBox spacing="20" alignment="CENTER">
+        <VBox style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);" prefWidth="250">
+            <Text text="Weekly Avg Surplus" style="-fx-font-size: 14px; -fx-fill: #7f8c8d;" />
+            <Label fx:id="lblAvgSurplus" text="0.0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #e67e22;" />
+        </VBox>
+
+        <VBox style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);" prefWidth="250">
+            <Text text="CO2 Impact (kg)" style="-fx-font-size: 14px; -fx-fill: #7f8c8d;" />
+            <Label fx:id="lblCO2" text="0.0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #27ae60;" />
+        </VBox>
+    </HBox>
+
+    <VBox spacing="10" style="-fx-background-color: #ffffff; -fx-padding: 20; -fx-background-radius: 15;">
+        <Text text="AI Sustainability Prediction" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+        <TextArea fx:id="txtAiInsight" wrapText="true" editable="false" prefHeight="150" 
+                  style="-fx-background-color: transparent; -fx-border-color: #dcdde1; -fx-border-radius: 10;" />
+    </VBox>
+
+    <Button onAction="#handleBack" text="← Back to Dashboard" 
+        style="-fx-background-color: transparent; -fx-text-fill: #1A1A1A; -fx-font-weight: bold; -fx-cursor: hand;"/>
+</VBox>

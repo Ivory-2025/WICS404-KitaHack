@@ -152,4 +152,22 @@ private void handleGoToChats(MouseEvent event) {
         System.err.println("Error navigating to Chats: " + e.getMessage());
     }
 }
+    @FXML
+private void handleGoToAnalytics(javafx.scene.input.MouseEvent event) {
+    try {
+        // Path should match where you saved your VendorAnalytics.fxml
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/VendorAnalytics.fxml"));
+        javafx.scene.Parent root = loader.load();
+        
+        // Get current stage from the click event
+        javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.setTitle("SavePlate - Weekly Analysis Report");
+        stage.centerOnScreen();
+    } catch (java.io.IOException e) {
+        e.printStackTrace();
+        // You can use your showToast helper here if you have it available
+        System.out.println("Error: Could not load Analytics page.");
+    }
+}
 }
