@@ -8,6 +8,8 @@ import java.sql.SQLException;
 public class DatabaseInitializer {
 
     public static void initialize() {
+        insertTestData();
+        insertMarketplaceMission();
         // 1. Users table (Core profile)
         String createUsersTable = """
                 CREATE TABLE IF NOT EXISTS users (
@@ -200,8 +202,54 @@ System.out.println("DEBUG: Nasi Lemak test data is live!");
         System.err.println("Database Initialization Error: " + e.getMessage());
         e.printStackTrace();
     }
-}
+    }
 
+
+    public static void insertTestData() {
+        String sql = "INSERT INTO food_listings (vendor_id, food_name, ingredients, status) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = Database.DatabaseConnection.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            // Sample 1: Artisan Sourdough for Vendor 1 (SavePlate Cafe)
+            pstmt.setInt(1, 1); 
+            pstmt.setString(2, "Artisan Sourdough");
+            pstmt.setString(3, "Flour, Water, Sea Salt");
+            pstmt.setString(4, "PENDING"); // Must be PENDING to show up
+            pstmt.executeUpdate();
+
+            // Sample 2: Truffle Mushroom Pasta
+            pstmt.setInt(1, 1); 
+            pstmt.setString(2, "Truffle Mushroom Pasta");
+            pstmt.setString(3, "Penne, Cream, Truffle Oil");
+            pstmt.setString(4, "PENDING");
+            pstmt.executeUpdate();
+            
+            System.out.println("✅ Database populated with test food listings.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertMarketplaceMission() {
+    // Note: status 'AVAILABLE' makes it visible to NGOs in the marketplace
+    String sql = "INSERT INTO food_listings (vendorId, foodName, ingredients, status, expiryTime) " +
+                 "VALUES (?, ?, ?, 'AVAILABLE', ?)";
+    
+    try (Connection conn = Database.DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+         
+        pstmt.setInt(1, 1); // Associated with Vendor ID 1 (SavePlate Cafe)
+        pstmt.setString(2, "Premium Pastry Box");
+        pstmt.setString(3, "Assorted Croissants and Danishes");
+        pstmt.setString(4, "2026-03-01 22:00:00"); // Future expiry for routing logic
+        
+        pstmt.executeUpdate();
+        System.out.println("✅ NGO Marketplace mission injected.");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
     public static void main(String[] args) {
         initialize();
     }

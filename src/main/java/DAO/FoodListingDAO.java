@@ -24,6 +24,7 @@ public class FoodListingDAO {
             Models.FoodListing listing = new Models.FoodListing();
             listing.setListingId(rs.getInt("listingId")); // Fixed column name
             listing.setFoodName(rs.getString("food_name")); // Fixed column name
+            listing.setIngredients(rs.getString("ingredients"));
             listing.setStatus(rs.getString("status"));
             // Since 'quantity' is missing in schema, use a placeholder to stop the error
             listing.setQuantity("Standard Pack"); 
@@ -75,7 +76,13 @@ public class FoodListingDAO {
          ResultSet rs = stmt.executeQuery()) {
         while (rs.next()) {
             listings.add(mapResultSet(rs));
-        }
+    FoodListing item = new FoodListing();
+    item.setFoodName(rs.getString("foodName"));
+    item.setIngredients(rs.getString("ingredients")); 
+    
+    item.setPrice(rs.getDouble("price"));
+    item.setStatus(rs.getString("status"));
+}
     } catch (SQLException e) { e.printStackTrace(); }
     return listings;
 }
@@ -191,6 +198,19 @@ public void update(FoodListing listing) {
 
     } catch (Exception e) {
         e.printStackTrace();
+    }
+}
+
+public void updateToFlashSale(int listingId, double price) {
+    String sql = "UPDATE FoodListings SET status = 'FLASH_SALE', price = ?, is_for_sale = 1 WHERE id = ?";
+    
+    try (Connection conn = Database.DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setDouble(1, price);
+        pstmt.setInt(2, listingId);
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        System.err.println("Error updating to Flash Sale: " + e.getMessage());
     }
 }
 }

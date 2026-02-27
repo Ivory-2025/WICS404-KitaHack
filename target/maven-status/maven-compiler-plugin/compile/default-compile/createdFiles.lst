@@ -1,5 +1,6 @@
 Models\UserSession.class
 Controllers\NGODashboardController.class
+Controllers\ManageSurplusController.class
 Models\Rating.class
 app\Main.class
 DAO\MessageDAO.class
