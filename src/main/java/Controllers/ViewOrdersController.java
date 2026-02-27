@@ -156,6 +156,7 @@ public class ViewOrdersController {
             Parent root = FXMLLoader.load(getClass().getResource("/Views/VendorDashboard.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
+            stage.setTitle("SavePlate - Vendor Dashboard");
         } catch (IOException e) {
             e.printStackTrace();
         }

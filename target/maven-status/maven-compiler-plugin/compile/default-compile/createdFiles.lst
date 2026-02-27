@@ -40,6 +40,7 @@ Database\DatabaseConnection.class
 DAO\VendorDAO.class
 Utils\Api.class
 Controllers\MarketplaceController.class
+Controllers\VendorAnalyticsController.class
 Controllers\ChatLandingController$1.class
 Models\OrderResponse.class
 Controllers\ViewOrdersController.class
