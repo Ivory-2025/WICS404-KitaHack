@@ -44,6 +44,7 @@ Controllers\VendorAnalyticsController.class
 Controllers\ChatLandingController$1.class
 Models\OrderResponse.class
 Controllers\ViewOrdersController.class
+Controllers\UserDashBoardController.class
 Services\MatchingService.class
 Models\Transaction.class
 Controllers\NGODashboardController$1.class

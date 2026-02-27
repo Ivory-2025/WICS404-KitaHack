@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fx:id="rootScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" 
+            stylesheets="@../css/style.css" 
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="Controllers.UserDashBoardController"
+            prefHeight="750.0" prefWidth="1000.0" 
+            style="-fx-background-color: #FAFAFA; -fx-background: #FAFAFA;">
+    
+    <content>
+        <VBox spacing="35.0" alignment="TOP_LEFT" style="-fx-background-color: #FAFAFA;">
+            <padding>
+                <Insets top="40" bottom="60" left="60" right="60"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT">
+                <MenuButton fx:id="profileMenu" text="User Name" 
+                            style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-padding: 8 20; -fx-font-weight: 700; -fx-text-fill: #1E293B;">
+                </MenuButton>
+                <Region HBox.hgrow="ALWAYS" />
+                <VBox alignment="CENTER" style="-fx-background-color: #ECFDF5; -fx-padding: 10 25; -fx-background-radius: 15;">
+                    <Label text="5.2kg CO2 Saved" style="-fx-font-weight: 800; -fx-text-fill: #10B981; -fx-font-size: 14px;"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="10">
+                <Label fx:id="userNameLabel" text="Hello, Student!" 
+                       style="-fx-font-size: 18px; -fx-text-fill: #94A3B8; -fx-font-weight: 600;"/>
+                <Label text="Find Today's Savings" 
+                       style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #1E293B;"/>
+                
+                <TextField promptText="Search for meals, bakeries, or groceries..." 
+                           style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-padding: 18; -fx-font-size: 15px;">
+                    <VBox.margin>
+                        <Insets top="15" />
+                    </VBox.margin>
+                </TextField>
+            </VBox>
+
+            <HBox spacing="15">
+                <Button text="All" style="-fx-background-color: #1E293B; -fx-text-fill: white; -fx-background-radius: 25; -fx-padding: 10 25; -fx-font-weight: 700; -fx-cursor: hand;"/>
+                <Button text="Meals" style="-fx-background-color: white; -fx-text-fill: #64748B; -fx-background-radius: 25; -fx-border-color: #E2E8F0; -fx-border-radius: 25; -fx-padding: 10 25; -fx-font-weight: 700; -fx-cursor: hand;"/>
+                <Button text="Bakery" style="-fx-background-color: white; -fx-text-fill: #64748B; -fx-background-radius: 25; -fx-border-color: #E2E8F0; -fx-border-radius: 25; -fx-padding: 10 25; -fx-font-weight: 700; -fx-cursor: hand;"/>
+                <Button text="Groceries" style="-fx-background-color: white; -fx-text-fill: #64748B; -fx-background-radius: 25; -fx-border-color: #E2E8F0; -fx-border-radius: 25; -fx-padding: 10 25; -fx-font-weight: 700; -fx-cursor: hand;"/>
+            </HBox>
+
+            <VBox spacing="20">
+                <Label text="🔥 Flash Sales (Ending Soon)" 
+                       style="-fx-font-size: 24px; -fx-font-weight: 800; -fx-text-fill: #F43F5E;"/>
+                <HBox fx:id="flashSaleContainer" spacing="30" style="-fx-padding: 10 5;">
+                    </HBox>
+            </VBox>
+
+            <VBox spacing="20" maxWidth="Infinity" VBox.vgrow="ALWAYS">
+                <Label text="Explore Nearby Surplus" 
+                       style="-fx-font-size: 24px; -fx-font-weight: 800; -fx-text-fill: #1E293B;"/>
+                <VBox fx:id="mainFoodContainer" spacing="20" maxWidth="Infinity">
+                    </VBox>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

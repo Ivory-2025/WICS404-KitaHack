@@ -101,4 +101,28 @@ if (rs.next()) {
             System.out.println(e.getMessage());
         }
     }
+
+    public User getUserById(int userId) {
+    // Matches your 'users' table structure
+    String sql = "SELECT * FROM users WHERE id = ?"; 
+    
+    try (Connection conn = Database.DatabaseConnection.connect();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setInt(1, userId);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            User user = new User();
+            user.setUserId(rs.getInt("id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setRole(rs.getString("role")); // Must be 'USER' for your logic
+            return user;
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
 }

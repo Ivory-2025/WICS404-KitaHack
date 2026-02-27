@@ -4,48 +4,75 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.paint.Color?>
 
-<VBox alignment="CENTER" spacing="15.0" prefHeight="550.0" prefWidth="450.0" 
-      stylesheets="@../css/style.css" 
-      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="Controllers.RegisterController">
+<StackPane prefHeight="750.0" prefWidth="1000.0" 
+           style="-fx-background-color: #F8FAFC;" 
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="Controllers.RegisterController">
     
-    <padding>
-        <Insets top="30" right="40" bottom="30" left="40"/>
-    </padding>
-
     <children>
-        <Text text="SavePlate" styleClass="header-text" />
-        <Text text="Create an Account to Start Saving Food" 
-              style="-fx-font-size: 14px; -fx-fill: #636e72;" />
-        
-        <VBox spacing="5.0" maxWidth="300.0">
-            <Label text="Full Name" style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
-            <TextField fx:id="nameField" promptText="Enter your name"/>
-        </VBox>
+        <VBox alignment="CENTER" spacing="25.0" maxWidth="480.0" maxHeight="680.0" 
+              style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 50;">
+            
+            <effect>
+                <DropShadow blurType="THREE_PASS_BOX" height="40.0" radius="19.5" width="40.0">
+                    <color>
+                        <Color red="0.8" green="0.83" blue="0.87" opacity="0.4" />
+                    </color>
+                </DropShadow>
+            </effect>
 
-        <VBox spacing="5.0" maxWidth="300.0">
-            <Label text="Email Address" style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
-            <TextField fx:id="emailField" promptText="Enter your email"/>
-        </VBox>
+            <children>
+                <VBox alignment="CENTER" spacing="8.0">
+                    <Text text="SavePlate" 
+                          style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-fill: #0F172A; -fx-letter-spacing: 1px;" />
+                    <Text text="Join the movement to save food" 
+                          style="-fx-font-size: 15px; -fx-fill: #64748B; -fx-font-weight: 500;" />
+                </VBox>
 
-        <VBox spacing="5.0" maxWidth="300.0">
-            <Label text="Password" style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
-            <PasswordField fx:id="passwordField" promptText="Create a password"/>
-        </VBox>
+                <Separator maxWidth="100.0" style="-fx-opacity: 0.5;" />
 
-        <VBox spacing="5.0" maxWidth="300.0">
-            <Label text="I am a..." style="-fx-text-fill: #2d3436; -fx-font-weight: bold;"/>
-            <ComboBox fx:id="roleComboBox" promptText="Select Role" maxWidth="300.0"/>
+                <VBox spacing="18.0" fillWidth="true">
+                    
+                    <VBox spacing="8.0">
+                        <Label text="FULL NAME" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
+                        <TextField fx:id="nameField" promptText="e.g. John Doe" 
+                                   style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;"/>
+                    </VBox>
+
+                    <VBox spacing="8.0">
+                        <Label text="EMAIL ADDRESS" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
+                        <TextField fx:id="emailField" promptText="john@example.com" 
+                                   style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;"/>
+                    </VBox>
+
+                    <VBox spacing="8.0">
+                        <Label text="PASSWORD" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
+                        <PasswordField fx:id="passwordField" promptText="••••••••" 
+                                       style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;"/>
+                    </VBox>
+
+                    <VBox spacing="8.0">
+                        <Label text="I AM JOINING AS A..." style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
+                        <ComboBox fx:id="roleComboBox" promptText="Select Role" maxWidth="Infinity" 
+                                  style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
+                    </VBox>
+                </VBox>
+                
+                <VBox alignment="CENTER" spacing="15.0">
+                    <Button text="CREATE ACCOUNT" onAction="#handleRegister" maxWidth="Infinity" 
+                            style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 15; -fx-background-radius: 10; -fx-cursor: hand;">
+                        <VBox.margin>
+                            <Insets top="10" />
+                        </VBox.margin>
+                    </Button>
+                    
+                    <Hyperlink text="Already have an account? Sign In" onAction="#handleBackToLogin" 
+                               style="-fx-text-fill: #6366F1; -fx-underline: false; -fx-font-weight: 700; -fx-font-size: 13px;"/>
+                </VBox>
+            </children>
         </VBox>
-        
-        <Button text="CREATE ACCOUNT" onAction="#handleRegister" prefWidth="200.0">
-            <VBox.margin>
-                <Insets top="10" />
-            </VBox.margin>
-        </Button>
-        
-        <Hyperlink text="Already have an account? Login" onAction="#handleBackToLogin" 
-                   style="-fx-text-fill: #4CAF50; -fx-underline: false;"/>
     </children>
-</VBox>
+</StackPane>

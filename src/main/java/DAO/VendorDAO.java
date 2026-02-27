@@ -54,18 +54,21 @@ public class VendorDAO {
 
     public Vendor getVendorByUserId(int userId) {
     String sql = "SELECT * FROM vendors WHERE user_id = ?";
+    // Use DatabaseConnection.getConnection() to match your existing DAO logic
     try (Connection conn = DatabaseConnection.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
         
         pstmt.setInt(1, userId);
-        ResultSet rs = pstmt.executeQuery();
         
-        if (rs.next()) {
-            Vendor vendor = new Vendor();
-            vendor.setId(rs.getInt("vendor_id"));
-            vendor.setUserId(rs.getInt("user_id")); // 🔥 CRITICAL: Must set the UserID for the Chat
-            vendor.setRestaurantName(rs.getString("restaurant_name"));
-            return vendor;
+        // Use a nested try-with-resources to ensure ResultSet is closed properly
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                Vendor vendor = new Vendor();
+                vendor.setId(rs.getInt("vendor_id"));
+                vendor.setUserId(rs.getInt("user_id")); // 🔥 CRITICAL: Must set the UserID for the Chat
+                vendor.setRestaurantName(rs.getString("restaurant_name"));
+                return vendor;
+            }
         }
     } catch (SQLException e) {
         System.err.println("DB Error: " + e.getMessage());
