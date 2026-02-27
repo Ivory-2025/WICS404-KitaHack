@@ -82,7 +82,7 @@ public class FoodListingDAO {
     
     item.setPrice(rs.getDouble("price"));
     item.setStatus(rs.getString("status"));
-}
+        }
     } catch (SQLException e) { e.printStackTrace(); }
     return listings;
 }
