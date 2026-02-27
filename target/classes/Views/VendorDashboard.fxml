@@ -4,82 +4,91 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.effect.DropShadow?>
 
-<StackPane fx:controller="Controllers.VendorDashboardController" 
-           xmlns="http://javafx.com/javafx/21" 
-           xmlns:fx="http://javafx.com/fxml/1"
-           prefHeight="750.0" prefWidth="1000.0" 
-           style="-fx-background-color: #FAFAFA;">
+<HBox prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: #FAFAFA;" 
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.VendorDashboardController">
+    
+    <VBox prefWidth="300.0" minWidth="300.0" style="-fx-background-color: white; -fx-padding: 40 25;">
+        <effect>
+            <DropShadow blurType="THREE_PASS_BOX" color="#00000008" offsetX="5.0" radius="10.0" />
+        </effect>
+        
+        <VBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="SavePlate" style="-fx-font-size: 26px; -fx-font-weight: 900; -fx-text-fill: #1E293B;"/>
+            <Label text="VENDOR PORTAL" style="-fx-font-size: 11px; -fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-letter-spacing: 1.5px;"/>
+        </VBox>
 
-    <VBox alignment="TOP_CENTER" spacing="50.0">
-        <padding>
-            <Insets top="80" bottom="60" left="50" right="50"/>
-        </padding>
+        <VBox spacing="20.0" VBox.vgrow="ALWAYS">
+            <padding><Insets top="60"/></padding>
+            
+            <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: #F8FAFC; -fx-padding: 12; -fx-background-radius: 12;">
+                <Label text="🏠" style="-fx-font-size: 18px;"/>
+                <Label text="Overview" style="-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: #1E293B;"/>
+            </HBox>
+            
+            <HBox onMouseClicked="#handleViewOrders" spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand; -fx-padding: 10 12;">
+                <Label text="📋" style="-fx-font-size: 18px;"/>
+                <Label text="Active Orders" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #64748B;"/>
+            </HBox>
+            
+            <HBox onMouseClicked="#handleGoToChats" spacing="15" alignment="CENTER_LEFT" style="-fx-cursor: hand; -fx-padding: 10 12;">
+                <Label text="💬" style="-fx-font-size: 18px;"/>
+                <Label text="Messages" style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #64748B;"/>
+            </HBox>
+        </VBox>
 
-        <VBox alignment="CENTER" spacing="10">
-            <Label fx:id="welcomeLabel" text="Welcome back, SavePlate Cafe!" 
-                   style="-fx-font-size: 16px; -fx-text-fill: #94A3B8; -fx-font-weight: 600;"/>
-            <Label text="Vendor Dashboard" 
+        <Button text="Sign Out" onAction="#handleLogout" maxWidth="Infinity"
+                style="-fx-text-fill: #EF4444; -fx-font-weight: 800; -fx-background-color: #FFF1F2; -fx-background-radius: 10; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 13px;"/>
+    </VBox>
+
+    <VBox HBox.hgrow="ALWAYS" spacing="40.0" style="-fx-padding: 60 60;" minWidth="800">
+        <VBox spacing="10">
+            <Label fx:id="welcomeLabel" text="Welcome back, Partner!" 
+                   style="-fx-font-size: 18px; -fx-text-fill: #94A3B8; -fx-font-weight: 600;"/>
+            <Label text="Dashboard" 
                    style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #1E293B; -fx-letter-spacing: -1px;"/>
         </VBox>
 
-        <GridPane alignment="CENTER" hgap="25.0" vgap="25.0">
+        <GridPane hgap="25.0" vgap="25.0" alignment="TOP_LEFT">
             <columnConstraints>
-                <ColumnConstraints hgrow="NEVER" minWidth="220.0" prefWidth="240.0" />
-                <ColumnConstraints hgrow="NEVER" minWidth="220.0" prefWidth="240.0" />
-                <ColumnConstraints hgrow="NEVER" minWidth="220.0" prefWidth="240.0" />
+                <ColumnConstraints percentWidth="33.33" />
+                <ColumnConstraints percentWidth="33.33" />
+                <ColumnConstraints percentWidth="33.33" />
             </columnConstraints>
             
             <children>
                 <VBox fx:id="uploadCard" onMouseClicked="#handleUploadFoodSurplus" 
                       GridPane.columnIndex="0" GridPane.rowIndex="0"
-                      alignment="CENTER" spacing="20.0" styleClass="dashboard-card"
-                      style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 30; -fx-cursor: hand;">
-                    <effect><DropShadow color="#0000000D" radius="30" offsetY="15"/></effect>
-                    <Label mouseTransparent="true" text="⬆" style="-fx-font-size: 40px; -fx-text-fill: #1E293B;"/>
-                    <Label mouseTransparent="true" text="Upload Surplus" style="-fx-font-size: 17px; -fx-font-weight: 800;"/>
-                </VBox>
-
-                <VBox fx:id="ordersCard" onMouseClicked="#handleViewOrders" 
-                      GridPane.columnIndex="1" GridPane.rowIndex="0"
-                      alignment="CENTER" spacing="20.0"
-                      style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 30; -fx-cursor: hand;">
-                    <effect><DropShadow color="#0000000D" radius="30" offsetY="15"/></effect>
-                    <Label mouseTransparent="true" text="📋" style="-fx-font-size: 40px;"/>
-                    <Label mouseTransparent="true" text="View Orders" style="-fx-font-size: 17px; -fx-font-weight: 800;"/>
+                      alignment="CENTER_LEFT" spacing="15.0"
+                      style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25; -fx-cursor: hand;">
+                    <effect><DropShadow color="#00000008" radius="20" offsetY="10"/></effect>
+                    <Label text="🚀" style="-fx-font-size: 30px;"/>
+                    <Label text="Upload Surplus" style="-fx-font-size: 18px; -fx-font-weight: 800;"/>
+                    <Label text="List new food items instantly." style="-fx-text-fill: #64748B; -fx-font-size: 13px;" wrapText="true"/>
                 </VBox>
 
                 <VBox fx:id="analyticsCard" onMouseClicked="#handleGoToAnalytics" 
-                      GridPane.columnIndex="2" GridPane.rowIndex="0"
-                      alignment="CENTER" spacing="20.0"
-                      style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 30; -fx-cursor: hand;">
-                    <effect><DropShadow color="#0000000D" radius="30" offsetY="15"/></effect>
-                    <Label mouseTransparent="true" text="📊" style="-fx-font-size: 40px;"/>
-                    <Label mouseTransparent="true" text="Weekly Analysis" style="-fx-font-size: 17px; -fx-font-weight: 800;"/>
-                </VBox>
-
-                <VBox fx:id="chatCard" onMouseClicked="#handleGoToChats" 
-                      GridPane.columnIndex="0" GridPane.rowIndex="1"
-                      alignment="CENTER" spacing="20.0"
-                      style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 30; -fx-cursor: hand;">
-                    <effect><DropShadow color="#0000000D" radius="30" offsetY="15"/></effect>
-                    <Label mouseTransparent="true" text="💬" style="-fx-font-size: 40px;"/>
-                    <Label mouseTransparent="true" text="Messages" style="-fx-font-size: 17px; -fx-font-weight: 800;"/>
+                      GridPane.columnIndex="1" GridPane.rowIndex="0"
+                      alignment="CENTER_LEFT" spacing="15.0"
+                      style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25; -fx-cursor: hand;">
+                    <effect><DropShadow color="#00000008" radius="20" offsetY="10"/></effect>
+                    <Label text="📊" style="-fx-font-size: 30px;"/>
+                    <Label text="Weekly Analysis" style="-fx-font-size: 18px; -fx-font-weight: 800;"/>
+                    <Label text="Review your sustainability impact." style="-fx-text-fill: #64748B; -fx-font-size: 13px;" wrapText="true"/>
                 </VBox>
 
                 <VBox fx:id="manageSalesCard" onMouseClicked="#handleGoToManageSales" 
-                      GridPane.columnIndex="1" GridPane.rowIndex="1"
-                      alignment="CENTER" spacing="20.0"
-                      style="-fx-background-color: white; -fx-padding: 35; -fx-background-radius: 30; -fx-cursor: hand;">
-                    <effect><DropShadow color="#0000000D" radius="30" offsetY="15"/></effect>
-                    <Label mouseTransparent="true" text="💰" style="-fx-font-size: 40px;"/>
-                    <Label mouseTransparent="true" text="Manage Sales" style="-fx-font-size: 17px; -fx-font-weight: 800;"/>
+                      GridPane.columnIndex="2" GridPane.rowIndex="0"
+                      alignment="CENTER_LEFT" spacing="15.0"
+                      style="-fx-background-color: white; -fx-padding: 30; -fx-background-radius: 25; -fx-cursor: hand;">
+                    <effect><DropShadow color="#00000008" radius="20" offsetY="10"/></effect>
+                    <Label text="💰" style="-fx-font-size: 30px;"/>
+                    <Label text="Manage Sales" style="-fx-font-size: 18px; -fx-font-weight: 800;"/>
+                    <Label text="Track earnings and surplus history." style="-fx-text-fill: #64748B; -fx-font-size: 13px;" wrapText="true"/>
                 </VBox>
             </children>
         </GridPane>
-
+        
         <Region VBox.vgrow="ALWAYS" />
-
-        <Button text="Sign Out" onAction="#handleLogout" 
-                style="-fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 13px; -fx-letter-spacing: 1px;"/>
     </VBox>
-</StackPane>
+</HBox>

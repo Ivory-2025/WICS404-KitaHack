@@ -12,12 +12,16 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -195,13 +199,58 @@ private void handlePublish(ActionEvent event) {
 
         // Confirmation Dialog
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Surplus Published");
-        alert.setHeaderText("Success!");
-        alert.setContentText(matches.size() + " NGOs have been notified.");
+alert.setTitle("Surplus Published");
 
-        ButtonType goToChat = new ButtonType("Go to Chat");
-        ButtonType stayHere = new ButtonType("Stay Here");
-        alert.getButtonTypes().setAll(goToChat, stayHere);
+// --- 1. CUSTOM DIALOG PANE DESIGN ---
+DialogPane dialogPane = alert.getDialogPane();
+
+// Apply the same expert background and border radius
+dialogPane.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+dialogPane.setPrefWidth(450);
+
+// Remove the default header text and graphic for a cleaner look
+alert.setHeaderText(null);
+alert.setGraphic(null);
+
+// --- 2. CUSTOM CONTENT LAYOUT ---
+VBox customContent = new VBox(15);
+customContent.setAlignment(Pos.CENTER);
+customContent.setPadding(new Insets(20, 10, 10, 10));
+
+// Success Icon (Expert Emerald)
+Label iconLabel = new Label("✨");
+iconLabel.setStyle("-fx-font-size: 40px;");
+
+Label titleLabel = new Label("Listing Published!");
+titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #1E293B;");
+
+Label infoLabel = new Label(matches.size() + " NGOs have been notified of your surplus.");
+infoLabel.setStyle("-fx-font-size: 15px; -fx-text-fill: #64748B; -fx-font-weight: 500; -fx-text-alignment: center;");
+infoLabel.setWrapText(true);
+
+customContent.getChildren().addAll(iconLabel, titleLabel, infoLabel);
+dialogPane.setContent(customContent);
+
+// --- 3. BUTTON STYLING ---
+ButtonType goToChat = new ButtonType("Go to Chat");
+ButtonType stayHere = new ButtonType("Stay Here");
+alert.getButtonTypes().setAll(goToChat, stayHere);
+
+// Lookup buttons after they are set to apply the expert CSS
+Button chatBtn = (Button) dialogPane.lookupButton(goToChat);
+Button stayBtn = (Button) dialogPane.lookupButton(stayHere);
+
+// Primary "Expert" Button Style
+chatBtn.setStyle("-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-font-weight: 800; " +
+                 "-fx-background-radius: 12; -fx-padding: 10 25; -fx-cursor: hand;");
+
+// Secondary "Expert" Button Style
+stayBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-weight: 700; " +
+                 "-fx-cursor: hand;");
+
+// Standardize Dialog Window appearance
+Stage alertStage = (Stage) dialogPane.getScene().getWindow();
+alertStage.getScene().setFill(Color.TRANSPARENT); // Allows for rounded corners
 
         Optional<ButtonType> result = alert.showAndWait();
 

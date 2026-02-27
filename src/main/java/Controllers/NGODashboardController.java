@@ -359,70 +359,81 @@ private void goToMarketplace(javafx.scene.input.MouseEvent event) {
 }
 
 @FXML
-private void handleViewRating() {
+// Pass the event from the button that calls this
+private void handleViewRating(javafx.scene.input.MouseEvent event) {
     DAO.RatingDAO ratingDAO = new DAO.RatingDAO();
     List<Models.VendorRatingSummary> ratingsList = ratingDAO.getVendorLeaderboard();
 
-    Stage stage = new Stage();
-    VBox root = new VBox(0); 
-    root.setStyle("-fx-background-color: #FFFFFF;"); 
+    // 🔥 THE FIX: Get the stage from the MouseEvent since you don't have a node reference
+    javafx.stage.Stage currentStage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
 
-    // --- NEW: TOP NAVIGATION BAR ---
-    HBox navBar = new HBox();
-    navBar.setPadding(new Insets(20, 50, 0, 50));
-    navBar.setAlignment(Pos.CENTER_LEFT);
-    
-    Button backBtn = new Button("←  Dashboard");
-    backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; " + 
-                     "-fx-font-weight: 700; -fx-font-size: 14px; -fx-cursor: hand;");
-    
-    // Smooth hover for back button
-    backBtn.setOnMouseEntered(e -> backBtn.setStyle(backBtn.getStyle() + "-fx-text-fill: #1E293B;"));
-    backBtn.setOnMouseExited(e -> backBtn.setStyle(backBtn.getStyle().replace("-fx-text-fill: #1E293B;", "")));
-    
-    // Close the current leaderboard stage to "return" to the dashboard
+    // Build the Standard 1100x800 Root
+    HBox root = new HBox(0);
+    root.setPrefSize(1100, 800);
+    root.setStyle("-fx-background-color: #FAFAFA;");
+
+    // --- SIDEBAR SECTION ---
+    VBox sidebar = new VBox(40);
+    sidebar.setPrefWidth(280.0);
+    sidebar.setStyle("-fx-background-color: white; -fx-padding: 40 30;");
+    sidebar.setEffect(new javafx.scene.effect.DropShadow(10, 5, 0, javafx.scene.paint.Color.web("#00000008")));
+
+    VBox brandIdentity = new VBox(10);
+    Label brandName = new Label("SavePlate");
+    brandName.setStyle("-fx-font-size: 24px; -fx-font-weight: 900; -fx-text-fill: #1E293B;");
+    Label portalTag = new Label("IMPACT RANKINGS");
+    portalTag.setStyle("-fx-font-size: 11px; -fx-text-fill: #EAB308; -fx-font-weight: 700; -fx-letter-spacing: 1.5px;");
+    brandIdentity.getChildren().addAll(brandName, portalTag);
+
+    VBox navLinks = new VBox(25);
+    navLinks.setPadding(new Insets(60, 0, 0, 0));
+    VBox.setVgrow(navLinks, Priority.ALWAYS);
+
+    HBox activeLink = new HBox(15);
+    activeLink.setAlignment(Pos.CENTER_LEFT);
+    activeLink.setStyle("-fx-background-color: #FFFDF5; -fx-padding: 12; -fx-background-radius: 12;");
+    Label leaderIcon = new Label("🏆");
+    Label leaderText = new Label("Leaderboard");
+    leaderText.setStyle("-fx-font-size: 15px; -fx-font-weight: 800; -fx-text-fill: #854D0E;");
+    activeLink.getChildren().addAll(leaderIcon, leaderText);
+    navLinks.getChildren().add(activeLink);
+
+    // --- RETURN TO DASHBOARD BUTTON ---
+    Button backBtn = new Button("← Back to Dashboard");
+    backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-cursor: hand; -fx-font-size: 13px;");
     backBtn.setOnAction(e -> {
-    Stage currentStage = (Stage) backBtn.getScene().getWindow();
-    
-    // Create a smooth 300ms fade-out transition
-    javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
-        javafx.util.Duration.millis(300), 
-        backBtn.getScene().getRoot()
-    );
-    fadeOut.setFromValue(1.0);
-    fadeOut.setToValue(0.0);
-    
-    // Close the stage only AFTER the animation finishes
-    fadeOut.setOnFinished(event -> currentStage.close());
-    fadeOut.play();
-}); 
-    
-    navBar.getChildren().add(backBtn);
+        try {
+            // This reloads your main NGO dashboard FXML
+            Parent dashboard = FXMLLoader.load(getClass().getResource("/Views/NGOMainDashboard.fxml"));
+            currentStage.getScene().setRoot(dashboard);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    });
 
-    // --- EXISTING HEADER ---
+    sidebar.getChildren().addAll(brandIdentity, navLinks, backBtn);
+
+    // --- MAIN CONTENT AREA ---
+    VBox contentArea = new VBox(0);
+    HBox.setHgrow(contentArea, Priority.ALWAYS);
+
     VBox header = new VBox(8);
-    header.setPadding(new Insets(30, 50, 40, 50)); // Adjusted padding for navBar
+    header.setPadding(new Insets(60, 60, 30, 60));
     header.setAlignment(Pos.CENTER_LEFT);
-    
-    Label title = new Label("Food Hero Leaderboard");
-    title.setStyle("-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #1E293B; -fx-letter-spacing: -0.5px;");
-    
-    Label subtitle = new Label("The most impactful contributors in your area.");
-    subtitle.setStyle("-fx-font-size: 15px; -fx-text-fill: #94A3B8; -fx-font-weight: 500;");
-    
-    Region line = new Region();
-    line.setPrefHeight(1);
-    line.setStyle("-fx-background-color: #F1F5F9; -fx-max-width: 100;");
-    
-    header.getChildren().addAll(title, subtitle, line);
 
-    // --- SCROLLABLE CONTENT ---
-    VBox listContainer = new VBox(12);
-    listContainer.setPadding(new Insets(10, 50, 40, 50));
+    Label title = new Label("Food Hero Leaderboard");
+    title.setStyle("-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #0F172A;");
+    Label subtitle = new Label("Top contributors rescuing surplus food today.");
+    subtitle.setStyle("-fx-font-size: 16px; -fx-text-fill: #64748B;");
+    header.getChildren().addAll(title, subtitle);
+
+    VBox listContainer = new VBox(15);
+    listContainer.setPadding(new Insets(10, 60, 60, 60));
 
     ScrollPane scrollPane = new ScrollPane(listContainer);
     scrollPane.setFitToWidth(true);
-    scrollPane.setPrefHeight(600);
+    scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    VBox.setVgrow(scrollPane, Priority.ALWAYS);
     scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
 
     int rank = 1;
@@ -430,13 +441,11 @@ private void handleViewRating() {
         listContainer.getChildren().add(createMinimalistCard(summary, rank++));
     }
 
-    // Adding the navBar at the very top
-    root.getChildren().addAll(navBar, header, scrollPane);
+    contentArea.getChildren().addAll(header, scrollPane);
+    root.getChildren().addAll(sidebar, contentArea);
 
-    Scene scene = new Scene(root, 750, 850); // Slightly taller to accommodate nav
-    stage.setScene(scene);
-    stage.setTitle("SavePlate Elite");
-    stage.show();
+    // 🔥 THE SWAP: No new stage, just replace the current scene's root
+    currentStage.getScene().setRoot(root);
 }
 
 private HBox createMinimalistCard(Models.VendorRatingSummary summary, int rank) {
@@ -668,8 +677,8 @@ private void goToChat(javafx.scene.input.MouseEvent event) {
 
 @FXML
 private void goToRatings(javafx.scene.input.MouseEvent event) {
-    // This calls the aesthetic leaderboard method we just built
-    handleViewRating();
+    // We pass the event so handleViewRating knows which window to use
+    handleViewRating(event);
 }
 
 @FXML

@@ -14,9 +14,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.animation.FadeTransition;
@@ -150,7 +152,7 @@ public void initialize() {
 
     // Main Card Container
     VBox card = new VBox(15);
-    card.setStyle("-fx-background-color: " + (isVendor ? "#e4f1de" : "#FFFFFF") + "; " +
+    card.setStyle("-fx-background-color: " + (isVendor ? "#e4f1de" : "#000000") + "; " +
                   "-fx-padding: 20; -fx-background-radius: 20; " +
                   "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);");
 
@@ -312,17 +314,29 @@ private void handleAcceptDonation(VBox container, Models.FoodListing listing) {
 }
 
 @FXML
-private void handleSendMessage() { // Remove any parameters like (ActionEvent event)
+private void handleSendMessage() {
     String text = messageInputField.getText();
     
+    // 1. Validation check
     if (text == null || text.trim().isEmpty() || selectedNGO == null) {
         return;
     }
 
+    String cleanText = text.trim();
     int vendorId = UserSession.getInstance().getVendor().getUserId();
-    messageDAO.sendMessage(vendorId, selectedNGO.getUserId(), text.trim());
-    addMessageToUI(text.trim(), true);
+
+    // 2. Database Logic: Save the message
+    messageDAO.sendMessage(vendorId, selectedNGO.getUserId(), cleanText);
+
+    // 3. UI Logic: Delegate to addMessageToUI
+    // Note: Ensure addMessageToUI calls createMessageBubble(text, true) internally
+    addMessageToUI(cleanText, true);
+
+    // 4. Cleanup & Scroll
     messageInputField.clear();
+    
+    // Auto-scroll to the newest message
+    javafx.application.Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
 }
     public void showToast(Stage stage, String message, boolean isSuccess) {
     Label label = new Label(message);
@@ -434,4 +448,42 @@ private void handleReject(ActionEvent event) {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    // Inside your ChatLandingController.java
+private HBox createMessageBubble(String text, boolean isSentByMe) {
+    Label messageLabel = new Label(text);
+    messageLabel.setWrapText(true);
+    messageLabel.setMaxWidth(400);
+
+    HBox bubbleWrapper = new HBox();
+    
+    if (isSentByMe) {
+        // --- SENT MESSAGE: Classy Dark Navy ---
+        messageLabel.setStyle(
+            "-fx-background-color: #0F172A; " + 
+            "-fx-text-fill: white; " + // Clear white text for dark background
+            "-fx-padding: 12 18; " +
+            "-fx-background-radius: 20 20 0 20; " + 
+            "-fx-font-size: 14px; " +
+            "-fx-font-weight: 500;"
+        );
+        bubbleWrapper.setAlignment(Pos.CENTER_RIGHT);
+        // Added depth to the dark bubble
+        messageLabel.setEffect(new javafx.scene.effect.DropShadow(10, 0, 5, javafx.scene.paint.Color.web("#00000022")));
+    } else {
+        // --- RECEIVED MESSAGE: High-Contrast Soft Slate ---
+        messageLabel.setStyle(
+            "-fx-background-color: #F1F5F9; " + 
+            "-fx-text-fill: #1E293B; " + // Dark Slate text for light background (Readability Fix)
+            "-fx-padding: 12 18; " +
+            "-fx-background-radius: 20 20 20 0; " + 
+            "-fx-font-size: 14px; " +
+            "-fx-font-weight: 500;"
+        );
+        bubbleWrapper.setAlignment(Pos.CENTER_LEFT);
+    }
+
+    bubbleWrapper.getChildren().add(messageLabel);
+    return bubbleWrapper;
+}
 }

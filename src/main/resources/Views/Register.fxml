@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -7,72 +6,86 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.paint.Color?>
 
-<StackPane prefHeight="750.0" prefWidth="1000.0" 
-           style="-fx-background-color: #F8FAFC;" 
-           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" 
-           fx:controller="Controllers.RegisterController">
-    
+<HBox prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.RegisterController">
     <children>
-        <VBox alignment="CENTER" spacing="25.0" maxWidth="480.0" maxHeight="680.0" 
-              style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 50;">
-            
-            <effect>
-                <DropShadow blurType="THREE_PASS_BOX" height="40.0" radius="19.5" width="40.0">
-                    <color>
-                        <Color red="0.8" green="0.83" blue="0.87" opacity="0.4" />
-                    </color>
-                </DropShadow>
-            </effect>
-
+        
+        <VBox alignment="CENTER_LEFT" spacing="30" style="-fx-background-color: #0F172A;" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets left="60" right="60" />
+            </padding>
             <children>
-                <VBox alignment="CENTER" spacing="8.0">
-                    <Text text="SavePlate" 
-                          style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-fill: #0F172A; -fx-letter-spacing: 1px;" />
-                    <Text text="Join the movement to save food" 
-                          style="-fx-font-size: 15px; -fx-fill: #64748B; -fx-font-weight: 500;" />
-                </VBox>
-
-                <Separator maxWidth="100.0" style="-fx-opacity: 0.5;" />
-
-                <VBox spacing="18.0" fillWidth="true">
-                    
-                    <VBox spacing="8.0">
-                        <Label text="FULL NAME" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
-                        <TextField fx:id="nameField" promptText="e.g. John Doe" 
-                                   style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;"/>
-                    </VBox>
-
-                    <VBox spacing="8.0">
-                        <Label text="EMAIL ADDRESS" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
-                        <TextField fx:id="emailField" promptText="john@example.com" 
-                                   style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;"/>
-                    </VBox>
-
-                    <VBox spacing="8.0">
-                        <Label text="PASSWORD" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
-                        <PasswordField fx:id="passwordField" promptText="••••••••" 
-                                       style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;"/>
-                    </VBox>
-
-                    <VBox spacing="8.0">
-                        <Label text="I AM JOINING AS A..." style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px; -fx-letter-spacing: 0.5px;"/>
-                        <ComboBox fx:id="roleComboBox" promptText="Select Role" maxWidth="Infinity" 
-                                  style="-fx-background-color: #F1F5F9; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8;"/>
-                    </VBox>
+                <VBox spacing="15">
+                    <Text text="SavePlate" style="-fx-font-size: 56px; -fx-font-weight: 900; -fx-fill: white; -fx-font-family: 'Inter';" />
+                    <Label text="Be the change." style="-fx-font-size: 24px; -fx-text-fill: #6366F1; -fx-font-weight: 800;"/>
+                    <Label text="Whether you are a student hungry for savings, a vendor with surplus, or an NGO on a mission—there is a place for you here." 
+                           wrapText="true" style="-fx-font-size: 16px; -fx-text-fill: #94A3B8; -fx-max-width: 420; -fx-line-spacing: 5;"/>
                 </VBox>
                 
-                <VBox alignment="CENTER" spacing="15.0">
-                    <Button text="CREATE ACCOUNT" onAction="#handleRegister" maxWidth="Infinity" 
-                            style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 15; -fx-background-radius: 10; -fx-cursor: hand;">
-                        <VBox.margin>
-                            <Insets top="10" />
-                        </VBox.margin>
-                    </Button>
-                    
-                    <Hyperlink text="Already have an account? Sign In" onAction="#handleBackToLogin" 
-                               style="-fx-text-fill: #6366F1; -fx-underline: false; -fx-font-weight: 700; -fx-font-size: 13px;"/>
+                <VBox spacing="20" style="-fx-padding: 40 0 0 0;">
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Label text="✔" style="-fx-text-fill: #10B981; -fx-font-weight: 900; -fx-font-size: 18px;"/>
+                        <Label text="Access to exclusive surplus deals" style="-fx-text-fill: #CBD5E1; -fx-font-size: 14px;"/>
+                    </HBox>
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Label text="✔" style="-fx-text-fill: #10B981; -fx-font-weight: 900; -fx-font-size: 18px;"/>
+                        <Label text="Real-time CO2 impact tracking" style="-fx-text-fill: #CBD5E1; -fx-font-size: 14px;"/>
+                    </HBox>
                 </VBox>
             </children>
         </VBox>
+
+        <ScrollPane fitToWidth="true" prefWidth="550.0" style="-fx-background-color: #FAFAFA; -fx-background: #FAFAFA;" hbarPolicy="NEVER">
+            <content>
+                <VBox alignment="CENTER" spacing="35" style="-fx-padding: 60 80;">
+                    <children>
+                        <VBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Create Account" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #0F172A;"/>
+                            <Label text="Join the movement to save food and the planet." style="-fx-text-fill: #64748B; -fx-font-size: 14px;"/>
+                        </VBox>
+
+                        <VBox spacing="20" fillWidth="true">
+                            <VBox spacing="8.0">
+                                <Label text="FULL NAME" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px;"/>
+                                <TextField fx:id="nameField" promptText="e.g. John Doe" 
+                                           style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 14;"/>
+                            </VBox>
+
+                            <VBox spacing="8.0">
+                                <Label text="EMAIL ADDRESS" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px;"/>
+                                <TextField fx:id="emailField" promptText="john@example.com" 
+                                           style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 14;"/>
+                            </VBox>
+
+                            <VBox spacing="8.0">
+                                <Label text="PASSWORD" style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px;"/>
+                                <PasswordField fx:id="passwordField" promptText="••••••••" 
+                                               style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 14;"/>
+                            </VBox>
+
+                            <VBox spacing="8.0">
+                                <Label text="I AM JOINING AS A..." style="-fx-text-fill: #475569; -fx-font-weight: 800; -fx-font-size: 11px;"/>
+                                <ComboBox fx:id="roleComboBox" promptText="Select your role" maxWidth="Infinity" 
+                                          style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10;"/>
+                            </VBox>
+                        </VBox>
+                        
+                        <VBox spacing="20" alignment="CENTER">
+                            <Button text="GET STARTED" onAction="#handleRegister" maxWidth="Infinity" 
+                                    style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: 900; -fx-padding: 16; -fx-background-radius: 12; -fx-cursor: hand;">
+                                <effect>
+                                    <DropShadow color="#00000022" radius="15" offsetY="5"/>
+                                </effect>
+                            </Button>
+                            
+                            <HBox spacing="5" alignment="CENTER">
+                                <Label text="Already have an account?" style="-fx-text-fill: #64748B; -fx-font-size: 13px;"/>
+                                <Hyperlink text="Sign In" onAction="#handleBackToLogin" 
+                                           style="-fx-text-fill: #6366F1; -fx-font-weight: 800; -fx-font-size: 13px; -fx-underline: false;"/>
+                            </HBox>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
     </children>
-</StackPane>
+</HBox>

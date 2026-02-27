@@ -6,76 +6,94 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.geometry.Insets?>
 
-<StackPane fx:controller="Controllers.UploadFoodController" 
-           xmlns:fx="http://javafx.com/fxml/1" 
-           prefHeight="850.0" prefWidth="1100.0" 
-           style="-fx-background-color: #FAFAFA;">
+<HBox prefHeight="800.0" prefWidth="1100.0" style="-fx-background-color: white;" 
+      xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+      fx:controller="Controllers.UploadFoodController">
     <children>
-        <VBox spacing="30">
-            <padding><Insets top="40" right="80" bottom="40" left="80"/></padding>
-            
-            <VBox spacing="8">
-                <Text text="New Listing" style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-fill: #1A1A1A;"/>
-                <Text text="Use Gemini AI to analyze food safety and quality instantly." style="-fx-fill: #555555; -fx-font-size: 17px; -fx-font-weight: 500;"/>
-            </VBox>
-
-            <HBox spacing="60" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
-                <VBox spacing="25" alignment="TOP_CENTER">
-                    <StackPane style="-fx-background-color: white; -fx-background-radius: 25;">
-                        <effect><DropShadow color="#0000001F" radius="45" offsetY="20"/></effect>
-                        <ImageView fx:id="foodImageView" fitWidth="380" fitHeight="280" preserveRatio="true"/>
-                    </StackPane>
-                    <HBox spacing="15" alignment="CENTER">
-                        <Button text="Select Photo" onAction="#handleSelectPhoto" 
-                                style="-fx-background-color: #F0F0F0; -fx-text-fill: #1A1A1A; -fx-font-weight: 700; -fx-background-radius: 25; -fx-padding: 12 25; -fx-cursor: hand;"/>
-                        <Button text="AI Scan" onAction="#handleAIScan" 
-                                style="-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 25; -fx-padding: 12 25; -fx-cursor: hand;"/>
-                    </HBox>
+        
+        <VBox alignment="TOP_CENTER" spacing="35" style="-fx-background-color: #0F172A;" prefWidth="480.0">
+            <padding>
+                <Insets top="60" right="40" bottom="40" left="40"/>
+            </padding>
+            <children>
+                <VBox spacing="10" alignment="CENTER_LEFT">
+                    <Text text="New Listing" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-fill: white;" />
+                    <Text text="Analyze food safety instantly." style="-fx-fill: #94A3B8; -fx-font-size: 14px;" />
                 </VBox>
 
-                <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 30; -fx-padding: 40;" HBox.hgrow="ALWAYS">
-                    <effect><DropShadow color="#0000000D" radius="50" offsetY="25"/></effect>
-                    
-                    <TextField fx:id="foodNameField" promptText="Food Name (e.g., Apple)" 
-                               style="-fx-background-color: #F8F9FA; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-padding: 15; -fx-font-size: 14px;"/>
-                    
-                    <TextField fx:id="quantityField" promptText="Quantity" 
-                               style="-fx-background-color: #F8F9FA; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-padding: 15; -fx-font-size: 14px;"/>
-                    
-                    <HBox spacing="20" alignment="CENTER_LEFT">
-                        <Label text="Estimated Expiry:" style="-fx-text-fill: #1A1A1A; -fx-font-weight: 800;"/>
-                        <DatePicker fx:id="expiryDatePicker" HBox.hgrow="ALWAYS" maxWidth="Infinity" style="-fx-background-radius: 10;"/>
-                    </HBox>
-
-                    <VBox spacing="10" VBox.vgrow="ALWAYS">
-                        <Label text="✨ PREMIUM AI INSIGHTS" style="-fx-text-fill: #2D3748; -fx-font-weight: 900; -fx-font-size: 13px; -fx-letter-spacing: 1px;"/>
-                        <TextArea fx:id="aiRecommendationArea" 
-                                  VBox.vgrow="ALWAYS"
-                                  prefHeight="350.0" 
-                                  promptText="Waiting for Gemini AI scan..." 
-                                  wrapText="true" 
-                                  editable="false" 
-                                  style="-fx-control-inner-background: #F8FAFC; 
-                                         -fx-border-color: #E2E8F0; 
-                                         -fx-border-width: 2;
-                                         -fx-border-radius: 15; 
-                                         -fx-background-radius: 15; 
-                                         -fx-font-family: 'Inter', 'Segoe UI'; 
-                                         -fx-font-size: 15px; 
-                                         -fx-padding: 10;"/>
-                    </VBox>
-                    
-                    <Button text="Publish Listing" onAction="#handlePublish" maxWidth="Infinity" 
-                            style="-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 18; -fx-background-radius: 15; -fx-cursor: hand;"/>
-                    
-                    <Button fx:id="chatNavButton" text="Go to Chats →" onAction="#handleGoToChats" 
-                            maxWidth="Infinity" visible="false" managed="false"
-                            style="-fx-background-color: #4A5568; -fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 15; -fx-background-radius: 15; -fx-cursor: hand;"/>
+                <VBox alignment="CENTER" style="-fx-background-color: #1E293B; -fx-background-radius: 25; -fx-min-height: 320;">
+                    <effect><DropShadow color="#00000033" radius="30" offsetY="15"/></effect>
+                    <ImageView fx:id="foodImageView" fitWidth="380" fitHeight="260" preserveRatio="true"/>
                 </VBox>
-            </HBox>
-            
-            <Button text="← Back to Dashboard" onAction="#handleBack" 
-                    style="-fx-background-color: transparent; -fx-text-fill: #1A1A1A; -fx-font-weight: 800; -fx-cursor: hand;"/>
+                
+                <HBox spacing="15" alignment="CENTER">
+                    <Button text="Select Photo" onAction="#handleSelectPhoto" 
+                            style="-fx-background-color: #334155; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 25; -fx-padding: 12 25; -fx-cursor: hand;"/>
+                    <Button text="AI Scan ✨" onAction="#handleAIScan" 
+                            style="-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: 800; -fx-background-radius: 25; -fx-padding: 12 25; -fx-cursor: hand;"/>
+                </HBox>
+
+                <Region VBox.vgrow="ALWAYS" />
+                
+                <Button text="← Back to Dashboard" onAction="#handleBack" 
+                        style="-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-cursor: hand;"/>
+            </children>
         </VBox>
+
+        <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS" style="-fx-background-color: #FAFAFA; -fx-background: #FAFAFA;" hbarPolicy="NEVER">
+            <content>
+                <VBox spacing="30" style="-fx-padding: 60 60;">
+                    <children>
+                        <VBox spacing="25">
+                            <VBox spacing="15">
+                                <Label text="PRODUCT DETAILS" style="-fx-text-fill: #64748B; -fx-font-weight: 900; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
+                                
+                                <TextField fx:id="foodNameField" promptText="What are you listing today?" 
+                                           style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 15; -fx-font-size: 15px;"/>
+                                
+                                <TextField fx:id="quantityField" promptText="Quantity / Weight" 
+                                           style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 15; -fx-font-size: 15px;"/>
+                                
+                                <VBox spacing="8">
+                                    <Label text="Estimated Expiry Date" style="-fx-text-fill: #475569; -fx-font-weight: 700; -fx-font-size: 13px;"/>
+                                    <DatePicker fx:id="expiryDatePicker" maxWidth="Infinity" 
+                                                promptText="Select date"
+                                                style="-fx-background-color: white; 
+                                                       -fx-border-color: #E2E8F0; 
+                                                       -fx-border-radius: 12; 
+                                                       -fx-background-radius: 12; 
+                                                       -fx-font-size: 14px; 
+                                                       -fx-padding: 8; 
+                                                       -fx-cursor: hand;"/>
+                                </VBox>
+                            </VBox>
+
+                            <Separator />
+
+                            <VBox spacing="15">
+                                <Label text="✨ PREMIUM AI INSIGHTS" style="-fx-text-fill: #10B981; -fx-font-weight: 900; -fx-font-size: 12px; -fx-letter-spacing: 1px;"/>
+                                <TextArea fx:id="aiRecommendationArea" 
+                                          prefHeight="250.0" 
+                                          promptText="Waiting for Gemini AI scan results..." 
+                                          wrapText="true" 
+                                          editable="false" 
+                                          style="-fx-control-inner-background: white; -fx-border-color: #E2E8F0; -fx-border-radius: 15; -fx-background-radius: 15; -fx-font-size: 14px; -fx-padding: 10;"/>
+                            </VBox>
+                        </VBox>
+                        
+                        <VBox spacing="15">
+                            <Button text="Confirm &amp; Publish Listing" onAction="#handlePublish" maxWidth="Infinity" 
+                                    style="-fx-background-color: #0F172A; -fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 18; -fx-background-radius: 15; -fx-cursor: hand;">
+                                <effect><DropShadow color="#00000033" radius="10" offsetY="5"/></effect>
+                            </Button>
+                            
+                            <Button fx:id="chatNavButton" text="Go to Chats →" onAction="#handleGoToChats" 
+                                    maxWidth="Infinity" visible="false" managed="false"
+                                    style="-fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 16px; -fx-padding: 15; -fx-background-radius: 15; -fx-cursor: hand;"/>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
     </children>
-</StackPane>
+</HBox>

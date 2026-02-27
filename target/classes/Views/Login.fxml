@@ -4,36 +4,79 @@
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.shape.Circle?>
 
-<StackPane prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #FAFAFA;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.LoginController">
+<HBox prefHeight="750.0" prefWidth="1100.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.LoginController">
     <children>
-        <VBox alignment="CENTER" spacing="30.0" maxWidth="450.0" maxHeight="550.0" 
-              style="-fx-background-color: white; -fx-background-radius: 35; -fx-padding: 50;">
-            <effect>
-                <DropShadow color="#0000000D" radius="30" offsetY="15"/>
-            </effect>
+        
+        <VBox alignment="CENTER" spacing="30" style="-fx-background-color: #1A1A1A;" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets left="60" right="60" />
+            </padding>
             <children>
-                <VBox alignment="CENTER" spacing="8">
-                    <Text text="SavePlate" style="-fx-font-size: 48px; -fx-font-weight: 900; -fx-fill: #1A1A1A; -fx-font-family: 'Inter';" />
-                    <Label text="Fighting food waste with intelligence." style="-fx-font-size: 14px; -fx-text-fill: #999999; -fx-font-family: 'Inter';"/>
-                </VBox>
-
-                <VBox spacing="15" alignment="CENTER">
-                    <TextField fx:id="emailField" promptText="Email Address" 
-                               style="-fx-background-color: #F5F5F7; -fx-background-radius: 12; -fx-padding: 15; -fx-font-family: 'Inter';"/>
-                    
-                    <PasswordField fx:id="passwordField" promptText="Password" 
-                                   style="-fx-background-color: #F5F5F7; -fx-background-radius: 12; -fx-padding: 15; -fx-font-family: 'Inter';"/>
+                <VBox alignment="CENTER_LEFT" spacing="15">
+                    <Text text="SavePlate" style="-fx-font-size: 56px; -fx-font-weight: 900; -fx-fill: white; -fx-font-family: 'Inter';" />
+                    <Label text="Zero Waste. Zero Hunger." style="-fx-font-size: 22px; -fx-text-fill: #10B981; -fx-font-weight: 700;"/>
+                    <Label text="Join the elite network of university students and local vendors fighting food waste together." 
+                           wrapText="true" style="-fx-font-size: 16px; -fx-text-fill: #94A3B8; -fx-max-width: 400;"/>
                 </VBox>
                 
-                <VBox spacing="20" alignment="CENTER">
-                    <Button text="Sign In" onAction="#handleLogin" prefWidth="350.0"
-                            style="-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 15; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                <HBox spacing="20" alignment="CENTER_LEFT">
+                    <VBox alignment="CENTER" style="-fx-background-color: #2D2D2D; -fx-padding: 15; -fx-background-radius: 15;">
+                        <Label text="1,200+" style="-fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 18px;"/>
+                        <Label text="Meals Saved" style="-fx-text-fill: #64748B; -fx-font-size: 12px;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" style="-fx-background-color: #2D2D2D; -fx-padding: 15; -fx-background-radius: 15;">
+                        <Label text="50+" style="-fx-text-fill: white; -fx-font-weight: 900; -fx-font-size: 18px;"/>
+                        <Label text="Top Vendors" style="-fx-text-fill: #64748B; -fx-font-size: 12px;"/>
+                    </VBox>
+                </HBox>
+            </children>
+        </VBox>
+
+        <VBox alignment="CENTER" prefWidth="550.0" spacing="40" style="-fx-background-color: #FAFAFA;">
+            <padding>
+                <Insets left="80" right="80" />
+            </padding>
+            <children>
+                <VBox spacing="10" alignment="CENTER_LEFT" maxWidth="380">
+                    <Label text="Welcome Back" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #1A1A1A;"/>
+                    <Label text="Please enter your credentials to access the marketplace." style="-fx-text-fill: #64748B; -fx-font-size: 14px;"/>
+                </VBox>
+
+                <VBox spacing="20" alignment="CENTER_LEFT" maxWidth="380">
+                    <VBox spacing="8">
+                        <Label text="Email Address" style="-fx-font-weight: 700; -fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                        <TextField fx:id="emailField" promptText="e.g. user1@saveplate.com" 
+                                   style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 15;"/>
+                    </VBox>
                     
-                    <Hyperlink text="Create a new account" onAction="#handleShowSignUp" 
-                               style="-fx-text-fill: #1A1A1A; -fx-underline: false; -fx-font-weight: 600; -fx-font-size: 13px;"/>
+                    <VBox spacing="8">
+                        <Label text="Password" style="-fx-font-weight: 700; -fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                        <PasswordField fx:id="passwordField" promptText="••••••••" 
+                                       style="-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 15;"/>
+                    </VBox>
+                    
+                    <HBox alignment="CENTER_RIGHT">
+                        <Hyperlink text="Forgot Password?" style="-fx-text-fill: #64748B; -fx-font-size: 12px; -fx-underline: false;"/>
+                    </HBox>
+                </VBox>
+                
+                <VBox spacing="20" alignment="CENTER" maxWidth="380">
+                    <Button text="Sign In to Dashboard" onAction="#handleLogin" prefWidth="380.0"
+                            style="-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-background-radius: 12; -fx-padding: 16; -fx-font-weight: 800; -fx-font-size: 15px; -fx-cursor: hand;">
+                        <effect>
+                            <DropShadow color="#00000033" radius="15" offsetY="5"/>
+                        </effect>
+                    </Button>
+                    
+                    <HBox spacing="5" alignment="CENTER">
+                        <Label text="New to SavePlate?" style="-fx-text-fill: #64748B; -fx-font-size: 13px;"/>
+                        <Hyperlink text="Create an Account" onAction="#handleShowSignUp" 
+                                   style="-fx-text-fill: #10B981; -fx-font-weight: 800; -fx-font-size: 13px; -fx-underline: false;"/>
+                    </HBox>
                 </VBox>
             </children>
         </VBox>
     </children>
-</StackPane>
+</HBox>
