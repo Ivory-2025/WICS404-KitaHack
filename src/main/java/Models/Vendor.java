@@ -5,6 +5,21 @@ public class Vendor extends User {
     private String address;
     private double trustScore;
     private int id;
+    private int userId;
+    private String storeName; 
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    // Add a setter if needed
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
 
     //Constructor
     //for manual vendor object creation

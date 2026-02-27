@@ -11,9 +11,19 @@ import java.sql.Connection;
 
 public class MessageDAO {
     
-    public void sendAutoPM(int senderId, int receiverId, String content) {
-        // SQL: INSERT INTO messages (sender_id, receiver_id, message_body) VALUES (?, ?, ?)
+    // Inside MessageDAO.java
+public void sendAutoPM(int senderId, int receiverId, String content) {
+    String sql = "INSERT INTO Messages (sender_id, receiver_id, message_text, timestamp) VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
+    try (Connection conn = DatabaseConnection.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, senderId);
+        pstmt.setInt(2, receiverId);
+        pstmt.setString(3, content);
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
     public List<Message> getChatHistory(int user1, int user2) {
     List<Message> history = new ArrayList<>();

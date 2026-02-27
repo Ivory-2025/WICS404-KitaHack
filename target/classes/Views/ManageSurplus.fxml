@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane fx:controller="Controllers.ManageSurplusController" 
+           xmlns="http://javafx.com/javafx/8" 
+           xmlns:fx="http://javafx.com/fxml/1"
+           prefHeight="750.0" prefWidth="1000.0" 
+           style="-fx-background-color: #FFFFFF;">
+
+    <VBox spacing="0">
+        <HBox alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="30" left="60" right="60" bottom="20"/>
+            </padding>
+            <Button text="←  DASHBOARD" onAction="#handleBack" 
+                    style="-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-font-weight: 800; -fx-font-size: 12px; -fx-letter-spacing: 1.5px; -fx-cursor: hand;"/>
+        </HBox>
+
+        <VBox spacing="15">
+            <padding>
+                <Insets top="20" left="60" right="60" bottom="40"/>
+            </padding>
+            <Label text="Surplus Management" 
+                   style="-fx-font-size: 42px; -fx-font-weight: 900; -fx-text-fill: #1E293B; -fx-letter-spacing: -1px;"/>
+            <Label text="Transform undonated food into exclusive flash sales." 
+                   style="-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-font-weight: 500;"/>
+            
+            <Region prefHeight="1" maxWidth="100" style="-fx-background-color: #F1F5F9;"/>
+        </VBox>
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+                    style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+            <content>
+                <VBox fx:id="salesContainer" spacing="20">
+                    <padding>
+                        <Insets top="10" left="60" right="60" bottom="60"/>
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </VBox>
+</StackPane>

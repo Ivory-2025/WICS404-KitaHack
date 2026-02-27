@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox prefHeight="700.0" prefWidth="950.0"
+      spacing="0"
+      style="-fx-background-color: white;"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="Controllers.NGOChatController"> <children>
+        <VBox prefWidth="300.0"
+              style="-fx-background-color: #F8F9FA; -fx-border-color: #E2E8F0; -fx-border-width: 0 1 0 0;">
+            <padding>
+                <Insets top="30" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <Button onAction="#handleBackToDashboard"
+                    text="← Back"
+                    style="-fx-background-color: transparent; -fx-text-fill: #1A1A1A; -fx-font-weight: 800; -fx-padding: 0 0 20 0; -fx-cursor: hand;"/>
+
+            <Label text="VENDORS NEAR YOU"
+                   style="-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #94A3B8; -fx-padding: 0 0 10 5;"/>
+
+            <ListView fx:id="vendorListView"
+                      VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: transparent; -fx-border-width: 0;"/>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS" spacing="20">
+            <padding>
+                <Insets top="30" right="40" bottom="30" left="40"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT"
+                  spacing="20"
+                  style="-fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-padding: 0 0 25 0;">
+
+                <VBox spacing="5">
+                    <Label fx:id="chatHeaderLabel"
+                           text="Select a Vendor"
+                           style="-fx-font-size: 28px; -fx-font-weight: 800; -fx-text-fill: #1A1A1A;"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Circle fx:id="statusIndicator"
+                                radius="4"
+                                fill="#94A3B8"/>
+                        <Label fx:id="statusLabel"
+                               text="Checking for surplus..."
+                               style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 600;"/>
+                    </HBox>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <ScrollPane fx:id="chatScrollPane"
+                        VBox.vgrow="ALWAYS"
+                        fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        style="-fx-background-color: transparent; -fx-border-color: transparent;">
+
+                <VBox fx:id="messageContainer"
+                      spacing="15"
+                      style="-fx-padding: 10 0;"/>
+            </ScrollPane>
+
+            <HBox spacing="15" alignment="CENTER">
+                <TextField fx:id="messageInputField"
+                           HBox.hgrow="ALWAYS"
+                           promptText="Ask about the donation..."
+                           style="-fx-background-radius: 25; -fx-padding: 12 25; -fx-background-color: #F1F5F9;"/>
+
+                <Button onAction="#handleSendMessage"
+                        text="Send"
+                        style="-fx-background-color: #1A1A1A; -fx-text-fill: white; -fx-font-weight: 700; -fx-background-radius: 25; -fx-padding: 12 35;"/>
+            </HBox>
+        </VBox>
+    </children>
+</HBox>

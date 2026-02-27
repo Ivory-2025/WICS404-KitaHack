@@ -19,10 +19,18 @@
             <Text text="NGO Marketplace" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
         </VBox>
 
-        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#goToRatings" 
+        <VBox alignment="CENTER" spacing="15.0" 
+              onMouseClicked="#goToRatings"
+              onMouseEntered="#handleHoverEnter" 
+              onMouseExited="#handleHoverExit"
               style="-fx-background-color: #f8f9fa; -fx-padding: 40; -fx-background-radius: 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
             <Text text="⭐" style="-fx-font-size: 50px;" />
-            <Text text="View Ratings" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+            <Text text="View Ratings" style="-fx-font-size: 20px; -fx-font-weight: 900; -fx-fill: #1E293B;" />
+        </VBox>
+        <VBox alignment="CENTER" spacing="15.0" onMouseClicked="#goToChat" 
+              style="-fx-background-color: #f8f9fa; -fx-padding: 40; -fx-background-radius: 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);">
+            <Text text="💬" style="-fx-font-size: 50px;" />
+            <Text text="Messages" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
         </VBox>
     </HBox>
 

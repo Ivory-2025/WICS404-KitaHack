@@ -19,7 +19,17 @@ public class FoodListing {
     private boolean locked = false;
 private Integer acceptedByUserId; // store NGO user id
     // Constructors
+private int vendorId; // Matches database column
+    
+    // Add this getter
+    public int getVendorId() {
+        return vendorId;
+    }
 
+    // Add this setter if you don't have it
+    public void setVendorId(int vendorId) {
+        this.vendorId = vendorId;
+    }
     // Default constructor
     public FoodListing() {}
 
@@ -181,4 +191,14 @@ public String getQuantity() {
                 ", expiryTime=" + expiryTime +
                 '}';
     }
+
+    private double price;
+private boolean isForSale;
+
+// Add these to your existing constructor or create getters/setters
+public double getPrice() { return price; }
+public void setPrice(double price) { this.price = price; }
+
+public boolean isForSale() { return isForSale; }
+public void setForSale(boolean forSale) { this.isForSale = forSale; }
 }

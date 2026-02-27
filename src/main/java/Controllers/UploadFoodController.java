@@ -177,7 +177,7 @@ private void handlePublish(ActionEvent event) {
         for (NGO ngo : matches) {
             String routeSummary = routingService.getRouteSummary(listing, ngo);
             String mapsLink = routingService.generateGoogleMapsLink(listing, ngo);
-
+            System.out.println("Attempting PM: Vendor(" + currentVendor.getUserId() + ") -> NGO(" + ngo.getUserId() + ")");
         // FIX: Pull the actual report generated on the landing page
         
             String messageContent = "NEW SURPLUS ALERT: " + listing.getFoodName() + " 🍎\n" +

@@ -4,7 +4,9 @@ package Controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.Node;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -18,10 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import Models.FoodListing;
-import Models.NGO;
-import Models.User;
-import Models.UserSession;
+import Models.*;
 import DAO.*;
 import java.io.IOException;
 import java.awt.Desktop;
@@ -30,6 +29,7 @@ import java.util.List;
 import javafx.stage.Popup;
 import Services.*;
 import javafx.util.Duration;
+import javafx.scene.layout.Region;
 
 public class NGODashboardController {
 
@@ -359,63 +359,150 @@ private void goToMarketplace(javafx.scene.input.MouseEvent event) {
 }
 
 @FXML
-private void goToRatings(javafx.scene.input.MouseEvent event) {
-    handleViewRating();
-}
-
 private void handleViewRating() {
     DAO.RatingDAO ratingDAO = new DAO.RatingDAO();
     List<Models.VendorRatingSummary> ratingsList = ratingDAO.getVendorLeaderboard();
-    ObservableList<Models.VendorRatingSummary> data = FXCollections.observableArrayList(ratingsList);
 
     Stage stage = new Stage();
-    javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(15);
-    root.setPadding(new javafx.geometry.Insets(25));
-    root.setStyle("-fx-background-color: white; -fx-background-radius: 20;");
+    VBox root = new VBox(0); 
+    root.setStyle("-fx-background-color: #FFFFFF;"); 
 
-    Label title = new Label("🏆 Food Hero Leaderboard");
-    title.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2f3542;");
+    // --- NEW: TOP NAVIGATION BAR ---
+    HBox navBar = new HBox();
+    navBar.setPadding(new Insets(20, 50, 0, 50));
+    navBar.setAlignment(Pos.CENTER_LEFT);
     
-    TableView<Models.VendorRatingSummary> table = new TableView<>();
-    table.setItems(data);
-    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    table.setStyle("-fx-background-color: transparent; -fx-table-cell-border-color: transparent;");
-
-    // COLUMN 1: VENDOR (Blue Style)
-    TableColumn<Models.VendorRatingSummary, String> nameCol = new TableColumn<>("VENDOR");
-    nameCol.setCellValueFactory(new PropertyValueFactory<>("vendorName"));
-    nameCol.setCellFactory(column -> new TableCell<>() {
-        @Override protected void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || item == null) { setText(null); setStyle(""); }
-            else { 
-                setText(item); 
-                setStyle("-fx-background-color: #eaf2ff; -fx-text-fill: #0984e3; -fx-font-weight: bold; -fx-padding: 15; -fx-background-radius: 10 0 0 10;");
-            }
-        }
-    });
-
-    // COLUMN 2: RATING (Gold Style)
-    TableColumn<Models.VendorRatingSummary, String> rateCol = new TableColumn<>("RATING");
-    rateCol.setCellValueFactory(new PropertyValueFactory<>("stars"));
-    rateCol.setCellFactory(column -> new TableCell<>() {
-        @Override protected void updateItem(String item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || item == null) { setText(null); setStyle(""); }
-            else { 
-                setText(item); 
-                setStyle("-fx-background-color: #fff9e6; -fx-text-fill: #ffa502; -fx-alignment: CENTER; -fx-font-size: 18px; -fx-background-radius: 0 10 10 0;");
-            }
-        }
-    });
-
-    table.getColumns().addAll(nameCol, rateCol);
-    root.getChildren().addAll(title, new Separator(), table);
+    Button backBtn = new Button("←  Dashboard");
+    backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; " + 
+                     "-fx-font-weight: 700; -fx-font-size: 14px; -fx-cursor: hand;");
     
-    stage.setScene(new Scene(root, 500, 550));
-    stage.setTitle("Rating Leaderboard");
+    // Smooth hover for back button
+    backBtn.setOnMouseEntered(e -> backBtn.setStyle(backBtn.getStyle() + "-fx-text-fill: #1E293B;"));
+    backBtn.setOnMouseExited(e -> backBtn.setStyle(backBtn.getStyle().replace("-fx-text-fill: #1E293B;", "")));
+    
+    // Close the current leaderboard stage to "return" to the dashboard
+    backBtn.setOnAction(e -> {
+    Stage currentStage = (Stage) backBtn.getScene().getWindow();
+    
+    // Create a smooth 300ms fade-out transition
+    javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
+        javafx.util.Duration.millis(300), 
+        backBtn.getScene().getRoot()
+    );
+    fadeOut.setFromValue(1.0);
+    fadeOut.setToValue(0.0);
+    
+    // Close the stage only AFTER the animation finishes
+    fadeOut.setOnFinished(event -> currentStage.close());
+    fadeOut.play();
+}); 
+    
+    navBar.getChildren().add(backBtn);
+
+    // --- EXISTING HEADER ---
+    VBox header = new VBox(8);
+    header.setPadding(new Insets(30, 50, 40, 50)); // Adjusted padding for navBar
+    header.setAlignment(Pos.CENTER_LEFT);
+    
+    Label title = new Label("Food Hero Leaderboard");
+    title.setStyle("-fx-font-size: 36px; -fx-font-weight: 900; -fx-text-fill: #1E293B; -fx-letter-spacing: -0.5px;");
+    
+    Label subtitle = new Label("The most impactful contributors in your area.");
+    subtitle.setStyle("-fx-font-size: 15px; -fx-text-fill: #94A3B8; -fx-font-weight: 500;");
+    
+    Region line = new Region();
+    line.setPrefHeight(1);
+    line.setStyle("-fx-background-color: #F1F5F9; -fx-max-width: 100;");
+    
+    header.getChildren().addAll(title, subtitle, line);
+
+    // --- SCROLLABLE CONTENT ---
+    VBox listContainer = new VBox(12);
+    listContainer.setPadding(new Insets(10, 50, 40, 50));
+
+    ScrollPane scrollPane = new ScrollPane(listContainer);
+    scrollPane.setFitToWidth(true);
+    scrollPane.setPrefHeight(600);
+    scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
+
+    int rank = 1;
+    for (Models.VendorRatingSummary summary : ratingsList) {
+        listContainer.getChildren().add(createMinimalistCard(summary, rank++));
+    }
+
+    // Adding the navBar at the very top
+    root.getChildren().addAll(navBar, header, scrollPane);
+
+    Scene scene = new Scene(root, 750, 850); // Slightly taller to accommodate nav
+    stage.setScene(scene);
+    stage.setTitle("SavePlate Elite");
     stage.show();
 }
+
+private HBox createMinimalistCard(Models.VendorRatingSummary summary, int rank) {
+    HBox card = new HBox(20);
+    card.setAlignment(Pos.CENTER_LEFT);
+    card.setPadding(new Insets(20, 30, 20, 30));
+    
+    // MINIMALIST DESIGN: White on White with a "Cloud" shadow
+    String baseStyle = "-fx-background-color: #FFFFFF; " +
+                       "-fx-background-radius: 20; " +
+                       "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 20, 0, 0, 10); " +
+                       "-fx-border-color: #F8FAFC; -fx-border-width: 1; -fx-border-radius: 20;";
+    card.setStyle(baseStyle);
+
+    // 1. ELEGANT RANK
+    Label rankLabel = new Label(String.format("%02d", rank));
+    rankLabel.setStyle("-fx-font-weight: 900; -fx-font-size: 18px; -fx-text-fill: #000000; -fx-min-width: 40;");
+
+    // 2. SOPHISTICATED AVATAR (Oppa Style)
+    Label avatar = new Label(summary.getVendorName().substring(0, 1).toUpperCase());
+    avatar.setStyle("-fx-background-color: #F8FAFC; -fx-text-fill: #64748B; " +
+                    "-fx-min-width: 50; -fx-min-height: 50; -fx-background-radius: 15; " +
+                    "-fx-alignment: center; -fx-font-weight: 800; -fx-font-size: 18px; " +
+                    "-fx-border-color: #F1F5F9; -fx-border-width: 1; -fx-border-radius: 15;");
+
+    // 3. VENDOR INFO
+    VBox details = new VBox(2);
+    Label name = new Label(summary.getVendorName());
+    name.setStyle("-fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #1E293B;");
+    
+    Label badge = new Label(rank == 1 ? "PREMIUM PARTNER" : "VERIFIED");
+    badge.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 10px; -fx-font-weight: 800; -fx-letter-spacing: 1px;");
+    details.getChildren().addAll(name, badge);
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    // 4. CHAMPAGNE GOLD RATING
+    HBox starChip = new HBox(5);
+    starChip.setAlignment(Pos.CENTER);
+    starChip.setPadding(new Insets(8, 15, 8, 15));
+    starChip.setStyle("-fx-background-color: #FFFDF5; -fx-background-radius: 12;");
+
+    Label starIcon = new Label("★");
+    starIcon.setStyle("-fx-text-fill: #EAB308; -fx-font-size: 16px;");
+    
+    Label score = new Label(summary.getStars());
+    score.setStyle("-fx-font-weight: 900; -fx-text-fill: #854D0E; -fx-font-size: 16px;");
+    starChip.getChildren().addAll(starIcon, score);
+
+    card.getChildren().addAll(rankLabel, avatar, details, spacer, starChip);
+
+    // SMOOTH INTERACTION
+    card.setOnMouseEntered(e -> {
+        card.setStyle(baseStyle + "-fx-background-color: #FBFCFE; -fx-translate-y: -3;");
+        card.setEffect(new javafx.scene.effect.DropShadow(30, 0, 15, Color.web("rgba(0,0,0,0.06)")));
+    });
+    card.setOnMouseExited(e -> {
+        card.setStyle(baseStyle);
+        card.setEffect(new javafx.scene.effect.DropShadow(20, 0, 10, Color.web("rgba(0,0,0,0.03)")));
+        card.setTranslateY(0);
+    });
+
+    return card;
+}
+
 @FXML
 public void handleLogout(ActionEvent event) { // Added ActionEvent parameter for the Button
     try {
@@ -504,7 +591,7 @@ NGO ngo = ngoDAO.getNGOByUserId(loggedInUser.getUserId());
     UserSession.getInstance().setNGO(ngo);
     
     // Correctly call the helper with the 'event' parameter
-    loadDashboard("/Views/NGODashboard.fxml", event);
+    loadDashboard("/Views/NGOMainDashboard.fxml", event);
 }
 }
 
@@ -561,5 +648,39 @@ private void showToast(String message, String bgColor, String textColor, String 
     out.setToValue(0);
     out.setOnFinished(e -> popup.hide());
     out.play();
+}
+@FXML
+private void goToChat(javafx.scene.input.MouseEvent event) {
+    try {
+        // Make sure the path matches your actual FXML location
+        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/Views/NGOChatLanding.fxml"));
+        javafx.scene.Parent root = loader.load();
+        
+        // Get the current stage from the source of the click
+        javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.show();
+    } catch (java.io.IOException e) {
+        System.err.println("Error loading NGO Chat: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
+
+@FXML
+private void goToRatings(javafx.scene.input.MouseEvent event) {
+    // This calls the aesthetic leaderboard method we just built
+    handleViewRating();
+}
+
+@FXML
+private void handleHoverEnter(javafx.scene.input.MouseEvent event) {
+    ((VBox)event.getSource()).setScaleX(1.05);
+    ((VBox)event.getSource()).setScaleY(1.05);
+}
+
+@FXML
+private void handleHoverExit(javafx.scene.input.MouseEvent event) {
+    ((VBox)event.getSource()).setScaleX(1.0);
+    ((VBox)event.getSource()).setScaleY(1.0);
 }
 }

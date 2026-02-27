@@ -3,6 +3,8 @@ package DAO;
 import Database.DatabaseConnection;
 import Models.Vendor;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VendorDAO {
 
@@ -100,5 +102,26 @@ public class VendorDAO {
         vendor.setAddress(rs.getString("address"));
         vendor.setTrustScore(rs.getDouble("trust_score"));
         return vendor;
+    }
+
+    public List<Vendor> getAllVendors() {
+        List<Vendor> vendors = new ArrayList<>();
+        String query = "SELECT * FROM vendors"; // Adjust table name if necessary
+
+        try (Connection conn = DatabaseConnection.connect();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Vendor vendor = new Vendor();
+                vendor.setUserId(rs.getInt("user_id"));
+                vendor.setStoreName(rs.getString("restaurant_name"));
+                // Set other fields as needed
+                vendors.add(vendor);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return vendors;
     }
 }

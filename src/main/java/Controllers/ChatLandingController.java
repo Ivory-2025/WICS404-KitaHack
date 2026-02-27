@@ -77,10 +77,12 @@ public void initialize() {
 
     // 3. Safely select the first item after the list is populated
     javafx.application.Platform.runLater(() -> {
-        if (!ngoListView.getItems().isEmpty()) {
-            ngoListView.getSelectionModel().selectFirst();
-        }
-    });
+    if (!ngoListView.getItems().isEmpty()) {
+        ngoListView.getSelectionModel().selectFirst();
+    } else {
+        System.out.println("No NGOs found in the list yet.");
+    }
+});
 
     // 4. Set up selection listener
     ngoListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -152,7 +154,7 @@ public void initialize() {
                   "-fx-padding: 20; -fx-background-radius: 20; " +
                   "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 15, 0, 0, 5);");
 
-    if (content.contains("New Surplus Alert")) {
+    if (content.toLowerCase().contains("new surplus alert")) {
         FoodListing listing = foodListingDAO.getLatestListingByVendor(
             UserSession.getInstance().getVendor().getUserId()
         );
@@ -340,20 +342,25 @@ private void handleSendMessage() { // Remove any parameters like (ActionEvent ev
 }
 
    private void loadActiveChats() {
-    javafx.application.Platform.runLater(() -> {
-        // Clear selection FIRST to stop JavaFX from looking at an empty index
-        ngoListView.getSelectionModel().clearSelection();
-        ngoListView.getItems().clear();
-        
-        List<Models.NGO> ngos = ngoDAO.getAllNGOs(); 
-ObservableList<NGO> items = FXCollections.observableArrayList(ngos);
-ngoListView.setItems(items);
+    // 1. Fetch data on the current thread
+    List<Models.NGO> ngos = ngoDAO.getAllNGOs(); 
+    ObservableList<NGO> observableNgos = FXCollections.observableArrayList(ngos);
 
-if (!items.isEmpty()) {
-    ngoListView.getSelectionModel().selectFirst();
-} else {
-    selectedNGO = null;
-}
+    javafx.application.Platform.runLater(() -> {
+        // 2. Disable selection before changing the list to prevent ghost events
+        ngoListView.getSelectionModel().clearSelection();
+        
+        // 3. Update the list
+        ngoListView.setItems(observableNgos);
+
+        // 4. THE CRITICAL FIX: Only select if size > 0
+        if (!observableNgos.isEmpty()) {
+            ngoListView.getSelectionModel().selectFirst();
+        } else {
+            selectedNGO = null;
+            chatHeaderLabel.setText("No active chats");
+            messageContainer.getChildren().clear();
+        }
     });
 }
 

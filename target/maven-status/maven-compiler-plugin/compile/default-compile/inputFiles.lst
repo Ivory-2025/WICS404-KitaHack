@@ -8,6 +8,7 @@ C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controlle
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Utils\Api.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\FoodListing.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\Message.java
+C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\VendorAnalyticsController.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Utils\Config.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\Transaction.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Services\FoodListingService.java
@@ -19,6 +20,7 @@ C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\Or
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Database\DatabaseInitializer.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\TransactionDAO.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Services\MatchingService.java
+C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\NGOChatController.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\NGODAO.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\VendorRatingSummary.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\app\Launcher.java
@@ -36,6 +38,7 @@ C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\Vendo
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Models\Rating.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\DAO\UserDAOImpl.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\RegisterController.java
+C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\ManageSurplusController.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\VendorDashboard.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Services\ModelsChecker.java
 C:\Users\OWNER\OneDrive\Documents\clone\WICS404-KitaHack\src\main\java\Controllers\UploadFoodController.java
