@@ -562,4 +562,20 @@ private void showToast(String message, String bgColor, String textColor, String 
     out.setOnFinished(e -> popup.hide());
     out.play();
 }
+@FXML
+private void goToChat(javafx.scene.input.MouseEvent event) {
+    try {
+        // Make sure the path matches your actual FXML location
+        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/Views/NGOChatLanding.fxml"));
+        javafx.scene.Parent root = loader.load();
+        
+        // Get the current stage from the source of the click
+        javafx.stage.Stage stage = (javafx.stage.Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new javafx.scene.Scene(root));
+        stage.show();
+    } catch (java.io.IOException e) {
+        System.err.println("Error loading NGO Chat: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 }

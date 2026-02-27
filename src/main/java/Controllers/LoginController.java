@@ -75,7 +75,7 @@ public void handleLogin() {
         }
         session.setNGO(ngo);
         showToast("Welcome back! ✨", "#D1FAE5", "#065F46", "✅");
-        loadDashboard("/Views/NGODashboard.fxml", loggedInUser);
+        loadDashboard("/Views/NGOMainDashboard.fxml", loggedInUser);
     }
 } // <--- handleLogin ends here
 

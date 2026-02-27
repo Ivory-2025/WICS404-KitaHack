@@ -9,6 +9,7 @@ DAO\NGODAO.class
 DAO\UserDAOImpl.class
 Services\FoodAnalysisService.class
 Database\DatabaseInitializer.class
+Controllers\NGOChatController.class
 Controllers\NGODashboardController$2.class
 DAO\SurplusRecordDAO.class
 Models\Vendor.class
@@ -21,6 +22,7 @@ Models\User.class
 Services\FoodListingService.class
 Controllers\NGODashboardController$3.class
 Controllers\NGODashboardController$6.class
+Controllers\NGOChatController$1.class
 Services\ModelsChecker.class
 Controllers\ChatLandingController.class
 DAO\FoodListingDAO.class
