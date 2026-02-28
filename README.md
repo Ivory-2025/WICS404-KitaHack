@@ -72,7 +72,7 @@ Rather than a static backend, we used Gemini 2.5 Flash as a "Smart Bridge." The 
 We measure success through transparency and efficiency:
 
 ### 100% Traceability: 
-Every successful rescue is logged via TransactionDAO to track the total volume of food diverted from landfills.
+Every successful food redistribution activity is logged via TransactionDAO to track the total volume of food diverted from landfills.
 
 ### Speed-to-Market: 
 AI has reduced the time it takes for a vendor to list surplus from ~2 minutes to under 5 seconds.
