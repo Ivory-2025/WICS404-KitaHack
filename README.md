@@ -1,12 +1,10 @@
 # 🍽️ SavePlate (by WICS 404)
 Bridging the Gap Between Surplus and Need with Intelligent Orchestration
 ## 📖 Project Overview
-SavePlate is a high-trust, AI-powered food rescue platform designed to eliminate the "manual friction" that causes perfectly edible surplus food to end up in landfills. By automating the listing process and providing real-time logistics coordination, we connect local vendors with NGOs and students in need.
+SavePlate is an AI-powered food redistribution system that helps reduce food waste by connecting food vendors with individuals and organizations in need. Vendors can upload details of extra food that would otherwise be thrown away, and the AI helps identify and categorize the items to match them with nearby recipients. With location-based coordination for easy pickups, SavePlate makes it simpler to redistribute surplus food efficiently while promoting sustainability and community support.
 
 ### Problem: 
-1. Busy vendors find manual listing too tedious;
-2. NGOs struggle with unpredictable supply and lack of trust;
-3. University students often face "food insecurity" due to tight budgets and busy schedules. They are actively seeking consistent, affordable, and nutritious meals but lack a platform to find high-quality surplus food at a "Flash Sale" price.
+Many perfectly edible surplus meals from vendors go to waste because vendors don’t have a quick way to share them. At the same time, students and NGOs struggle to find affordable, nutritious food.
 
 ### The Gap: 
 Currently, surplus food at campus cafes is either thrown away or sold at full price until closing, leaving students with no way to access these meals at a discounted rate.
